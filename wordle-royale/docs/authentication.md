@@ -1,0 +1,50 @@
+# Wordle Royale authentication
+
+Implements the account-access scope in `Sprint Planning.xlsx`, Sheet1, C2:C11: Firebase email/password signup, login, logout, field validation, helpful errors, persistent sessions, a protected account page, and responsive layouts. Password reset is included as a companion flow.
+
+## Connect your Firebase project
+
+1. In [Firebase Console](https://console.firebase.google.com/), create or select the project and register a web app.
+2. Under **Authentication → Sign-in method**, enable **Email/Password**.
+3. Copy `.env.example` to `.env.local` in this directory's parent (beside `package.json`). Fill in the four values from **Project settings → Your apps → SDK setup and configuration**.
+4. Under **Authentication → Settings → Authorized domains**, add your development and deployed domains as needed. Configure the password-reset email template and sender for your project.
+5. Run `npm install` and `npm run dev`. Restart the server whenever environment variables change. On Windows PowerShell with restricted script execution, use `npm.cmd` instead of `npm`.
+
+Firebase's web app configuration contains public identifiers. Never put a service-account private key or other Admin SDK secret in a `NEXT_PUBLIC_` variable. `.env.local` is ignored by Git. When deploying, set the same four values in the host's build environment and rebuild.
+
+Without configuration, the pages still render and local field validation works. Submission displays a service-unavailable error; no account or successful login is simulated.
+
+Reference: [Firebase password authentication](https://firebase.google.com/docs/auth/web/password-auth) and [session persistence](https://firebase.google.com/docs/auth/web/auth-state-persistence).
+
+## Routes and behavior
+
+| Route              | Behavior                                                                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`, `/login`      | Email/password login; signed-in users go to `/play`.                                                                                  |
+| `/signup`          | Player name, email, password, and matching confirmation; signs in after successful creation.                                          |
+| `/forgot-password` | Sends a Firebase reset email, with the same confirmation for unknown addresses. Firebase's hosted action handler completes the reset. |
+| `/play`            | Shows the authenticated account and logout. Signed-out users go to `/login`. Multiplayer gameplay is outside this sprint.             |
+
+Signup uses Firebase local persistence. Login defaults to “Keep me signed in,” which survives refresh and browser restart. Unchecking it uses session persistence: refresh still works, but a fresh tab/window does not inherit that session. Firebase synchronizes local-persistence sign-out across tabs. The app waits for Firebase's initial session check before displaying authenticated content.
+
+`components/auth-provider.tsx` owns authentication state and SDK operations. `lib/firebase.ts` initializes Firebase once. `lib/auth-utils.ts` handles form validation and public error messages. Passwords are passed directly to Firebase, never placed in application storage or logs. Player names are Firebase display names, not unique handles. A failed display-name update does not undo an otherwise successful account creation.
+
+Put new client-rendered authenticated pages under `app/(protected)/`. The shared guard controls client navigation and visibility; it is **not server/API authorization**. This sprint has no private server data or backend game endpoints. Any future API/server action must independently verify Firebase ID tokens or session cookies, and Firebase database/storage access must use appropriate security rules. Do not rely on the client guard for backend access control.
+
+## Verification
+
+```sh
+npm run lint
+npm run build
+npm run test:e2e
+```
+
+Browser tests use installed Google Chrome and Microsoft Edge, plus Chrome with a Pixel-sized viewport. The suite starts Next.js on `127.0.0.1:3100` and a Firebase Authentication emulator on `127.0.0.1:9099`, using only the `demo-wordle-royale` project. It downloads the pinned Firebase CLI via npm on first use. No real Firebase credentials or live users are involved. Keep ports 3100, 9099, and the emulator's default hub/log ports free. Playwright shuts down its servers after the run.
+
+Coverage includes signup, duplicate email, login, invalid credentials, refresh, logout, route redirects, session-only persistence, validation, password visibility, reset request privacy, keyboard dismissal/focus for the help dialog, and widths from 320px to 1440px. Screenshots and failure traces are written under ignored `test-results/`. Mobile checks emulate viewport/touch behavior; they do not substitute for testing a physical phone or Safari.
+
+If the CLI is already installed, set `FIREBASE_CLI_PATH` to its `lib/bin/firebase.js` file to run without downloading it again. The completed implementation passed all 27 browser tests, lint, and the production build. The production preview was also checked for missing-configuration errors, signed-out redirects, and browser exceptions. Desktop and mobile screenshots were visually reviewed.
+
+To try the emulator manually, start `npm exec --yes --package=firebase-tools@15.32.1 -- firebase emulators:start --only auth --project demo-wordle-royale`, set the four public variables to demo values matching that project, and set `NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_URL=http://127.0.0.1:9099`. Emulator connections are permitted only in development and only on localhost. Real email delivery, project-specific password policies, and your deployed domain still need a smoke test after adding your production Firebase configuration.
+
+The `@grpc/grpc-js` override keeps Firebase's unused Firestore dependency on a patched 1.x release instead of its vulnerable pinned version. The app imports only Firebase App and Auth.
