@@ -13,13 +13,6 @@ import {
   type FieldErrors,
 } from "@/lib/auth-utils";
 
-<<<<<<< HEAD
-const headings = {
-  login: {
-    eyebrow: "YOUR NEXT ROUND AWAITS",
-    title: "Welcome back.",
-    subtitle: "",
-=======
 const headings: Record<
   AuthMode,
   {
@@ -33,7 +26,7 @@ const headings: Record<
   login: {
     eyebrow: "YOUR NEXT ROUND AWAITS",
     title: "Welcome back.",
->>>>>>> authentication-and-whatnot
+    subtitle: "",
     action: "Let’s play",
     busy: "Logging in…",
   },
@@ -47,10 +40,7 @@ const headings: Record<
   reset: {
     eyebrow: "LET’S GET YOU BACK IN",
     title: "Lost your password?",
-<<<<<<< HEAD
-    subtitle: "", 
-=======
->>>>>>> authentication-and-whatnot
+    subtitle: "",
     action: "Send reset link",
     busy: "Sending link…",
   },
