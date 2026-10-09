@@ -13,7 +13,16 @@ import {
   type FieldErrors,
 } from "@/lib/auth-utils";
 
-const headings = {
+const headings: Record<
+  AuthMode,
+  {
+    eyebrow: string;
+    title: string;
+    subtitle?: string;
+    action: string;
+    busy: string;
+  }
+> = {
   login: {
     eyebrow: "YOUR NEXT ROUND AWAITS",
     title: "Welcome back.",
