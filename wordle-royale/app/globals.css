@@ -129,10 +129,12 @@ input {
   width: 17px;
 }
 .auth-main {
-  flex: 1;
+  flex: 0 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 1.14fr) minmax(0, 1fr);
-  min-height: 680px;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  max-width: 530px;
+  margin: auto;
   border: 1px solid var(--line);
   border-radius: 22px;
   overflow: hidden;
@@ -142,12 +144,21 @@ input {
   position: relative;
   padding: 55px 49px 35px;
   background-color: #eef1e5;
-  background-image: radial-gradient(#adbca333 0.8px, transparent 0.8px);
-  background-size: 16px 16px;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
   border-right: 1px solid var(--line);
+}
+.auth-hero .hero-mark {
+  width: clamp(120px, 18vw, 230px);
+  height: auto;
+  aspect-ratio: 1;
+  gap: clamp(8px, 1.2vw, 15px);
+}
+.hero-mark span {
+  border-radius: 8px;
 }
 .hero-kicker {
   display: flex;
@@ -429,6 +440,45 @@ input {
 }
 form {
   margin-top: 28px;
+}
+.google-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 1px solid #747775;
+  border-radius: 8px;
+  background: #fff;
+  color: #1f1f1f;
+  font-size: 14px;
+  font-weight: 500;
+}
+.google-button:hover:not(:disabled) {
+  background: #f4f6f1;
+}
+.google-button:disabled {
+  opacity: 0.65;
+}
+.google-button svg {
+  flex-shrink: 0;
+}
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  font-size: 11px;
+  color: #687261;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
 }
 fieldset {
   padding: 0;
@@ -905,9 +955,6 @@ fieldset {
   }
 }
 @media (min-width: 1500px) {
-  .auth-main {
-    min-height: 760px;
-  }
   .hero-content h1 {
     font-size: 60px;
   }
@@ -965,10 +1012,6 @@ fieldset {
   }
   .site-header {
     height: 90px;
-  }
-  .auth-main {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-    min-height: 650px;
   }
   .auth-hero {
     padding: 40px 23px 26px;

@@ -11,10 +11,12 @@ import {
   browserLocalPersistence,
   browserSessionPersistence,
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
   onAuthStateChanged,
   sendPasswordResetEmail,
   setPersistence,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   updateProfile,
   type User,
@@ -28,6 +30,7 @@ type AuthContextValue = {
   initializationError: string | null;
   logIn: (email: string, password: string, remember: boolean) => Promise<void>;
   signUp: (name: string, email: string, password: string) => Promise<void>;
+  continueWithGoogle: (remember: boolean) => Promise<void>;
   logOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
 };
@@ -97,6 +100,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(newUser);
   }
 
+  async function continueWithGoogle(remember: boolean) {
+    const auth = getFirebaseAuth();
+    await setPersistence(
+      auth,
+      remember ? browserLocalPersistence : browserSessionPersistence,
+    );
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
+    await signInWithPopup(auth, provider);
+  }
+
   async function logOut() {
     await signOut(getFirebaseAuth());
   }
@@ -112,6 +126,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         initializationError,
         logIn,
         signUp,
+        continueWithGoogle,
         logOut,
         resetPassword,
       }}

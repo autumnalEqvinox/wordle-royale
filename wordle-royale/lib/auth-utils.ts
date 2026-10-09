@@ -35,6 +35,15 @@ export function authErrorMessage(error: unknown): string {
       ? String(error.code)
       : "";
   switch (code) {
+    case "auth/popup-closed-by-user":
+    case "auth/cancelled-popup-request":
+      return "Google sign-in was canceled. Try again when you’re ready.";
+    case "auth/popup-blocked":
+      return "Your browser blocked the Google sign-in window. Allow pop-ups for this site and try again.";
+    case "auth/unauthorized-domain":
+      return "Google sign-in isn’t available on this website address yet. Please contact the site owner.";
+    case "auth/account-exists-with-different-credential":
+      return "This email uses another sign-in method. Please log in using your original method.";
     case "auth/invalid-credential":
     case "auth/invalid-login-credentials":
     case "auth/user-not-found":

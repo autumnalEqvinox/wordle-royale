@@ -38,15 +38,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
       </header>
       {children}
       <footer className="site-footer">
-        <span>Five letters. One crown.</span>
-        <span className="footer-credit">
-          <span className="tiny-tiles" aria-hidden="true">
-            <i />
-            <i />
-            <i />
-          </span>
-          A little friendly competition.
-        </span>
+        <span></span>
       </footer>
       <dialog
         ref={dialog}
