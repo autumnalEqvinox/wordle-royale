@@ -13,32 +13,42 @@ import {
   type FieldErrors,
 } from "@/lib/auth-utils";
 
-const headings = {
+const headings: Record<
+  AuthMode,
+  {
+    eyebrow: string;
+    title: string;
+    subtitle?: string;
+    action: string;
+    busy: string;
+  }
+> = {
   login: {
     eyebrow: "YOUR NEXT ROUND AWAITS",
     title: "Welcome back.",
-    subtitle: "Good to see you. Ready to make your move?",
+    subtitle: "",
     action: "Let’s play",
     busy: "Logging in…",
   },
   signup: {
-    eyebrow: "A NEW CHALLENGER APPROACHES",
+    eyebrow: "",
     title: "Join the wordplay.",
-    subtitle: "Create your account. Your crown is waiting.",
+    subtitle: "Create your account.",
     action: "Create my account",
     busy: "Creating account…",
   },
   reset: {
     eyebrow: "LET’S GET YOU BACK IN",
     title: "Lost your password?",
-    subtitle: "It happens. We’ll help you find your way back.",
+    subtitle: "",
     action: "Send reset link",
     busy: "Sending link…",
   },
 };
 
 export function AuthForm({ mode }: { mode: AuthMode }) {
-  const { user, loading, logIn, signUp, resetPassword } = useAuth();
+  const { user, loading, logIn, signUp, resetPassword, continueWithGoogle } =
+    useAuth();
   const router = useRouter();
   const [fields, setFields] = useState<AuthFields>({
     name: "",
@@ -49,6 +59,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [googlePending, setGooglePending] = useState(false);
   const [sent, setSent] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(true);
@@ -65,6 +76,25 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
     setFields((previous) => ({ ...previous, [field]: value }));
     setErrors((previous) => ({ ...previous, [field]: undefined }));
     setError("");
+  }
+
+  async function handleGoogle() {
+    if (pending.current || loading) return;
+    pending.current = true;
+    setSubmitting(true);
+    setGooglePending(true);
+    setError("");
+    setErrors({});
+    try {
+      await continueWithGoogle(mode === "signup" || remember);
+      router.replace("/play");
+    } catch (failure) {
+      setError(authErrorMessage(failure));
+    } finally {
+      pending.current = false;
+      setSubmitting(false);
+      setGooglePending(false);
+    }
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -224,6 +254,50 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
       ) : (
         <form ref={formRef} onSubmit={submit} noValidate aria-busy={submitting}>
           <fieldset disabled={submitting}>
+            {mode !== "reset" && (
+              <>
+                <button
+                  type="button"
+                  className="google-button"
+                  onClick={handleGoogle}
+                  disabled={submitting || loading}
+                >
+                  {googlePending ? (
+                    <span className="spinner" />
+                  ) : (
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fill="#4285F4"
+                        d="M21.6 12.23c0-.71-.06-1.39-.18-2.05H12v3.88h5.38a4.6 4.6 0 0 1-2 3.02v2.51h3.24c1.89-1.74 2.98-4.3 2.98-7.36Z"
+                      />
+                      <path
+                        fill="#34A853"
+                        d="M12 22c2.7 0 4.96-.9 6.62-2.41l-3.24-2.51c-.9.6-2.05.96-3.38.96-2.6 0-4.81-1.76-5.6-4.12H3.05v2.59A10 10 0 0 0 12 22Z"
+                      />
+                      <path
+                        fill="#FBBC05"
+                        d="M6.4 13.92a6 6 0 0 1 0-3.84V7.49H3.05a10 10 0 0 0 0 9.02l3.35-2.59Z"
+                      />
+                      <path
+                        fill="#EA4335"
+                        d="M12 5.96c1.47 0 2.79.51 3.83 1.51l2.87-2.87A9.62 9.62 0 0 0 12 2a10 10 0 0 0-8.95 5.49l3.35 2.59C7.19 7.72 9.4 5.96 12 5.96Z"
+                      />
+                    </svg>
+                  )}
+                  {googlePending
+                    ? "Connecting to Google…"
+                    : "Continue with Google"}
+                </button>
+                <div className="auth-divider">
+                  <span>or continue with email</span>
+                </div>
+              </>
+            )}
             {mode === "signup" &&
               input("name", "Player name", "Your royal alias", "user")}
             {input(
@@ -274,7 +348,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
               className="primary-button"
               disabled={submitting || loading}
             >
-              {submitting ? (
+              {submitting && !googlePending ? (
                 <>
                   <span className="spinner" />
                   {copy.busy}

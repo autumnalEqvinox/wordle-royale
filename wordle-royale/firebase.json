@@ -1,7 +1,21 @@
 {
   "emulators": {
-    "auth": { "host": "127.0.0.1", "port": 9099 },
-    "ui": { "enabled": false },
+    "auth": {
+      "host": "127.0.0.1",
+      "port": 9099
+    },
+    "ui": {
+      "enabled": false
+    },
     "singleProjectMode": true
+  },
+  "hosting": {
+    "public": "out",
+    "cleanUrls": true,
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
   }
 }
