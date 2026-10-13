@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Swords, SwordsIcon } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth-provider";
 import { Icon } from "@/components/icons";
@@ -55,6 +56,12 @@ export default function PlayerPage() {
             {error}
           </p>
         )}
+        <button
+        className="secondary-button"
+        onClick={() => router.push('/play')}>
+          <Swords size={30} aria-hidden="true" />
+          Battle
+        </button>
         <button
           className="secondary-button"
           disabled={busy}
