@@ -69,7 +69,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
 
   useEffect(() => {
     if (!loading && user && !submitting && mode !== "reset")
-      router.replace("/play");
+      router.replace("/account");
   }, [user, loading, submitting, mode, router]);
 
   function update(field: keyof AuthFields, value: string) {
@@ -87,7 +87,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
     setErrors({});
     try {
       await continueWithGoogle(mode === "signup" || remember);
-      router.replace("/play");
+      router.replace("/account");
     } catch (failure) {
       setError(authErrorMessage(failure));
     } finally {
@@ -121,7 +121,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         await resetPassword(fields.email);
         setSent(true);
       }
-      if (mode !== "reset") router.replace("/play");
+      if (mode !== "reset") router.replace("/account");
     } catch (failure) {
       // Do not reveal whether a reset request email has an account.
       if (
