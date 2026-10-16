@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"; 
-import { auth } from "../lib/firebase";
-
+import {useState} from "react";
+import {createUserWithEmailAndPassword, updateProfile} from "firebase/auth"; 
+import {auth, db} from "../lib/firebase";
+import {doc, setDoc} from "firebase/firestore";
 
 export default function Signup() {
     const [username, setUsername] = useState("");
@@ -26,7 +26,11 @@ export default function Signup() {
         try { 
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             await updateProfile(userCredential.user, {displayName: username});
-            alert("Created account");
+            await setDoc(doc(db, "users", userCredential.user.uid), { // create firestore document, doc() determiens which doc to access, db is firestore database
+                username: username,
+                email: email,
+            });
+            alert("created account");
         } 
         catch (error) {
         console.error("Signup failed:", error);
