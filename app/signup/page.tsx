@@ -1,5 +1,8 @@
 "use client";
 import { useState } from "react";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"; 
+import { auth } from "../lib/firebase";
+
 
 export default function Signup() {
     const [username, setUsername] = useState("");
@@ -7,10 +10,28 @@ export default function Signup() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
-    function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
-        event.preventDefault();
-        console.log("Username:", username);
-        console.log("Email:", email);
+    async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+        e.preventDefault(); // Prevent the default form submission behavior
+
+        if (password !== confirmPassword) {
+            alert("Passwords don't match");
+            return;
+        }
+
+        if (password.length < 6) {
+            alert("Passwords must be at least 6 characters.");
+            return;
+        }
+
+        try { 
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(userCredential.user, {displayName: username});
+            alert("Created account");
+        } 
+        catch (error) {
+        console.error("Signup failed:", error);
+        alert("Cannot create account. Check information and try again.");
+        }
     }
 
     return (
