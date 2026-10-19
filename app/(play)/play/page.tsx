@@ -29,73 +29,263 @@ export default function GamePlay() {
         <main className="flex flex-col items-center p-14">
             <div className="grid grid-cols-5 grid-rows-6 gap-2">
                 {/* Row 1 */}
-                {Array.from({ length: 5 }, (_, index) => (
-                    <div 
-                        key={index}
-                        className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                    >
-                        {
-                        text.length == MAX_LENGTH && guessedText[0] == text
-                            ? guessedText[0]
-                            : text[index]
-                        }
+
+                <div 
+                    key={0}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[0] != null && guessedText[0] != "" ? guessedText[0][0] : text[0]}
+           
 
                     </div>
-                ))}
+
+                    <div 
+                    key={1}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[0] != null && guessedText[0] != "" ? guessedText[0][1] : text[1]}
+               
+
+                    </div>
+
+                    <div 
+                    key={2}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[0] != null && guessedText[0] != "" ? guessedText[0][2] : text[2]}
+  
+                    </div>
+
+                    <div 
+                    key={3}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[0] != null && guessedText[0] != "" ? guessedText[0][3] : text[3]}
+
+                    </div>
+
+                    <div 
+                    key={4}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[0] != null && guessedText[0] != "" ? guessedText[0][4] : text[4]}
+
+                    </div>
 
                 {/* Row 2 */}
-                {Array.from({ length: 5 }, (_, index) => (
-                    <div 
-                        key={index}
-                        className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                    >
-                        {guessedText.length == 1 ? text[index] : null}
+           <div 
+                    key={5}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[1] != null && guessedText[1] != "" ? guessedText[1][0] : text[0]}
+           
+
                     </div>
-                ))}
+
+                    <div 
+                    key={6}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[1] != null && guessedText[1] != "" ? guessedText[1][1] : text[1]}
+               
+
+                    </div>
+
+                    <div 
+                    key={7}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[1] != null && guessedText[1] != "" ? guessedText[1][2] : text[2]}
+  
+                    </div>
+
+                    <div 
+                    key={8}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[1] != null && guessedText[1] != "" ? guessedText[1][3] : text[3]}
+
+                    </div>
+
+                    <div 
+                    key={9}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[1] != null && guessedText[1] != "" ? guessedText[1][4] : text[4]}
+
+                    </div>
 
                 {/* Row 3 */}
-                {Array.from({ length: 5 }, (_, index) => (
-                    <div 
-                        key={index}
-                        className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                    >
-                        {guessedText.length == 2 ? text[index] : null}
+                <div 
+                    key={10}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[2] != null && guessedText[2] != "" ? guessedText[2][0] : text[0]}
+           
 
                     </div>
-                ))}
+
+                    <div 
+                    key={11}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[2] != null && guessedText[2] != "" ? guessedText[2][1] : text[1]}
+               
+
+                    </div>
+
+                    <div 
+                    key={12}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[2] != null && guessedText[2] != "" ? guessedText[2][2] : text[2]}
+  
+                    </div>
+
+                    <div 
+                    key={13}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[2] != null && guessedText[2] != "" ? guessedText[2][3] : text[3]}
+
+                    </div>
+
+                    <div 
+                    key={14}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[2] != null && guessedText[2] != "" ? guessedText[2][4] : text[4]}
+
+                    </div>
 
                 {/* Row 4 */}
-                {Array.from({ length: 5 }, (_, index) => (
-                    <div 
-                        key={index}
-                        className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                    >
-                        {guessedText.length == 3 ? text[index] : null}
+                <div 
+                    key={15}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[3] != null && guessedText[3] != "" ? guessedText[3][0] : text[0]}
+           
 
                     </div>
-                ))}
+
+                    <div 
+                    key={16}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[3] != null && guessedText[3] != "" ? guessedText[3][1] : text[1]}
+               
+
+                    </div>
+
+                    <div 
+                    key={17}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[3] != null && guessedText[3] != "" ? guessedText[3][2] : text[2]}
+  
+                    </div>
+
+                    <div 
+                    key={18}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[3] != null && guessedText[3] != "" ? guessedText[3][3] : text[3]}
+
+                    </div>
+
+                    <div 
+                    key={19}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[3] != null && guessedText[3] != "" ? guessedText[3][4] : text[4]}
+
+                    </div>
 
                 {/* Row 5 */}
-                {Array.from({ length: 5 }, (_, index) => (
-                    <div 
-                        key={index}
-                        className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                    >
-                        {guessedText.length == 4 ? text[index] : null}
+                <div 
+                    key={20}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[4] != null && guessedText[4] != "" ? guessedText[4][0] : text[0]}
+           
 
                     </div>
-                ))}
+
+                    <div 
+                    key={21}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[4] != null && guessedText[4] != "" ? guessedText[4][1] : text[1]}
+               
+
+                    </div>
+
+                    <div 
+                    key={22}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[4] != null && guessedText[4] != "" ? guessedText[4][2] : text[2]}
+  
+                    </div>
+
+                    <div 
+                    key={23}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[4] != null && guessedText[4] != "" ? guessedText[4][3] : text[3]}
+
+                    </div>
+
+                    <div 
+                    key={24}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[4] != null && guessedText[4] != "" ? guessedText[4][4] : text[4]}
+
+                    </div>
 
                 {/* Row 6 */}
-                {Array.from({ length: 5 }, (_, index) => (
-                    <div 
-                        key={index}
-                        className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                <div 
+                    key={25}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                     >
-                        {guessedText.length == 5 ? text[index] : null}
+                    {guessedText[5] != null && guessedText[5] != "" ? guessedText[5][0] : text[0]}
+           
 
                     </div>
-                ))}
+
+                    <div 
+                    key={26}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                    >
+                    {guessedText[5] != null && guessedText[5] != "" ? guessedText[5][1] : text[1]}
+               
+
+                    </div>
+
+                    <div 
+                    key={27}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                    >
+                    {guessedText[5] != null && guessedText[5] != "" ? guessedText[5][2] : text[2]}
+  
+                    </div>
+
+                    <div 
+                    key={28}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                    >
+                    {guessedText[5] != null && guessedText[5] != "" ? guessedText[5][3] : text[3]}
+
+                    </div>
+
+                    <div 
+                    key={29}
+                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                >
+                    {guessedText[5] != null && guessedText[5] != "" ? guessedText[5][4] : text[4]}
+
+                    </div>
 
             </div>
 
@@ -185,7 +375,8 @@ export default function GamePlay() {
                             () => {
                                 if (text.length == MAX_LENGTH) {
                                   setGuessedText((prev) => [...prev, text]);
-                                     }
+                                    setText(() => "")
+                                    }
                                  }
                             }
                         className="bg-gray-300 h-10 w-25 hover:bg-blue-400"
