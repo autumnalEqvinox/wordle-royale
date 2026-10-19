@@ -1,3 +1,4 @@
+"use client"
 
 
 export default function GamePlay() {
@@ -6,6 +7,7 @@ export default function GamePlay() {
         "ASDFGHJKL", 
         "ZXCVBNM"
     ];
+
 
     return (
         <>
@@ -24,7 +26,11 @@ export default function GamePlay() {
                 {rows.map((row, index) => (
                     <div key={index} className="flex gap-2">
                         {row.split("").map((letter) => (
-                            <button key={letter} className="bg-gray-300 h-10 w-10 ">
+                            <button key={letter} 
+                                className="bg-gray-300 h-10 w-10 hover:bg-gray-500"
+                                onClick={() => console.log(letter)}
+                            >
+                                
                         {letter}
                     </button>
                 ))}

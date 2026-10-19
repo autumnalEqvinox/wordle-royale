@@ -1,7 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react";
-import { Settings } from "lucide-react";
+import { Settings, RefreshCw } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function PlayLayout({ children, }: 
@@ -17,6 +17,9 @@ export default function PlayLayout({ children, }:
                     <button onClick={() => router.push("/login")}>
                         <Settings size={30} aria-hidden="true"/>
                     </button>
+                    {/* <button onClick={() => router.push("/play")}>
+                        <RefreshCw size={30} aria-hidden="true"/>
+                    </button> */}
 
                 </div>
             </header>
