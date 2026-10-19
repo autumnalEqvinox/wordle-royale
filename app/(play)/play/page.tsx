@@ -24,7 +24,7 @@ export default function GamePlay() {
                 {rows.map((row, index) => (
                     <div key={index} className="flex gap-2">
                         {row.split("").map((letter) => (
-                            <button key={letter} className="bg-green-100 h-10 w-10 ">
+                            <button key={letter} className="bg-gray-300 h-10 w-10 ">
                         {letter}
                     </button>
                 ))}
