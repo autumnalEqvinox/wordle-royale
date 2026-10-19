@@ -1,7 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react";
-import { Settings, RefreshCw } from "lucide-react";
+import { Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function PlayLayout({ children, }: 

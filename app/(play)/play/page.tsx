@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import KeyboardDetector from "@/features/KeyboardDetector"
+import { useState } from "react"
 import { Delete } from "lucide-react"
 
 export default function GamePlay() {
@@ -29,6 +30,11 @@ export default function GamePlay() {
 
     return (
         <>
+        <KeyboardDetector
+            text={text}
+            setText={setText}
+            setSubmitted={setGuessedText}
+        />
         <main className="flex flex-col items-center p-14">
             <div className="grid grid-cols-5 grid-rows-6 gap-2">
                 {/* Row 1 */}
@@ -512,7 +518,7 @@ export default function GamePlay() {
                     <button 
                         onClick={
                             () => {
-                                if (text.length == MAX_LENGTH) {
+                                if (text.length >= MAX_LENGTH) {
                                   setGuessedText((prev) => [...prev, text]);
                                     setText(() => "")
                                     }
