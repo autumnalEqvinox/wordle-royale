@@ -37,12 +37,18 @@ export default function GamePlay() {
                     key={0}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[0] != null && guessedText[0] != "" 
-                        ? guessedText[0][0] 
-                        : guessedText.length == 0
-                            ? text[0]
-                            : ""
-                            }
+                    
+                    {guessedText[0] != null && guessedText[0] != "" // checks to see if there is a submission
+                        ? guessedText[0][0] // display the submitted word for this row
+                        : guessedText.length == 0 // if there is not a submission
+                            ? text[0] // display the guess's letter position
+                            : "" // show nothing if not on that row
+                            } {/* Think of this as a cursor, it will not show the previous 
+                                results until there is a guess. If there is a guess, then you 
+                                can move down the ladder and try the next row for a guess 
+                                attempt. This ensures there is no multiple guesses being displayed. 
+                                */}
+                            
            
 
                     </div>
