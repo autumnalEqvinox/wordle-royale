@@ -22,7 +22,10 @@ export default function GamePlay() {
     
       //this will listen for keyboard inputs 
       
-
+// need to set up visibility for one line till the guess have been submitted, like a typewriter
+// ; ideas: 
+    // - counter to keep track of guesses
+    // - having another condition, something around guessedText and the number of input
 
     return (
         <>
@@ -34,7 +37,12 @@ export default function GamePlay() {
                     key={0}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[0] != null && guessedText[0] != "" ? guessedText[0][0] : text[0]}
+                    {guessedText[0] != null && guessedText[0] != "" 
+                        ? guessedText[0][0] 
+                        : guessedText.length == 0
+                            ? text[0]
+                            : ""
+                            }
            
 
                     </div>
@@ -43,8 +51,12 @@ export default function GamePlay() {
                     key={1}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[0] != null && guessedText[0] != "" ? guessedText[0][1] : text[1]}
-               
+                    {guessedText[0] != null && guessedText[0] != "" 
+                        ? guessedText[0][1] 
+                        : guessedText.length == 0
+                            ? text[1]
+                            : ""
+                            }
 
                     </div>
 
@@ -52,24 +64,36 @@ export default function GamePlay() {
                     key={2}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[0] != null && guessedText[0] != "" ? guessedText[0][2] : text[2]}
-  
+                    {guessedText[0] != null && guessedText[0] != "" 
+                        ? guessedText[0][2] 
+                        : guessedText.length == 0
+                            ? text[2]
+                            : ""
+                            }
                     </div>
 
                     <div 
                     key={3}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[0] != null && guessedText[0] != "" ? guessedText[0][3] : text[3]}
-
+                    {guessedText[0] != null && guessedText[0] != "" 
+                        ? guessedText[0][3] 
+                        : guessedText.length == 0
+                            ? text[3]
+                            : ""
+                            }
                     </div>
 
                     <div 
                     key={4}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[0] != null && guessedText[0] != "" ? guessedText[0][4] : text[4]}
-
+                    {guessedText[0] != null && guessedText[0] != "" 
+                        ? guessedText[0][4] 
+                        : guessedText.length == 0
+                            ? text[4]
+                            : ""
+                            }
                     </div>
 
                 {/* Row 2 */}
@@ -77,8 +101,12 @@ export default function GamePlay() {
                     key={5}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[1] != null && guessedText[1] != "" ? guessedText[1][0] : text[0]}
-           
+                    {guessedText[1] != null && guessedText[1] != "" 
+                        ? guessedText[1][0] 
+                        : guessedText.length == 1
+                            ? text[0]
+                            : ""
+                            }
 
                     </div>
 
@@ -86,8 +114,12 @@ export default function GamePlay() {
                     key={6}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[1] != null && guessedText[1] != "" ? guessedText[1][1] : text[1]}
-               
+                    {guessedText[1] != null && guessedText[1] != "" 
+                        ? guessedText[1][1] 
+                        : guessedText.length == 1
+                            ? text[1]
+                            : ""
+                            }
 
                     </div>
 
@@ -95,24 +127,36 @@ export default function GamePlay() {
                     key={7}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[1] != null && guessedText[1] != "" ? guessedText[1][2] : text[2]}
-  
+                    {guessedText[1] != null && guessedText[1] != "" 
+                        ? guessedText[1][2] 
+                        : guessedText.length == 1
+                            ? text[2]
+                            : ""
+                            }
                     </div>
 
                     <div 
                     key={8}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[1] != null && guessedText[1] != "" ? guessedText[1][3] : text[3]}
-
+                    {guessedText[1] != null && guessedText[1] != "" 
+                        ? guessedText[1][3] 
+                        : guessedText.length == 1
+                            ? text[3]
+                            : ""
+                            }
                     </div>
 
                     <div 
                     key={9}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[1] != null && guessedText[1] != "" ? guessedText[1][4] : text[4]}
-
+                    {guessedText[1] != null && guessedText[1] != "" 
+                        ? guessedText[1][4] 
+                        : guessedText.length == 1
+                            ? text[4]
+                            : ""
+                            }
                     </div>
 
                 {/* Row 3 */}
@@ -120,8 +164,12 @@ export default function GamePlay() {
                     key={10}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[2] != null && guessedText[2] != "" ? guessedText[2][0] : text[0]}
-           
+                    {guessedText[2] != null && guessedText[2] != "" 
+                        ? guessedText[2][0] 
+                        : guessedText.length == 2
+                            ? text[0]
+                            : ""
+                            }
 
                     </div>
 
@@ -129,8 +177,12 @@ export default function GamePlay() {
                     key={11}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[2] != null && guessedText[2] != "" ? guessedText[2][1] : text[1]}
-               
+                    {guessedText[2] != null && guessedText[2] != "" 
+                        ? guessedText[2][1] 
+                        : guessedText.length == 2
+                            ? text[1]
+                            : ""
+                            }
 
                     </div>
 
@@ -138,15 +190,24 @@ export default function GamePlay() {
                     key={12}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[2] != null && guessedText[2] != "" ? guessedText[2][2] : text[2]}
-  
+                    {guessedText[2] != null && guessedText[2] != "" 
+                        ? guessedText[2][2] 
+                        : guessedText.length == 2
+                            ? text[2]
+                            : ""
+                            }
                     </div>
 
                     <div 
                     key={13}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[2] != null && guessedText[2] != "" ? guessedText[2][3] : text[3]}
+                    {guessedText[2] != null && guessedText[2] != "" 
+                        ? guessedText[2][3] 
+                        : guessedText.length == 2
+                            ? text[3]
+                            : ""
+                            }
 
                     </div>
 
@@ -154,7 +215,12 @@ export default function GamePlay() {
                     key={14}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[2] != null && guessedText[2] != "" ? guessedText[2][4] : text[4]}
+                    {guessedText[2] != null && guessedText[2] != "" 
+                        ? guessedText[2][4] 
+                        : guessedText.length == 2
+                            ? text[4]
+                            : ""
+                            }
 
                     </div>
 
@@ -163,8 +229,12 @@ export default function GamePlay() {
                     key={15}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[3] != null && guessedText[3] != "" ? guessedText[3][0] : text[0]}
-           
+                    {guessedText[3] != null && guessedText[3] != "" 
+                        ? guessedText[3][0] 
+                        : guessedText.length == 3
+                            ? text[0]
+                            : ""
+                            }
 
                     </div>
 
@@ -172,8 +242,12 @@ export default function GamePlay() {
                     key={16}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[3] != null && guessedText[3] != "" ? guessedText[3][1] : text[1]}
-               
+                    {guessedText[3] != null && guessedText[3] != "" 
+                        ? guessedText[3][1] 
+                        : guessedText.length == 3
+                            ? text[1]
+                            : ""
+                            }
 
                     </div>
 
@@ -181,24 +255,36 @@ export default function GamePlay() {
                     key={17}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[3] != null && guessedText[3] != "" ? guessedText[3][2] : text[2]}
-  
+                    {guessedText[3] != null && guessedText[3] != "" 
+                        ? guessedText[3][2] 
+                        : guessedText.length == 3
+                            ? text[2]
+                            : ""
+                            }
                     </div>
 
                     <div 
                     key={18}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[3] != null && guessedText[3] != "" ? guessedText[3][3] : text[3]}
-
+                    {guessedText[3] != null && guessedText[3] != "" 
+                        ? guessedText[3][3] 
+                        : guessedText.length == 3
+                            ? text[3]
+                            : ""
+                            }
                     </div>
 
                     <div 
                     key={19}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[3] != null && guessedText[3] != "" ? guessedText[3][4] : text[4]}
-
+                    {guessedText[3] != null && guessedText[3] != "" 
+                        ? guessedText[3][4] 
+                        : guessedText.length == 3
+                            ? text[4]
+                            : ""
+                            }
                     </div>
 
                 {/* Row 5 */}
@@ -206,8 +292,12 @@ export default function GamePlay() {
                     key={20}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[4] != null && guessedText[4] != "" ? guessedText[4][0] : text[0]}
-           
+                    {guessedText[4] != null && guessedText[4] != "" 
+                        ? guessedText[4][0] 
+                        : guessedText.length == 4
+                            ? text[0]
+                            : ""
+                            }
 
                     </div>
 
@@ -215,8 +305,12 @@ export default function GamePlay() {
                     key={21}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[4] != null && guessedText[4] != "" ? guessedText[4][1] : text[1]}
-               
+                    {guessedText[4] != null && guessedText[4] != "" 
+                        ? guessedText[4][1] 
+                        : guessedText.length == 4
+                            ? text[1]
+                            : ""
+                            }
 
                     </div>
 
@@ -224,15 +318,25 @@ export default function GamePlay() {
                     key={22}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[4] != null && guessedText[4] != "" ? guessedText[4][2] : text[2]}
-  
+                    {guessedText[4] != null && guessedText[4] != "" 
+                        ? guessedText[4][2] 
+                        : guessedText.length == 4
+                            ? text[2]
+                            : ""
+                            }
+
                     </div>
 
                     <div 
                     key={23}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[4] != null && guessedText[4] != "" ? guessedText[4][3] : text[3]}
+                    {guessedText[4] != null && guessedText[4] != "" 
+                        ? guessedText[4][3] 
+                        : guessedText.length == 4
+                            ? text[3]
+                            : ""
+                            }
 
                     </div>
 
@@ -240,7 +344,12 @@ export default function GamePlay() {
                     key={24}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[4] != null && guessedText[4] != "" ? guessedText[4][4] : text[4]}
+                    {guessedText[4] != null && guessedText[4] != "" 
+                        ? guessedText[4][4] 
+                        : guessedText.length == 4
+                            ? text[4]
+                            : ""
+                            }
 
                     </div>
 
@@ -249,8 +358,12 @@ export default function GamePlay() {
                     key={25}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                     >
-                    {guessedText[5] != null && guessedText[5] != "" ? guessedText[5][0] : text[0]}
-           
+                    {guessedText[5] != null && guessedText[5] != "" 
+                        ? guessedText[5][0] 
+                        : guessedText.length == 5
+                            ? text[0]
+                            : ""
+                            }
 
                     </div>
 
@@ -258,8 +371,13 @@ export default function GamePlay() {
                     key={26}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                     >
-                    {guessedText[5] != null && guessedText[5] != "" ? guessedText[5][1] : text[1]}
-               
+                    {guessedText[5] != null && guessedText[5] != "" 
+                        ? guessedText[5][1] 
+                        : guessedText.length == 5
+                            ? text[1]
+                            : ""
+                            }
+
 
                     </div>
 
@@ -267,15 +385,25 @@ export default function GamePlay() {
                     key={27}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                     >
-                    {guessedText[5] != null && guessedText[5] != "" ? guessedText[5][2] : text[2]}
-  
+                    {guessedText[5] != null && guessedText[5] != "" 
+                        ? guessedText[5][2] 
+                        : guessedText.length == 5
+                            ? text[2]
+                            : ""
+                            }
+
                     </div>
 
                     <div 
                     key={28}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                     >
-                    {guessedText[5] != null && guessedText[5] != "" ? guessedText[5][3] : text[3]}
+                    {guessedText[5] != null && guessedText[5] != "" 
+                        ? guessedText[5][3] 
+                        : guessedText.length == 5
+                            ? text[3]
+                            : ""
+                            }
 
                     </div>
 
@@ -283,7 +411,12 @@ export default function GamePlay() {
                     key={29}
                     className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
                 >
-                    {guessedText[5] != null && guessedText[5] != "" ? guessedText[5][4] : text[4]}
+                    {guessedText[5] != null && guessedText[5] != "" 
+                        ? guessedText[5][4] 
+                        : guessedText.length == 5
+                            ? text[4]
+                            : ""
+                            }
 
                     </div>
 
