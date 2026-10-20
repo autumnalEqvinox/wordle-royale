@@ -11,23 +11,16 @@ export default function GamePlay() {
     const row2 = ["ASDFGHJKL"];
     const row3 = ["ZXCVBNM"];
 
-    // const totalKeyboard = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Z", "X", "C", "V", "B", "N", "M"];
-
     const [guessedText, setGuessedText] = useState<string[]>([]);
     const [text, setText] = useState("");
+    const [pressedKey, setPressedKey] = useState("");
 
-    // const [something, setSomething] = useState("");
-    // default function keyboardMatcher(some) {
-    //     totalKeyboard.indexOf(some)
-    // }
     // check for 5 inputs, and submit when the text is 5, then build an array of 5 to 
     // display the inputs
 
     // // make a list for the text
     // const [ length, setLength ] = useState();
 
-    
-    
       //this will listen for keyboard inputs 
       
 // need to set up visibility for one line till the guess have been submitted, like a typewriter
@@ -41,7 +34,7 @@ export default function GamePlay() {
             text={text}
             setText={setText}
             setSubmitted={setGuessedText}
-            // keyPressed={something}
+            setPressedKey={setPressedKey}
         />
         <main className="flex flex-col items-center p-14">
             <div className="grid grid-cols-5 grid-rows-6 gap-2">
@@ -446,7 +439,12 @@ export default function GamePlay() {
                     <div key={index} className="flex gap-2">
                         {lett.split("").map((letter) => (
                             <button key={letter} 
-                                className="bg-gray-300 h-10 w-10 hover:bg-gray-500"
+                                className={`h-10 w-10 ${
+                                    pressedKey === letter 
+                                        ? "bg-gray-500"
+                                        : "bg-gray-300"
+                                    }    
+                                                hover:bg-gray-500`}
                                 onClick={
                                     () => {
                                             setText((prev) => {
@@ -470,7 +468,12 @@ export default function GamePlay() {
                     <div key={index} className="flex gap-2">
                         {lett.split("").map((letter) => (
                             <button key={letter} 
-                                className="bg-gray-300 h-10 w-10 hover:bg-gray-500 active:bg-gray-500"
+                                className={`h-10 w-10 ${
+                                    pressedKey === letter 
+                                        ? "bg-gray-500"
+                                        : "bg-gray-300"
+                                    }    
+                                                hover:bg-gray-500`}
                                 onClick={
                                     () => {
                                             setText((prev) => {
@@ -489,7 +492,11 @@ export default function GamePlay() {
                 ))}
                 {/* Delete */}
                 <button 
-                    className="bg-gray-300 h-10 w-12 pl-2 hover:bg-red-500"
+                    className={`h-10 w-12 pl-2 ${
+                        pressedKey === "BACKSPACE"
+                            ? "bg-red-500"
+                            : "bg-gray-300"
+                    } hover:bg-red-500`}
                     onClick={() => setText((prev) => prev.slice(0, -1))}
                     > 
 
@@ -502,7 +509,11 @@ export default function GamePlay() {
                     <div key={index} className="flex gap-2">
                         {lett.split("").map((letter) => (
                             <button key={letter} 
-                                className="bg-gray-300 h-10 w-10 hover:bg-gray-500"
+                                className={`h-10 w-10 ${
+                                    pressedKey === letter
+                                        ? "bg-gray-500"
+                                        : "bg-gray-300"
+                                } hover:bg-gray-500`}
                                 onClick={
                                     () => {
                                             setText((prev) => {
@@ -530,7 +541,11 @@ export default function GamePlay() {
                                     }
                                  }
                             }
-                        className="bg-gray-300 h-10 w-25 hover:bg-blue-400"
+                        className={`h-10 w-25 ${
+                            pressedKey === "ENTER" 
+                                ? "bg-blue-400"
+                                : "bg-gray-300"
+                        } hover:bg-blue-400`}
                         > ENTER
                     </button>
                 </div>
