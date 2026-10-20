@@ -29,15 +29,19 @@ export default function PlayPageShell() {
               className="h-10 w-10 rounded bg-gray-500"
             />
           ))}
+          <div key={51}
+                className="h-10 w-12 pl-2 bg-gray-500"/>
         </div>
 
         <div className="flex gap-2">
           {Array.from({ length: 7 }, (_, index) => (
-            <div
+              <div
               key={index}
               className="h-10 w-10 rounded bg-gray-500"
-            />
-          ))}
+              />
+            ))}
+            <div key={52}
+                className="h-10 w-25 bg-gray-500"/>
         </div>
       </div>
     </div>
