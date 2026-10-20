@@ -8,6 +8,7 @@ export default function KeyboardDetector({
     text, 
     setText, 
     setSubmitted,
+    // keyPressed,
   }) {
   // // const [text, setText] = useState(""); //where the currently typed text is stored
   const [lastKey, setLastKey] = useState(null); //shows what the last typed key is, for testing purposes
@@ -47,9 +48,11 @@ export default function KeyboardDetector({
         setText(
           (prev) => 
             (prev.length < MAX_LENGTH 
-              ? prev + event.key.toUpperCase() 
+              ? prev + event.key.toUpperCase()
               : prev)
         ); //if the word is under 5 letters, then it adds the letter
+
+        // keyPressed = event.key.toUpperCase();
       }
     };
 
