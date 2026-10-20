@@ -8,18 +8,18 @@ export default function KeyboardDetector({
     text, 
     setText, 
     setSubmitted,
-    // keyPressed,
+    setPressedKey,
   }) {
   // // const [text, setText] = useState(""); //where the currently typed text is stored
   const [lastKey, setLastKey] = useState(null); //shows what the last typed key is, for testing purposes
   // const [submitted, setSubmitted] = useState([]); // shows the currently submitted words, for testing purposes
 
-
   //this will listen for keyboard inputs 
   useEffect(() => { 
     const handleKeyDown = (event) => { //runs on every key press
       setLastKey(event.key); //save's the last key press and sends it to line 9
-      
+      setPressedKey(event.key.toUpperCase()); 
+
       if (event.ctrlKey || event.metaKey || event.altKey) { // not listening for control, any meta keys, or the alt key
         return;
       }
@@ -52,14 +52,34 @@ export default function KeyboardDetector({
               : prev)
         ); //if the word is under 5 letters, then it adds the letter
 
-        // keyPressed = event.key.toUpperCase();
       }
     };
 
+    const handleKeyUp = (event) => {
+      setPressedKey((current) => 
+        current === event.key.toUpperCase() ? "" : current
+      );
+    };
+
     window.addEventListener("keydown", handleKeyDown); //tells the browser to call 'handleKeyDown' everytime a key is pressed
-    return () => window.removeEventListener("keydown", handleKeyDown); //removes the listener when unmounted, avoiding leaks
+    window.addEventListener("keyup", handleKeyUp); // when teh user lets up on the key
+    return () => 
+      {
+        window.removeEventListener("keydown", handleKeyDown); //removes the listener when unmounted, avoiding leaks
+        window.removeEventListener("keyup", handleKeyUp);
+      }
   }, [text, setText, setSubmitted]);
 
   return null;
 
 }
+
+
+
+
+
+
+
+
+// used chat to figure out how to get the letters to flash. I knew to use event.key, but had chat show me the process in doing keyup. 
+// Sam C
