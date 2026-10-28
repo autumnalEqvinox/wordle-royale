@@ -14,6 +14,7 @@ export default function GamePlay() {
     const [guessedText, setGuessedText] = useState<string[]>([]);
     const [text, setText] = useState("");
     const [pressedKey, setPressedKey] = useState("");
+    const validGuess = "HELLO";
 
     // check for 5 inputs, and submit when the text is 5, then build an array of 5 to 
     // display the inputs
@@ -42,7 +43,18 @@ export default function GamePlay() {
 
                 <div 
                     key={0}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[0]?.[0]
+                            ? ""
+                            : validGuess[0] === guessedText[0][0]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[0][0])
+                                    ? "bg-yellow-400"
+                                    : validGuess[0] != guessedText[0][0]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
                 >
                     
                     {guessedText[0] != null && guessedText[0] != "" // checks to see if there is a submission
@@ -60,8 +72,19 @@ export default function GamePlay() {
 
                     <div 
                     key={1}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[0]?.[1]
+                            ? ""
+                            : validGuess[1] === guessedText[0][1]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[0][1])
+                                    ? "bg-yellow-400"
+                                    : validGuess[1] != guessedText[0][1]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[0] != null && guessedText[0] != "" 
                         ? guessedText[0][1] 
                         : guessedText.length == 0
@@ -73,8 +96,19 @@ export default function GamePlay() {
 
                     <div 
                     key={2}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[0]?.[2]
+                            ? ""
+                            : validGuess[2] === guessedText[0][2]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[0][2])
+                                    ? "bg-yellow-400"
+                                    : validGuess[2] != guessedText[0][2]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[0] != null && guessedText[0] != "" 
                         ? guessedText[0][2] 
                         : guessedText.length == 0
@@ -85,8 +119,19 @@ export default function GamePlay() {
 
                     <div 
                     key={3}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[0]?.[3]
+                            ? ""
+                            : validGuess[3] === guessedText[0][3]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[0][3])
+                                    ? "bg-yellow-400"
+                                    : validGuess[3] != guessedText[0][3]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[0] != null && guessedText[0] != "" 
                         ? guessedText[0][3] 
                         : guessedText.length == 0
@@ -97,8 +142,19 @@ export default function GamePlay() {
 
                     <div 
                     key={4}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[0]?.[4]
+                            ? ""
+                            : validGuess[4] === guessedText[0][4]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[0][4])
+                                    ? "bg-yellow-400"
+                                    : validGuess[4] != guessedText[0][4]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[0] != null && guessedText[0] != "" 
                         ? guessedText[0][4] 
                         : guessedText.length == 0
@@ -110,8 +166,19 @@ export default function GamePlay() {
                 {/* Row 2 */}
            <div 
                     key={5}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[1]?.[0]
+                            ? ""
+                            : validGuess[0] === guessedText[1][0]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[1][0])
+                                    ? "bg-yellow-400"
+                                    : validGuess[0] != guessedText[1][0]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[1] != null && guessedText[1] != "" 
                         ? guessedText[1][0] 
                         : guessedText.length == 1
@@ -123,8 +190,20 @@ export default function GamePlay() {
 
                     <div 
                     key={6}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[1]?.[1]
+                            ? ""
+                            : validGuess[1] === guessedText[1][1]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[1][1])
+                                    ? "bg-yellow-400"
+                                    : validGuess[1] != guessedText[1][1]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
+
                     {guessedText[1] != null && guessedText[1] != "" 
                         ? guessedText[1][1] 
                         : guessedText.length == 1
@@ -136,8 +215,19 @@ export default function GamePlay() {
 
                     <div 
                     key={7}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[1]?.[2]
+                            ? ""
+                            : validGuess[2] === guessedText[1][2]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[1][2])
+                                    ? "bg-yellow-400"
+                                    : validGuess[2] != guessedText[1][2]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[1] != null && guessedText[1] != "" 
                         ? guessedText[1][2] 
                         : guessedText.length == 1
@@ -148,8 +238,19 @@ export default function GamePlay() {
 
                     <div 
                     key={8}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[1]?.[3]
+                            ? ""
+                            : validGuess[3] === guessedText[1][3]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[1][3])
+                                    ? "bg-yellow-400"
+                                    : validGuess[3] != guessedText[1][3]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[1] != null && guessedText[1] != "" 
                         ? guessedText[1][3] 
                         : guessedText.length == 1
@@ -160,8 +261,19 @@ export default function GamePlay() {
 
                     <div 
                     key={9}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[1]?.[4]
+                            ? ""
+                            : validGuess[4] === guessedText[1][4]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[1][4])
+                                    ? "bg-yellow-400"
+                                    : validGuess[4] != guessedText[1][4]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[1] != null && guessedText[1] != "" 
                         ? guessedText[1][4] 
                         : guessedText.length == 1
@@ -170,11 +282,23 @@ export default function GamePlay() {
                             }
                     </div>
 
+
                 {/* Row 3 */}
                 <div 
                     key={10}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[2]?.[0]
+                            ? ""
+                            : validGuess[0] === guessedText[2][0]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[2][0])
+                                    ? "bg-yellow-400"
+                                    : validGuess[0] != guessedText[2][0]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[2] != null && guessedText[2] != "" 
                         ? guessedText[2][0] 
                         : guessedText.length == 2
@@ -186,8 +310,19 @@ export default function GamePlay() {
 
                     <div 
                     key={11}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[2]?.[1]
+                            ? ""
+                            : validGuess[1] === guessedText[2][1]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[2][1])
+                                    ? "bg-yellow-400"
+                                    : validGuess[1] != guessedText[2][1]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[2] != null && guessedText[2] != "" 
                         ? guessedText[2][1] 
                         : guessedText.length == 2
@@ -199,8 +334,19 @@ export default function GamePlay() {
 
                     <div 
                     key={12}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[2]?.[2]
+                            ? ""
+                            : validGuess[2] === guessedText[2][2]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[2][2])
+                                    ? "bg-yellow-400"
+                                    : validGuess[2] != guessedText[2][2]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[2] != null && guessedText[2] != "" 
                         ? guessedText[2][2] 
                         : guessedText.length == 2
