@@ -1,0 +1,23 @@
+October 21-2026
+
+Report: 
+
+/(play)/loading.tsx, /(play)/page.tsx, and I made a PageShell.tsx
+
+
+for the /(play)/page.tsx, there are a couple of things to document
+
+for the first one, I built 30 individual array boxes that each keep track of the number of guesses, saved as guessedText, and the current guess attempt, saved as text. first each box, starting with the first top left box, I have split the text and the guessedText into a array of five letters, so it will keep track of one letter per box. and I have a set up in every box that says if there is a guessedText attempt, depending on how many guesses submitted there are, then the current text will display on that next row. 
+
+For example, I have guessedText.length to see how many guesses there are. if it has a length of 2, then there are two guesses, so it displays the two guesses submitted in the two rows, and then the third row will be filled with the user's current guess attempt, sectioned off by text[x], where x is the columns. 
+
+The second part I have buttons. For each button row, I have a .map() function that will place each letter into a respected box, and then will also have a <button> function inside that makes it where each box is instead a button. I have a onClick effect that if the current guess is 4 or less letters, then allow for the letter for that button to be appended to the current text, whereas if there are 5 or more already guesses, then then the button will still work/click, but the letter will not be appended into the current text. 
+
+I also added a delete button that removes the last bit of the current text string to shorten the word. and if you try to remove when there are 0 letters, then it will just look like it clicks but there is no change in the text display. 
+
+I also have a enter button. it checks to see if the current text guess is 5 length exactly, and if it is then submit the word into guessedText and then the explanation from above will take effect and show the next row to be able to work/append on. 
+
+I also added a change into Aaron's file that was called KeyboardDectection.jsx, which his code detects when the letter pressed down on the physical keyboard. I wired his code into the /(play)/page.tsx, which listens at the beginning of the page being rendered and will interact with the buttons as if the buttons were being pressed. 
+
+I made another change to the KeyboardDetection.jsx to always be listening for the key being let go. I wanted to show the user feedback that if they click a key like enter, delete, or even letters like g or h, that it will show a different color on that button, which would be the same as clicking the button. 
+I also added a hover effect over all the buttons, that when a mouse hovers over the button, the button will change to a different color. The reason was so the user can have conformation that the letter button is clickable. 
