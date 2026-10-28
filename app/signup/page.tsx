@@ -75,6 +75,10 @@ export default function Signup() {
                 <button type="submit" className="bg-blue-500 text-black font-bold px-6 py-3 rounded-lg w-fit mt-4">
                     SIGN UP
                 </button>
+
+                <button type="button" className="bg-blue-500 text-black font-bold px-6 py-3 rounded-lg w-fit mt-4">
+                    CONTINUE W/ GOOGLE 
+                </button>
             </form>
         </div>
     );
