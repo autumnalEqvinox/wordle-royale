@@ -433,126 +433,619 @@ export default function GamePlay() {
 
             </div>
 
-            {/* {This is the keyboard buttons} */}
-            <div className="flex flex-col items-center gap-2 mt-8">
-                {row1.map((lett, index) => (
-                    <div key={index} className="flex gap-2">
-                        {lett.split("").map((letter) => (
-                            <button key={letter} 
-                                className={`h-10 w-10 ${
-                                    pressedKey === letter 
-                                        ? "bg-gray-500"
-                                        : "bg-gray-300"
-                                    }    
-                                                hover:bg-gray-500`}
-                                onClick={
-                                    () => {
-                                            setText((prev) => {
-                                                    if (prev.length >= MAX_LENGTH) {
-                                                        return prev;
-                                                    }
-
-                                                    return prev + letter;
-                                            });
-                                    }
+    {/* {This is the keyboard buttons} */}
+        <div className="flex flex-col items-center gap-2 mt-8">
+            <div key={100} className="flex gap-2">
+                <button key="Q-key" 
+                className={`h-10 w-10 ${
+                pressedKey === "Q"
+                    ? "bg-gray-500"
+                    : "bg-gray-300"
+                }    
+                hover:bg-gray-500`}
+                onClick={
+                    () => {
+                        setText((prev) => {
+                            if (prev.length >= MAX_LENGTH) {
+                                return prev;
                                 }
-                            >
-                                
-                        {letter}
-                    </button>
-                ))}
-                </div>
-            ))}
 
-            {row2.map((lett, index) => (
-                    <div key={index} className="flex gap-2">
-                        {lett.split("").map((letter) => (
-                            <button key={letter} 
-                                className={`h-10 w-10 ${
-                                    pressedKey === letter 
-                                        ? "bg-gray-500"
-                                        : "bg-gray-300"
-                                    }    
-                                                hover:bg-gray-500`}
-                                onClick={
-                                    () => {
-                                            setText((prev) => {
-                                                    if (prev.length >= MAX_LENGTH) {
-                                                        return prev;
-                                                    }
-
-                                                    return prev + letter;
-                                            });
-                                    }
-                                }
-                                >
-                                
-                        {letter}
-                    </button>
-                ))}
-                {/* Delete */}
-                <button 
-                    className={`h-10 w-12 pl-2 ${
-                        pressedKey === "BACKSPACE"
-                            ? "bg-red-500"
-                            : "bg-gray-300"
-                    } hover:bg-red-500`}
-                    onClick={() => setText((prev) => prev.slice(0, -1))}
-                    > 
-
-                    <Delete size={32} aria-hidden="true"> </Delete>
+                        return prev + "Q";
+                    });
+                       }
+                    }
+                >
+                     Q
                 </button>
-            </div>
-            ))}
 
-            {row3.map((lett, index) => (
-                    <div key={index} className="flex gap-2">
-                        {lett.split("").map((letter) => (
-                            <button key={letter} 
-                                className={`h-10 w-10 ${
-                                    pressedKey === letter
-                                        ? "bg-gray-500"
-                                        : "bg-gray-300"
-                                } hover:bg-gray-500`}
-                                onClick={
-                                    () => {
-                                            setText((prev) => {
-                                                    if (prev.length >= MAX_LENGTH) {
-                                                        return prev;
-                                                    }
-
-                                                    return prev + letter;
-                                            });
-                                    }
+        <button key="W-key" 
+                className={`h-10 w-10 ${
+                pressedKey === "W" 
+                    ? "bg-gray-500"
+                    : "bg-gray-300"
+                }    
+                hover:bg-gray-500`}
+                onClick={
+                    () => {
+                        setText((prev) => {
+                            if (prev.length >= MAX_LENGTH) {
+                                return prev;
                                 }
-                                >
-                                
-                        {letter}
-                    </button>
-                ))}
 
-                    {/* Enter */}
-                    <button 
-                        onClick={
-                            () => {
-                                if (text.length >= MAX_LENGTH) {
-                                  setGuessedText((prev) => [...prev, text]);
-                                    setText(() => "")
-                                    }
-                                 }
+                        return prev + "W";
+                    });
+                }
+            }
+        >
+            W
+        </button>
+        
+        <button key="E-key" 
+                className={`h-10 w-10 ${
+                pressedKey === "E"
+                    ? "bg-gray-500"
+                    : "bg-gray-300"
+                }    
+                hover:bg-gray-500`}
+                onClick={
+                    () => {
+                        setText((prev) => {
+                            if (prev.length >= MAX_LENGTH) {
+                                return prev;
+                                }
+
+                        return prev + "E";
+                    });
+                       }
+                    }
+                >
+                    E
+                </button>
+
+        <button key="R-key"
+                className={`h-10 w-10 ${
+                pressedKey === "R" 
+                    ? "bg-gray-500"
+                    : "bg-gray-300"
+                }    
+                hover:bg-gray-500`}
+                onClick={
+                    () => {
+                        setText((prev) => {
+                            if (prev.length >= MAX_LENGTH) {
+                                return prev;
+                                }
+
+                        return prev + "R";
+                    });
+                }
+            }
+        >
+            R
+        </button>
+
+        <button key="T-key" 
+                className={`h-10 w-10 ${
+                pressedKey === "T"
+                    ? "bg-gray-500"
+                    : "bg-gray-300"
+                }    
+                hover:bg-gray-500`}
+                onClick={
+                    () => {
+                        setText((prev) => {
+                            if (prev.length >= MAX_LENGTH) {
+                                return prev;
+                                }
+
+                        return prev + "T";
+                    });
+                       }
+                    }
+                >
+                    T
+                </button>
+
+        <button key="Y-key"
+                className={`h-10 w-10 ${
+                pressedKey === "Y" 
+                    ? "bg-gray-500"
+                    : "bg-gray-300"
+                }    
+                hover:bg-gray-500`}
+                onClick={
+                    () => {
+                        setText((prev) => {
+                            if (prev.length >= MAX_LENGTH) {
+                                return prev;
+                                }
+
+                        return prev + "Y";
+                    });
+                }
+            }
+        >
+            Y
+        </button>
+
+        <button key="U-key"
+                className={`h-10 w-10 ${
+                pressedKey === "U"
+                    ? "bg-gray-500"
+                    : "bg-gray-300"
+                }    
+                hover:bg-gray-500`}
+                onClick={
+                    () => {
+                        setText((prev) => {
+                            if (prev.length >= MAX_LENGTH) {
+                                return prev;
+                                }
+
+                        return prev + "U";
+                    });
+                       }
+                    }
+                >
+                    U
+                </button>
+
+        <button key="I-key"
+                className={`h-10 w-10 ${
+                pressedKey === "I" 
+                    ? "bg-gray-500"
+                    : "bg-gray-300"
+                }    
+                hover:bg-gray-500`}
+                onClick={
+                    () => {
+                        setText((prev) => {
+                            if (prev.length >= MAX_LENGTH) {
+                                return prev;
+                                }
+
+                        return prev + "I";
+                    });
+                }
+            }
+        >
+            I
+        </button>
+
+        <button key="O-key"
+                className={`h-10 w-10 ${
+                pressedKey === "O"
+                    ? "bg-gray-500"
+                    : "bg-gray-300"
+                }    
+                hover:bg-gray-500`}
+                onClick={
+                    () => {
+                        setText((prev) => {
+                            if (prev.length >= MAX_LENGTH) {
+                                return prev;
+                                }
+
+                        return prev + "O";
+                    });
+                       }
+                    }
+                >
+                    O
+                </button>
+
+        <button key="P-key"
+                className={`h-10 w-10 ${
+                pressedKey === "P" 
+                    ? "bg-gray-500"
+                    : "bg-gray-300"
+                }    
+                hover:bg-gray-500`}
+                onClick={
+                    () => {
+                        setText((prev) => {
+                            if (prev.length >= MAX_LENGTH) {
+                                return prev;
+                                }
+
+                        return prev + "P";
+                        });
+                    }
+                }
+            >
+                P
+            </button>
+        </div>
+
+    {/* Row 2 */}
+        <div key={102} className="flex gap-2">
+            <button key="A-key" 
+            className={`h-10 w-10 ${
+            pressedKey === "A"
+                ? "bg-gray-500"
+                : "bg-gray-300"
+            }    
+            hover:bg-gray-500`}
+            onClick={
+                () => {
+                    setText((prev) => {
+                        if (prev.length >= MAX_LENGTH) {
+                            return prev;
                             }
-                        className={`h-10 w-25 ${
-                            pressedKey === "ENTER" 
-                                ? "bg-blue-400"
-                                : "bg-gray-300"
-                        } hover:bg-blue-400`}
-                        > ENTER
-                    </button>
-                </div>
-            ))}
 
+                    return prev + "A";
+                });
+                    }
+                }
+            >
+                A
+            </button>
+        
+        <button key="S-key" 
+            className={`h-10 w-10 ${
+            pressedKey === "S"
+                ? "bg-gray-500"
+                : "bg-gray-300"
+            }    
+            hover:bg-gray-500`}
+            onClick={
+                () => {
+                    setText((prev) => {
+                        if (prev.length >= MAX_LENGTH) {
+                            return prev;
+                            }
+
+                    return prev + "S";
+                });
+                    }
+                }
+            >
+                S
+            </button>
+
+            <button key="D-key" 
+            className={`h-10 w-10 ${
+            pressedKey === "D"
+                ? "bg-gray-500"
+                : "bg-gray-300"
+            }    
+            hover:bg-gray-500`}
+            onClick={
+                () => {
+                    setText((prev) => {
+                        if (prev.length >= MAX_LENGTH) {
+                            return prev;
+                            }
+
+                    return prev + "D";
+                });
+                    }
+                }
+            >
+                D
+            </button>
+
+            <button key="F-key" 
+            className={`h-10 w-10 ${
+            pressedKey === "F"
+                ? "bg-gray-500"
+                : "bg-gray-300"
+            }    
+            hover:bg-gray-500`}
+            onClick={
+                () => {
+                    setText((prev) => {
+                        if (prev.length >= MAX_LENGTH) {
+                            return prev;
+                            }
+
+                    return prev + "F";
+                });
+                    }
+                }
+            >
+                F
+            </button>
+
+            <button key="G-key" 
+            className={`h-10 w-10 ${
+            pressedKey === "G"
+                ? "bg-gray-500"
+                : "bg-gray-300"
+            }    
+            hover:bg-gray-500`}
+            onClick={
+                () => {
+                    setText((prev) => {
+                        if (prev.length >= MAX_LENGTH) {
+                            return prev;
+                            }
+
+                    return prev + "G";
+                });
+                    }
+                }
+            >
+                G
+            </button>
+
+            <button key="H-key" 
+            className={`h-10 w-10 ${
+            pressedKey === "H"
+                ? "bg-gray-500"
+                : "bg-gray-300"
+            }    
+            hover:bg-gray-500`}
+            onClick={
+                () => {
+                    setText((prev) => {
+                        if (prev.length >= MAX_LENGTH) {
+                            return prev;
+                            }
+
+                    return prev + "H";
+                });
+                    }
+                }
+            >
+                H
+            </button>
+
+            <button key="J-key" 
+            className={`h-10 w-10 ${
+            pressedKey === "J"
+                ? "bg-gray-500"
+                : "bg-gray-300"
+            }    
+            hover:bg-gray-500`}
+            onClick={
+                () => {
+                    setText((prev) => {
+                        if (prev.length >= MAX_LENGTH) {
+                            return prev;
+                            }
+
+                    return prev + "J";
+                });
+                    }
+                }
+            >
+                J
+            </button>
+
+            <button key="K-key" 
+            className={`h-10 w-10 ${
+            pressedKey === "K"
+                ? "bg-gray-500"
+                : "bg-gray-300"
+            }    
+            hover:bg-gray-500`}
+            onClick={
+                () => {
+                    setText((prev) => {
+                        if (prev.length >= MAX_LENGTH) {
+                            return prev;
+                            }
+
+                    return prev + "K";
+                });
+                    }
+                }
+            >
+                K
+            </button>
+
+            <button key="L-key" 
+            className={`h-10 w-10 ${
+            pressedKey === "L"
+                ? "bg-gray-500"
+                : "bg-gray-300"
+            }    
+            hover:bg-gray-500`}
+            onClick={
+                () => {
+                    setText((prev) => {
+                        if (prev.length >= MAX_LENGTH) {
+                            return prev;
+                            }
+
+                    return prev + "L";
+                });
+                    }
+                }
+            >
+                L
+            </button>
+            
+            {/* Delete */}
+            <button 
+                className={`h-10 w-12 pl-2 ${
+                    pressedKey === "BACKSPACE"
+                    ? "bg-red-500"
+                    : "bg-gray-300"
+                } hover:bg-red-500`}
+                onClick={() => setText((prev) => prev.slice(0, -1))}
+                > 
+
+                <Delete size={32} aria-hidden="true"> </Delete>
+            </button>
 
         </div>
+
+        <div key={103} className="flex gap-2">
+            <button key="Z-key" 
+            className={`h-10 w-10 ${
+            pressedKey === "Z"
+                ? "bg-gray-500"
+                : "bg-gray-300"
+            }    
+            hover:bg-gray-500`}
+            onClick={
+                () => {
+                    setText((prev) => {
+                        if (prev.length >= MAX_LENGTH) {
+                            return prev;
+                            }
+
+                    return prev + "Z";
+                });
+                    }
+                }
+            >
+                Z
+            </button>
+
+            <button key="X-key" 
+            className={`h-10 w-10 ${
+            pressedKey === "X"
+                ? "bg-gray-500"
+                : "bg-gray-300"
+            }    
+            hover:bg-gray-500`}
+            onClick={
+                () => {
+                    setText((prev) => {
+                        if (prev.length >= MAX_LENGTH) {
+                            return prev;
+                            }
+
+                    return prev + "X";
+                });
+                    }
+                }
+            >
+                X
+            </button>
+
+            <button key="C-key" 
+            className={`h-10 w-10 ${
+            pressedKey === "C"
+                ? "bg-gray-500"
+                : "bg-gray-300"
+            }    
+            hover:bg-gray-500`}
+            onClick={
+                () => {
+                    setText((prev) => {
+                        if (prev.length >= MAX_LENGTH) {
+                            return prev;
+                            }
+
+                    return prev + "C";
+                });
+                    }
+                }
+            >
+                C
+            </button>
+
+            <button key="V-key" 
+            className={`h-10 w-10 ${
+            pressedKey === "V"
+                ? "bg-gray-500"
+                : "bg-gray-300"
+            }    
+            hover:bg-gray-500`}
+            onClick={
+                () => {
+                    setText((prev) => {
+                        if (prev.length >= MAX_LENGTH) {
+                            return prev;
+                            }
+
+                    return prev + "V";
+                });
+                    }
+                }
+            >
+                V
+            </button>
+
+            <button key="B-key" 
+            className={`h-10 w-10 ${
+            pressedKey === "B"
+                ? "bg-gray-500"
+                : "bg-gray-300"
+            }    
+            hover:bg-gray-500`}
+            onClick={
+                () => {
+                    setText((prev) => {
+                        if (prev.length >= MAX_LENGTH) {
+                            return prev;
+                            }
+
+                    return prev + "B";
+                });
+                    }
+                }
+            >
+                B
+            </button>
+
+            <button key="N-key" 
+            className={`h-10 w-10 ${
+            pressedKey === "N"
+                ? "bg-gray-500"
+                : "bg-gray-300"
+            }    
+            hover:bg-gray-500`}
+            onClick={
+                () => {
+                    setText((prev) => {
+                        if (prev.length >= MAX_LENGTH) {
+                            return prev;
+                            }
+
+                    return prev + "N";
+                });
+                    }
+                }
+            >
+                N
+            </button>
+
+            <button key="M-key" 
+            className={`h-10 w-10 ${
+            pressedKey === "M"
+                ? "bg-gray-500"
+                : "bg-gray-300"
+            }    
+            hover:bg-gray-500`}
+            onClick={
+                () => {
+                    setText((prev) => {
+                        if (prev.length >= MAX_LENGTH) {
+                            return prev;
+                            }
+
+                    return prev + "M";
+                });
+                    }
+                }
+            >
+                M
+            </button>
+
+            {/* Enter */}
+            <button 
+                onClick={
+                    () => {
+                        if (text.length >= MAX_LENGTH) {
+                            setGuessedText((prev) => [...prev, text]);
+                            setText(() => "")
+                            }
+                            }
+                    }
+                className={`h-10 w-25 ${
+                    pressedKey === "ENTER" 
+                        ? "bg-blue-400"
+                        : "bg-gray-300"
+                } hover:bg-blue-400`}
+                > ENTER
+            </button>
+        </div>
+    </div>
         </main>
         </>
     )
