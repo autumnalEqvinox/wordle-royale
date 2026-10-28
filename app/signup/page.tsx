@@ -33,6 +33,7 @@ export default function Signup() {
                 email: email,
             });
             alert("created account");
+            router.push("/login");
         } 
         catch (error) {
         console.error("Signup failed:", error);
@@ -75,7 +76,6 @@ export default function Signup() {
                 />
 
                 <button type="submit" className="bg-blue-500 text-black font-bold px-6 py-3 rounded-lg w-fit mt-4"
-                onClick={() => router.push("/login")}
                 >
                     SIGN UP
                 </button>
