@@ -1,5 +1,6 @@
 "use client";
-import {useState} from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {createUserWithEmailAndPassword, updateProfile} from "firebase/auth"; 
 import {auth, db} from "../lib/firebase";
 import {doc, setDoc} from "firebase/firestore";
@@ -9,6 +10,7 @@ export default function Signup() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const router = useRouter();
 
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault(); // Prevent the default form submission behavior
@@ -31,6 +33,7 @@ export default function Signup() {
                 email: email,
             });
             alert("created account");
+            router.push("/login");
         } 
         catch (error) {
         console.error("Signup failed:", error);
@@ -72,7 +75,8 @@ export default function Signup() {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                 />
 
-                <button type="submit" className="bg-blue-500 text-black font-bold px-6 py-3 rounded-lg w-fit mt-4">
+                <button type="submit" className="bg-blue-500 text-black font-bold px-6 py-3 rounded-lg w-fit mt-4"
+                >
                     SIGN UP
                 </button>
 
