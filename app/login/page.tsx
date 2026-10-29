@@ -3,6 +3,8 @@ import {useState, useEffect} from "react";
 import {auth} from "../lib/firebase";
 import {signInWithEmailAndPassword, onAuthStateChanged, signOut} from "firebase/auth";
 import type {User} from "firebase/auth";
+import { Swords } from "lucide-react"
+import Link from "next/link"
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -10,7 +12,7 @@ export default function Login() {
     const [user, setUser] = useState<User|null>(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => { // code runs as soon as page is opened 
+    useEffect(() => { 
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => { // sees if theres changes in authentication
             setUser(currentUser);
             setLoading(false);
@@ -52,8 +54,17 @@ export default function Login() {
             {loading ? (
                 <p>Loading...</p>
             ) : user ? (
+                <>
                 <div>
                     <h2> logged in as {user.displayName} </h2>
+                    <Link href="/play" className="mt-4 text-red-500 hover:underline">
+                        <button className="bg-green-300 text-black font-bold px-6 py-3 rounded-lg w-fit mt-4">
+                            <Swords size={30} aria-hidden="true"/> 
+                            Play
+                        </button>
+                    </Link>
+                </div>
+                <div>
                     <button 
                         type="button"
                         onClick={handleLogout}
@@ -62,6 +73,7 @@ export default function Login() {
                         LOGOUT
                     </button>
                 </div>
+                </>
             ) : (
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     <input 
