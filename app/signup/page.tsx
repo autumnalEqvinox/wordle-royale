@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {createUserWithEmailAndPassword, updateProfile} from "firebase/auth"; 
+import {createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup} from "firebase/auth"; 
 import {auth, db} from "../lib/firebase";
 import {doc, setDoc} from "firebase/firestore";
 
@@ -38,6 +38,28 @@ export default function Signup() {
         catch (error) {
         console.error("Signup failed:", error);
         alert("Cannot create account. Check information and try again.");
+        }
+    }
+
+    
+    async function handleGoogleSignIn() {
+        try {
+            const provider = new GoogleAuthProvider();
+
+            const result = await signInWithPopup(auth, provider);
+
+            const user = result.user;
+
+            console.log("Google sign-in successful!");
+            console.log("Username:", user.displayName);
+            console.log("Email:", user.email);
+            console.log("UID:", user.uid);
+
+            router.push("/login");
+
+        } catch (error) {
+            console.error("Google sign-in failed:", error);
+            alert("Unable to sign in with Google.");
         }
     }
 
@@ -80,7 +102,7 @@ export default function Signup() {
                     SIGN UP
                 </button>
 
-                <button type="button" className="bg-blue-500 text-black font-bold px-6 py-3 rounded-lg w-fit mt-4">
+                <button type="button" className="bg-blue-500 text-black font-bold px-6 py-3 rounded-lg w-fit mt-4 google-button" onClick={handleGoogleSignIn}>
                     CONTINUE W/ GOOGLE 
                 </button>
             </form>

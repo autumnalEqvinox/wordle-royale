@@ -3,6 +3,7 @@
 import KeyboardDetector from "@/features/KeyboardDetector"
 import { useState } from "react"
 import { Delete } from "lucide-react"
+import  Leaderboard  from "@/components/Leaderboard";
 
 export default function GamePlay() {
     const MAX_LENGTH = 5;
@@ -554,6 +555,7 @@ export default function GamePlay() {
 
         </div>
         </main>
+        <Leaderboard/>
         </>
     )
 }
