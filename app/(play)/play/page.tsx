@@ -14,20 +14,671 @@ export default function GamePlay() {
     const [guessedText, setGuessedText] = useState<string[]>([]);
     const [text, setText] = useState("");
     const [pressedKey, setPressedKey] = useState("");
-    const validGuess = "HELLO";
+    const validGuess = "GIDDY";
 
-    // check for 5 inputs, and submit when the text is 5, then build an array of 5 to 
-    // display the inputs
+    {/* Code for button letters color changing visibility */}
 
-    // // make a list for the text
-    // const [ length, setLength ] = useState();
+   const qIsGreen = () => {
+    let color = "bg-gray-300";
+    let letter = "Q"
 
-      //this will listen for keyboard inputs 
-      
-// need to set up visibility for one line till the guess have been submitted, like a typewriter
-// ; ideas: 
-    // - counter to keep track of guesses
-    // - having another condition, something around guessedText and the number of input
+    for (let row = 0; row < guessedText.length; row++) {
+        if (guessedText[row]?.includes(letter)) {
+            if (
+                (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                (guessedText[row][4] === letter && validGuess[4] === letter)
+            ) {
+                return "bg-green-400";
+            }
+
+            color = validGuess.includes(letter)
+                ? "bg-yellow-400"
+                : "bg-gray-400"
+        }
+    }
+
+    return color;
+};
+
+    const wIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "W"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+
+    const eIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "E"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+    const rIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "R"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+    const tIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "T"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+    const yIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "Y"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+
+    const uIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "U"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+    const iIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "I"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+    const oIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "O"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+    const pIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "P"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+
+    {/* Row 2 */}
+
+    const aIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "A"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+
+    const sIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "S"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+    const dIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "D"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+    const fIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "F"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+    const gIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "G"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+
+    const hIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "H"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+    const jIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "J"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+    const kIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "K"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+    const lIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "L"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+
+    {/* Row 3 */}
+
+    const zIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "Z"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+
+    const xIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "X"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+    const cIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "C"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+    const vIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "V"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+    const bIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "B"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+
+    const nIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "N"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
+
+    const mIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "M"
+
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
+
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
+            }
+        }
+
+            return color;
+        };
 
     return (
         <>
@@ -357,8 +1008,19 @@ export default function GamePlay() {
 
                     <div 
                     key={13}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[2]?.[3]
+                            ? ""
+                            : validGuess[3] === guessedText[2][3]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[2][3])
+                                    ? "bg-yellow-400"
+                                    : validGuess[3] != guessedText[2][3]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[2] != null && guessedText[2] != "" 
                         ? guessedText[2][3] 
                         : guessedText.length == 2
@@ -370,8 +1032,19 @@ export default function GamePlay() {
 
                     <div 
                     key={14}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[2]?.[4]
+                            ? ""
+                            : validGuess[4] === guessedText[2][4]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[2][4])
+                                    ? "bg-yellow-400"
+                                    : validGuess[4] != guessedText[2][4]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[2] != null && guessedText[2] != "" 
                         ? guessedText[2][4] 
                         : guessedText.length == 2
@@ -384,8 +1057,19 @@ export default function GamePlay() {
                 {/* Row 4 */}
                 <div 
                     key={15}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[3]?.[0]
+                            ? ""
+                            : validGuess[0] === guessedText[3][0]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[3][0])
+                                    ? "bg-yellow-400"
+                                    : validGuess[0] != guessedText[3][0]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[3] != null && guessedText[3] != "" 
                         ? guessedText[3][0] 
                         : guessedText.length == 3
@@ -397,8 +1081,19 @@ export default function GamePlay() {
 
                     <div 
                     key={16}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[3]?.[1]
+                            ? ""
+                            : validGuess[1] === guessedText[3][1]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[3][1])
+                                    ? "bg-yellow-400"
+                                    : validGuess[1] != guessedText[3][1]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[3] != null && guessedText[3] != "" 
                         ? guessedText[3][1] 
                         : guessedText.length == 3
@@ -410,8 +1105,19 @@ export default function GamePlay() {
 
                     <div 
                     key={17}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[3]?.[2]
+                            ? ""
+                            : validGuess[2] === guessedText[3][2]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[3][2])
+                                    ? "bg-yellow-400"
+                                    : validGuess[2] != guessedText[3][2]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[3] != null && guessedText[3] != "" 
                         ? guessedText[3][2] 
                         : guessedText.length == 3
@@ -422,8 +1128,19 @@ export default function GamePlay() {
 
                     <div 
                     key={18}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[3]?.[3]
+                            ? ""
+                            : validGuess[3] === guessedText[3][3]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[3][3])
+                                    ? "bg-yellow-400"
+                                    : validGuess[3] != guessedText[3][3]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[3] != null && guessedText[3] != "" 
                         ? guessedText[3][3] 
                         : guessedText.length == 3
@@ -434,8 +1151,19 @@ export default function GamePlay() {
 
                     <div 
                     key={19}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[3]?.[4]
+                            ? ""
+                            : validGuess[4] === guessedText[3][4]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[3][4])
+                                    ? "bg-yellow-400"
+                                    : validGuess[4] != guessedText[3][4]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[3] != null && guessedText[3] != "" 
                         ? guessedText[3][4] 
                         : guessedText.length == 3
@@ -447,8 +1175,19 @@ export default function GamePlay() {
                 {/* Row 5 */}
                 <div 
                     key={20}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[4]?.[0]
+                            ? ""
+                            : validGuess[0] === guessedText[4][0]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[4][0])
+                                    ? "bg-yellow-400"
+                                    : validGuess[0] != guessedText[4][0]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[4] != null && guessedText[4] != "" 
                         ? guessedText[4][0] 
                         : guessedText.length == 4
@@ -460,8 +1199,19 @@ export default function GamePlay() {
 
                     <div 
                     key={21}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[4]?.[1]
+                            ? ""
+                            : validGuess[1] === guessedText[4][1]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[4][1])
+                                    ? "bg-yellow-400"
+                                    : validGuess[1] != guessedText[4][1]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[4] != null && guessedText[4] != "" 
                         ? guessedText[4][1] 
                         : guessedText.length == 4
@@ -473,8 +1223,19 @@ export default function GamePlay() {
 
                     <div 
                     key={22}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[4]?.[2]
+                            ? ""
+                            : validGuess[2] === guessedText[4][2]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[4][2])
+                                    ? "bg-yellow-400"
+                                    : validGuess[2] != guessedText[4][2]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[4] != null && guessedText[4] != "" 
                         ? guessedText[4][2] 
                         : guessedText.length == 4
@@ -486,8 +1247,19 @@ export default function GamePlay() {
 
                     <div 
                     key={23}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[4]?.[3]
+                            ? ""
+                            : validGuess[3] === guessedText[4][3]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[4][3])
+                                    ? "bg-yellow-400"
+                                    : validGuess[3] != guessedText[4][3]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[4] != null && guessedText[4] != "" 
                         ? guessedText[4][3] 
                         : guessedText.length == 4
@@ -499,8 +1271,19 @@ export default function GamePlay() {
 
                     <div 
                     key={24}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[4]?.[4]
+                            ? ""
+                            : validGuess[4] === guessedText[4][4]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[4][4])
+                                    ? "bg-yellow-400"
+                                    : validGuess[4] != guessedText[4][4]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[4] != null && guessedText[4] != "" 
                         ? guessedText[4][4] 
                         : guessedText.length == 4
@@ -513,7 +1296,18 @@ export default function GamePlay() {
                 {/* Row 6 */}
                 <div 
                     key={25}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[5]?.[0]
+                            ? ""
+                            : validGuess[0] === guessedText[5][0]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[5][0])
+                                    ? "bg-yellow-400"
+                                    : validGuess[0] != guessedText[5][0]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
                     >
                     {guessedText[5] != null && guessedText[5] != "" 
                         ? guessedText[5][0] 
@@ -526,7 +1320,18 @@ export default function GamePlay() {
 
                     <div 
                     key={26}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[5]?.[1]
+                            ? ""
+                            : validGuess[1] === guessedText[5][1]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[5][1])
+                                    ? "bg-yellow-400"
+                                    : validGuess[1] != guessedText[5][1]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
                     >
                     {guessedText[5] != null && guessedText[5] != "" 
                         ? guessedText[5][1] 
@@ -540,7 +1345,18 @@ export default function GamePlay() {
 
                     <div 
                     key={27}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[5]?.[2]
+                            ? ""
+                            : validGuess[2] === guessedText[5][2]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[5][2])
+                                    ? "bg-yellow-400"
+                                    : validGuess[2] != guessedText[5][2]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
                     >
                     {guessedText[5] != null && guessedText[5] != "" 
                         ? guessedText[5][2] 
@@ -553,7 +1369,18 @@ export default function GamePlay() {
 
                     <div 
                     key={28}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[5]?.[3]
+                            ? ""
+                            : validGuess[3] === guessedText[5][3]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[5][3])
+                                    ? "bg-yellow-400"
+                                    : validGuess[3] != guessedText[5][3]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
                     >
                     {guessedText[5] != null && guessedText[5] != "" 
                         ? guessedText[5][3] 
@@ -566,8 +1393,19 @@ export default function GamePlay() {
 
                     <div 
                     key={29}
-                    className="flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold"
-                >
+                    className={`flex h-15 w-15 items-center justify-center border-2 border-grey-500 text-3xl font-bold
+                    ${
+                        !guessedText[5]?.[4]
+                            ? ""
+                            : validGuess[4] === guessedText[5][4]
+                                ? "bg-green-400"
+                                : validGuess.includes(guessedText[5][4])
+                                    ? "bg-yellow-400"
+                                    : validGuess[4] != guessedText[5][4]
+                                        ? "bg-gray-400"
+                                        : ""
+                    }`}
+                    >
                     {guessedText[5] != null && guessedText[5] != "" 
                         ? guessedText[5][4] 
                         : guessedText.length == 5
@@ -586,7 +1424,9 @@ export default function GamePlay() {
                 className={`h-10 w-10 ${
                 pressedKey === "Q"
                     ? "bg-gray-500"
-                    : "bg-gray-300"
+
+                    // default color -- bg-gray-300
+                    : qIsGreen()
                 }    
                 hover:bg-gray-500`}
                 onClick={
@@ -608,7 +1448,7 @@ export default function GamePlay() {
                 className={`h-10 w-10 ${
                 pressedKey === "W" 
                     ? "bg-gray-500"
-                    : "bg-gray-300"
+                    : wIsGreen()
                 }    
                 hover:bg-gray-500`}
                 onClick={
@@ -630,7 +1470,7 @@ export default function GamePlay() {
                 className={`h-10 w-10 ${
                 pressedKey === "E"
                     ? "bg-gray-500"
-                    : "bg-gray-300"
+                    : eIsGreen()
                 }    
                 hover:bg-gray-500`}
                 onClick={
@@ -652,7 +1492,7 @@ export default function GamePlay() {
                 className={`h-10 w-10 ${
                 pressedKey === "R" 
                     ? "bg-gray-500"
-                    : "bg-gray-300"
+                    : rIsGreen()
                 }    
                 hover:bg-gray-500`}
                 onClick={
@@ -674,7 +1514,7 @@ export default function GamePlay() {
                 className={`h-10 w-10 ${
                 pressedKey === "T"
                     ? "bg-gray-500"
-                    : "bg-gray-300"
+                    : tIsGreen()
                 }    
                 hover:bg-gray-500`}
                 onClick={
@@ -696,7 +1536,7 @@ export default function GamePlay() {
                 className={`h-10 w-10 ${
                 pressedKey === "Y" 
                     ? "bg-gray-500"
-                    : "bg-gray-300"
+                    : yIsGreen()
                 }    
                 hover:bg-gray-500`}
                 onClick={
@@ -718,7 +1558,7 @@ export default function GamePlay() {
                 className={`h-10 w-10 ${
                 pressedKey === "U"
                     ? "bg-gray-500"
-                    : "bg-gray-300"
+                    : uIsGreen()
                 }    
                 hover:bg-gray-500`}
                 onClick={
@@ -740,7 +1580,7 @@ export default function GamePlay() {
                 className={`h-10 w-10 ${
                 pressedKey === "I" 
                     ? "bg-gray-500"
-                    : "bg-gray-300"
+                    : iIsGreen()
                 }    
                 hover:bg-gray-500`}
                 onClick={
@@ -762,7 +1602,7 @@ export default function GamePlay() {
                 className={`h-10 w-10 ${
                 pressedKey === "O"
                     ? "bg-gray-500"
-                    : "bg-gray-300"
+                    : oIsGreen()
                 }    
                 hover:bg-gray-500`}
                 onClick={
@@ -784,7 +1624,7 @@ export default function GamePlay() {
                 className={`h-10 w-10 ${
                 pressedKey === "P" 
                     ? "bg-gray-500"
-                    : "bg-gray-300"
+                    : pIsGreen()
                 }    
                 hover:bg-gray-500`}
                 onClick={
@@ -809,7 +1649,7 @@ export default function GamePlay() {
             className={`h-10 w-10 ${
             pressedKey === "A"
                 ? "bg-gray-500"
-                : "bg-gray-300"
+                : aIsGreen()
             }    
             hover:bg-gray-500`}
             onClick={
@@ -831,7 +1671,7 @@ export default function GamePlay() {
             className={`h-10 w-10 ${
             pressedKey === "S"
                 ? "bg-gray-500"
-                : "bg-gray-300"
+                : sIsGreen()
             }    
             hover:bg-gray-500`}
             onClick={
@@ -853,7 +1693,7 @@ export default function GamePlay() {
             className={`h-10 w-10 ${
             pressedKey === "D"
                 ? "bg-gray-500"
-                : "bg-gray-300"
+                : dIsGreen()
             }    
             hover:bg-gray-500`}
             onClick={
@@ -875,7 +1715,7 @@ export default function GamePlay() {
             className={`h-10 w-10 ${
             pressedKey === "F"
                 ? "bg-gray-500"
-                : "bg-gray-300"
+                : fIsGreen()
             }    
             hover:bg-gray-500`}
             onClick={
@@ -897,7 +1737,7 @@ export default function GamePlay() {
             className={`h-10 w-10 ${
             pressedKey === "G"
                 ? "bg-gray-500"
-                : "bg-gray-300"
+                : gIsGreen()
             }    
             hover:bg-gray-500`}
             onClick={
@@ -919,7 +1759,7 @@ export default function GamePlay() {
             className={`h-10 w-10 ${
             pressedKey === "H"
                 ? "bg-gray-500"
-                : "bg-gray-300"
+                : hIsGreen()
             }    
             hover:bg-gray-500`}
             onClick={
@@ -941,7 +1781,7 @@ export default function GamePlay() {
             className={`h-10 w-10 ${
             pressedKey === "J"
                 ? "bg-gray-500"
-                : "bg-gray-300"
+                : jIsGreen()
             }    
             hover:bg-gray-500`}
             onClick={
@@ -963,7 +1803,7 @@ export default function GamePlay() {
             className={`h-10 w-10 ${
             pressedKey === "K"
                 ? "bg-gray-500"
-                : "bg-gray-300"
+                : kIsGreen()
             }    
             hover:bg-gray-500`}
             onClick={
@@ -985,7 +1825,7 @@ export default function GamePlay() {
             className={`h-10 w-10 ${
             pressedKey === "L"
                 ? "bg-gray-500"
-                : "bg-gray-300"
+                : lIsGreen()
             }    
             hover:bg-gray-500`}
             onClick={
@@ -1023,7 +1863,7 @@ export default function GamePlay() {
             className={`h-10 w-10 ${
             pressedKey === "Z"
                 ? "bg-gray-500"
-                : "bg-gray-300"
+                : zIsGreen()
             }    
             hover:bg-gray-500`}
             onClick={
@@ -1045,7 +1885,7 @@ export default function GamePlay() {
             className={`h-10 w-10 ${
             pressedKey === "X"
                 ? "bg-gray-500"
-                : "bg-gray-300"
+                : xIsGreen()
             }    
             hover:bg-gray-500`}
             onClick={
@@ -1067,7 +1907,7 @@ export default function GamePlay() {
             className={`h-10 w-10 ${
             pressedKey === "C"
                 ? "bg-gray-500"
-                : "bg-gray-300"
+                : cIsGreen()
             }    
             hover:bg-gray-500`}
             onClick={
@@ -1089,7 +1929,7 @@ export default function GamePlay() {
             className={`h-10 w-10 ${
             pressedKey === "V"
                 ? "bg-gray-500"
-                : "bg-gray-300"
+                : vIsGreen()
             }    
             hover:bg-gray-500`}
             onClick={
@@ -1111,7 +1951,7 @@ export default function GamePlay() {
             className={`h-10 w-10 ${
             pressedKey === "B"
                 ? "bg-gray-500"
-                : "bg-gray-300"
+                : bIsGreen()
             }    
             hover:bg-gray-500`}
             onClick={
@@ -1133,7 +1973,7 @@ export default function GamePlay() {
             className={`h-10 w-10 ${
             pressedKey === "N"
                 ? "bg-gray-500"
-                : "bg-gray-300"
+                : nIsGreen()
             }    
             hover:bg-gray-500`}
             onClick={
@@ -1155,7 +1995,7 @@ export default function GamePlay() {
             className={`h-10 w-10 ${
             pressedKey === "M"
                 ? "bg-gray-500"
-                : "bg-gray-300"
+                : mIsGreen()
             }    
             hover:bg-gray-500`}
             onClick={
