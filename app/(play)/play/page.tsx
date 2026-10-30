@@ -5,7 +5,8 @@ import { useState } from "react"
 import { Delete } from "lucide-react"
 
 export default function GamePlay() {
-    const MAX_LENGTH = 5;
+    const [MAX_LENGTH, setMaxLength] = useState<number>(5);
+    const [hasWon, setHasWon] = useState(false);
 
     const [isOpen, setIsOpen] = useState<boolean>(false);
     
@@ -21,11 +22,16 @@ export default function GamePlay() {
     // Enter handle logic for both
         // keyboard input and enter button pressed
     const handleEnter = () => {
+        // if the guess is valid, stop inputs or text
+        if (hasWon) 
+            return;
+
         if (text.length >= MAX_LENGTH) {
                 setGuessedText((prev) => [...prev, text]);
         
                 if (validGuess === text) {
                     setIsOpen(true); 
+                    setHasWon(true);
                 };
             
                 setText("")
@@ -695,15 +701,16 @@ export default function GamePlay() {
             return color;
         };
 
-    return (
-        <>
+        return (
+            <>
         <KeyboardDetector
+            hasWon={hasWon}
             text={text}
             setText={setText}
             handleEnter={handleEnter}
             setSubmitted={setGuessedText}
             setPressedKey={setPressedKey}
-        />
+            />
         <main className="flex flex-col items-center p-14">
             <div className="grid grid-cols-5 grid-rows-6 gap-2">
                 {/* Row 1 */}
@@ -1457,7 +1464,7 @@ export default function GamePlay() {
                 onClick={
                     () => {
                         setText((prev) => {
-                            if (prev.length >= MAX_LENGTH) {
+                            if (hasWon || prev.length >= MAX_LENGTH) {
                                 return prev;
                                 }
 
@@ -1490,7 +1497,7 @@ export default function GamePlay() {
                 onClick={
                     () => {
                         setText((prev) => {
-                            if (prev.length >= MAX_LENGTH) {
+                            if (hasWon || prev.length >= MAX_LENGTH) {
                                 return prev;
                                 }
 
@@ -1523,7 +1530,7 @@ export default function GamePlay() {
                 onClick={
                     () => {
                         setText((prev) => {
-                            if (prev.length >= MAX_LENGTH) {
+                            if (hasWon || prev.length >= MAX_LENGTH) {
                                 return prev;
                                 }
 
@@ -1556,7 +1563,7 @@ export default function GamePlay() {
                 onClick={
                     () => {
                         setText((prev) => {
-                            if (prev.length >= MAX_LENGTH) {
+                            if (hasWon || prev.length >= MAX_LENGTH) {
                                 return prev;
                                 }
 
@@ -1589,7 +1596,7 @@ export default function GamePlay() {
                 onClick={
                     () => {
                         setText((prev) => {
-                            if (prev.length >= MAX_LENGTH) {
+                            if (hasWon || prev.length >= MAX_LENGTH) {
                                 return prev;
                                 }
 
@@ -1622,7 +1629,7 @@ export default function GamePlay() {
                 onClick={
                     () => {
                         setText((prev) => {
-                            if (prev.length >= MAX_LENGTH) {
+                            if (hasWon || prev.length >= MAX_LENGTH) {
                                 return prev;
                                 }
 
@@ -1655,7 +1662,7 @@ export default function GamePlay() {
                 onClick={
                     () => {
                         setText((prev) => {
-                            if (prev.length >= MAX_LENGTH) {
+                            if (hasWon || prev.length >= MAX_LENGTH) {
                                 return prev;
                                 }
 
@@ -1688,7 +1695,7 @@ export default function GamePlay() {
                 onClick={
                     () => {
                         setText((prev) => {
-                            if (prev.length >= MAX_LENGTH) {
+                            if (hasWon || prev.length >= MAX_LENGTH) {
                                 return prev;
                                 }
 
@@ -1721,7 +1728,7 @@ export default function GamePlay() {
                 onClick={
                     () => {
                         setText((prev) => {
-                            if (prev.length >= MAX_LENGTH) {
+                            if (hasWon || prev.length >= MAX_LENGTH) {
                                 return prev;
                                 }
 
@@ -1754,7 +1761,7 @@ export default function GamePlay() {
                 onClick={
                     () => {
                         setText((prev) => {
-                            if (prev.length >= MAX_LENGTH) {
+                            if (hasWon || prev.length >= MAX_LENGTH) {
                                 return prev;
                                 }
 
@@ -1790,7 +1797,7 @@ export default function GamePlay() {
             onClick={
                 () => {
                     setText((prev) => {
-                        if (prev.length >= MAX_LENGTH) {
+                        if (hasWon || prev.length >= MAX_LENGTH) {
                             return prev;
                             }
 
@@ -1823,7 +1830,7 @@ export default function GamePlay() {
             onClick={
                 () => {
                     setText((prev) => {
-                        if (prev.length >= MAX_LENGTH) {
+                        if (hasWon || prev.length >= MAX_LENGTH) {
                             return prev;
                             }
 
@@ -1856,7 +1863,7 @@ export default function GamePlay() {
             onClick={
                 () => {
                     setText((prev) => {
-                        if (prev.length >= MAX_LENGTH) {
+                        if (hasWon || prev.length >= MAX_LENGTH) {
                             return prev;
                             }
 
@@ -1889,7 +1896,7 @@ export default function GamePlay() {
             onClick={
                 () => {
                     setText((prev) => {
-                        if (prev.length >= MAX_LENGTH) {
+                        if (hasWon || prev.length >= MAX_LENGTH) {
                             return prev;
                             }
 
@@ -1922,7 +1929,7 @@ export default function GamePlay() {
             onClick={
                 () => {
                     setText((prev) => {
-                        if (prev.length >= MAX_LENGTH) {
+                        if (hasWon || prev.length >= MAX_LENGTH) {
                             return prev;
                             }
 
@@ -1955,7 +1962,7 @@ export default function GamePlay() {
             onClick={
                 () => {
                     setText((prev) => {
-                        if (prev.length >= MAX_LENGTH) {
+                        if (hasWon || prev.length >= MAX_LENGTH) {
                             return prev;
                             }
 
@@ -1988,7 +1995,7 @@ export default function GamePlay() {
             onClick={
                 () => {
                     setText((prev) => {
-                        if (prev.length >= MAX_LENGTH) {
+                        if (hasWon || prev.length >= MAX_LENGTH) {
                             return prev;
                             }
 
@@ -2021,7 +2028,7 @@ export default function GamePlay() {
             onClick={
                 () => {
                     setText((prev) => {
-                        if (prev.length >= MAX_LENGTH) {
+                        if (hasWon || prev.length >= MAX_LENGTH) {
                             return prev;
                             }
 
@@ -2054,7 +2061,7 @@ export default function GamePlay() {
             onClick={
                 () => {
                     setText((prev) => {
-                        if (prev.length >= MAX_LENGTH) {
+                        if (hasWon || prev.length >= MAX_LENGTH) {
                             return prev;
                             }
 
@@ -2103,7 +2110,7 @@ export default function GamePlay() {
             onClick={
                 () => {
                     setText((prev) => {
-                        if (prev.length >= MAX_LENGTH) {
+                        if (hasWon || prev.length >= MAX_LENGTH) {
                             return prev;
                             }
 
@@ -2136,7 +2143,7 @@ export default function GamePlay() {
             onClick={
                 () => {
                     setText((prev) => {
-                        if (prev.length >= MAX_LENGTH) {
+                        if (hasWon || prev.length >= MAX_LENGTH) {
                             return prev;
                             }
 
@@ -2169,7 +2176,7 @@ export default function GamePlay() {
             onClick={
                 () => {
                     setText((prev) => {
-                        if (prev.length >= MAX_LENGTH) {
+                        if (hasWon || prev.length >= MAX_LENGTH) {
                             return prev;
                             }
 
@@ -2202,7 +2209,7 @@ export default function GamePlay() {
             onClick={
                 () => {
                     setText((prev) => {
-                        if (prev.length >= MAX_LENGTH) {
+                        if (hasWon || prev.length >= MAX_LENGTH) {
                             return prev;
                             }
 
@@ -2235,7 +2242,7 @@ export default function GamePlay() {
             onClick={
                 () => {
                     setText((prev) => {
-                        if (prev.length >= MAX_LENGTH) {
+                        if (hasWon || prev.length >= MAX_LENGTH) {
                             return prev;
                             }
 
@@ -2268,7 +2275,7 @@ export default function GamePlay() {
             onClick={
                 () => {
                     setText((prev) => {
-                        if (prev.length >= MAX_LENGTH) {
+                        if (hasWon || prev.length >= MAX_LENGTH) {
                             return prev;
                             }
 
@@ -2301,7 +2308,7 @@ export default function GamePlay() {
             onClick={
                 () => {
                     setText((prev) => {
-                        if (prev.length >= MAX_LENGTH) {
+                        if (hasWon || prev.length >= MAX_LENGTH) {
                             return prev;
                             }
 

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 const MAX_LENGTH = 5; //Maximum number of characters allowed, like wordle
 
 export default function KeyboardDetector({
+    hasWon,
     text, 
     setText, 
     handleEnter,
@@ -25,6 +26,9 @@ export default function KeyboardDetector({
         return;
       }
 
+      if (hasWon)
+        return;
+
       if (event.key === "Backspace") { //if there is a backspace, remove the last character
         event.preventDefault();
         setText((prev) => prev.slice(0, -1)); //slice(0, -1) returns everything except last character
@@ -34,7 +38,8 @@ export default function KeyboardDetector({
         event.preventDefault();
 
         // check to see if there is a duplicate 
-        if (event.repeat) return;
+        if (event.repeat) 
+          return;
 
         handleEnter(); // used to display pop up window when enter is pressed on the keyboard
         
