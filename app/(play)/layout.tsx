@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import { Palette, LogOut, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { setDoc, doc } from "firebase/firestore";
+import { auth, db } from "../lib/firebase"; 
 
 // Color choices for the palette popup
 const COLORS = [
@@ -91,7 +93,10 @@ function PaletteButton() {
                 <button
                   key={c.value}
                   style={swatchStyle(c.value, c.value === selectedColor)}
-                  onClick={() => setSelectedColor(c.value)}
+                  onClick={() => {
+                    setSelectedColor(c.value);
+                    setDoc(doc(db, "users", auth.currentUser?.uid || ""), { color: c.value }, { merge: true });
+                  }}
                   aria-label={c.name}
                   aria-pressed={c.value === selectedColor}
                   title={c.name}
