@@ -32,7 +32,7 @@ export default function KeyboardDetector({
       
       else if (event.key === "Enter") { //if there is an enter, save the current word and then delete what has been inputted
         event.preventDefault();
-        handleEnter();
+        handleEnter(); // used to display pop up window when enter is pressed on the keyboard
         
         if (text.length === MAX_LENGTH) {
           setSubmitted((lines) => [...lines, text]); // append the text to the submitted guesses
