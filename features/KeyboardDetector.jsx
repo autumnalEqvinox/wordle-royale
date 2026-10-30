@@ -7,6 +7,7 @@ const MAX_LENGTH = 5; //Maximum number of characters allowed, like wordle
 export default function KeyboardDetector({
     text, 
     setText, 
+    handleEnter,
     setSubmitted,
     setPressedKey,
   }) {
@@ -31,6 +32,7 @@ export default function KeyboardDetector({
       
       else if (event.key === "Enter") { //if there is an enter, save the current word and then delete what has been inputted
         event.preventDefault();
+        handleEnter();
         
         if (text.length === MAX_LENGTH) {
           setSubmitted((lines) => [...lines, text]); // append the text to the submitted guesses

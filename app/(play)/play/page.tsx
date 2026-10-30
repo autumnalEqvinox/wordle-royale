@@ -6,6 +6,8 @@ import { Delete } from "lucide-react"
 
 export default function GamePlay() {
     const MAX_LENGTH = 5;
+
+    const [isOpen, setIsOpen] = useState<boolean>(false);
     
     const row1 = ["QWERTYUIOP"];
     const row2 = ["ASDFGHJKL"];
@@ -15,6 +17,20 @@ export default function GamePlay() {
     const [text, setText] = useState("");
     const [pressedKey, setPressedKey] = useState("");
     const validGuess = "HOWDY"; // API call ???
+
+    // Enter handle logic for both
+        // keyboard input and enter button pressed
+    const handleEnter = () => {
+        if (text.length >= MAX_LENGTH) {
+                setGuessedText((prev) => [...prev, text]);
+        
+                if (validGuess === text) {
+                    setIsOpen(true); 
+                };
+            
+                setText("")
+            };
+        }
 
     {/* Code for button letters color changing visibility */}
     const qIsGreen = () => {
@@ -684,6 +700,7 @@ export default function GamePlay() {
         <KeyboardDetector
             text={text}
             setText={setText}
+            handleEnter={handleEnter}
             setSubmitted={setGuessedText}
             setPressedKey={setPressedKey}
         />
@@ -2298,21 +2315,30 @@ export default function GamePlay() {
 
             {/* Enter */}
             <button 
-                onClick={
-                    () => {
-                        if (text.length >= MAX_LENGTH) {
-                            setGuessedText((prev) => [...prev, text]);
-                            setText(() => "")
-                            }
-                            }
-                    }
+                onClick={handleEnter}
                 className={`h-10 w-25 ${
                     pressedKey === "ENTER" 
                         ? "bg-blue-400"
                         : "bg-gray-300"
                 } hover:bg-blue-400`}
-                > ENTER
+                > 
+                ENTER
             </button>
+
+            {/* Window for guessed word*/}
+            {isOpen && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black/50" 
+                onClick={() => setIsOpen(false)}
+            >
+                <div className="rounded-lg bg-white p-8 text-black">
+                    <p className="text-xl">You guessed the word!</p>
+                        <button onClick={() => setIsOpen(false)} className="bold text-red-800 text-xl hover:underline">
+                            Back to Play
+                        </button>
+
+                </div>
+            </div>
+            )}
         </div>
     </div>
         </main>
