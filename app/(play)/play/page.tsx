@@ -14,7 +14,7 @@ export default function GamePlay() {
     const [guessedText, setGuessedText] = useState<string[]>([]);
     const [text, setText] = useState("");
     const [pressedKey, setPressedKey] = useState("");
-    const validGuess = "QUOTE";
+    const validGuess = "HOWDY"; // API call ???
 
     {/* Code for button letters color changing visibility */}
     const qIsGreen = () => {
@@ -1422,11 +1422,14 @@ export default function GamePlay() {
                 <button key="Q-key" 
                 className={`h-10 w-10 ${
                 pressedKey === "Q"
-                    ? "bg-gray-500"
+                    ? qIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : qIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
 
-                    // default color -- bg-gray-300
                     : qIsGreen()
-                }    
+                }
                 ${ // This is for hover effects
                     qIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1452,9 +1455,14 @@ export default function GamePlay() {
         <button key="W-key" 
                 className={`h-10 w-10 ${
                 pressedKey === "W" 
-                    ? "bg-gray-500"
+                    ? wIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : wIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
                     : wIsGreen()
-                } 
+                }
                 ${ // This is for hover effects
                     wIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1480,9 +1488,14 @@ export default function GamePlay() {
         <button key="E-key" 
                 className={`h-10 w-10 ${
                 pressedKey === "E"
-                    ? "bg-gray-500"
+                    ? eIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : eIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
                     : eIsGreen()
-                } 
+                }
                 ${ // This is for hover effects
                     eIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1508,9 +1521,14 @@ export default function GamePlay() {
         <button key="R-key"
                 className={`h-10 w-10 ${
                 pressedKey === "R" 
-                    ? "bg-gray-500"
+                    ? rIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : rIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
                     : rIsGreen()
-                } 
+                }
                 ${ // This is for hover effects
                     rIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1536,9 +1554,14 @@ export default function GamePlay() {
         <button key="T-key" 
                 className={`h-10 w-10 ${
                 pressedKey === "T"
-                    ? "bg-gray-500"
+                    ? tIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : tIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
                     : tIsGreen()
-                } 
+                }
                 ${ // This is for hover effects
                     tIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1564,9 +1587,14 @@ export default function GamePlay() {
         <button key="Y-key"
                 className={`h-10 w-10 ${
                 pressedKey === "Y" 
-                    ? "bg-gray-500"
+                    ? yIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : yIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
                     : yIsGreen()
-                } 
+                }
                 ${ // This is for hover effects
                     yIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1592,9 +1620,14 @@ export default function GamePlay() {
         <button key="U-key"
                 className={`h-10 w-10 ${
                 pressedKey === "U"
-                    ? "bg-gray-500"
+                    ? uIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : uIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
                     : uIsGreen()
-                } 
+                }
                 ${ // This is for hover effects
                     uIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1620,9 +1653,14 @@ export default function GamePlay() {
         <button key="I-key"
                 className={`h-10 w-10 ${
                 pressedKey === "I" 
-                    ? "bg-gray-500"
+                    ? iIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : iIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
                     : iIsGreen()
-                } 
+                }
                 ${ // This is for hover effects
                     iIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1648,9 +1686,14 @@ export default function GamePlay() {
         <button key="O-key"
                 className={`h-10 w-10 ${
                 pressedKey === "O"
-                    ? "bg-gray-500"
+                    ? oIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : oIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
                     : oIsGreen()
-                } 
+                }
                 ${ // This is for hover effects
                     oIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1676,9 +1719,14 @@ export default function GamePlay() {
         <button key="P-key"
                 className={`h-10 w-10 ${
                 pressedKey === "P" 
-                    ? "bg-gray-500"
+                    ? pIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : pIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
                     : pIsGreen()
-                } 
+                }
                 ${ // This is for hover effects
                     pIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1707,9 +1755,14 @@ export default function GamePlay() {
             <button key="A-key" 
             className={`h-10 w-10 ${
             pressedKey === "A"
-                ? "bg-gray-500"
-                : aIsGreen()
-            } 
+                ? aIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : aIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
+                    : aIsGreen()
+                }
                 ${ // This is for hover effects
                     aIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1735,9 +1788,14 @@ export default function GamePlay() {
         <button key="S-key" 
             className={`h-10 w-10 ${
             pressedKey === "S"
-                ? "bg-gray-500"
-                : sIsGreen()
-            } 
+                ? sIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : sIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
+                    : sIsGreen()
+                }
                 ${ // This is for hover effects
                     sIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1763,9 +1821,14 @@ export default function GamePlay() {
             <button key="D-key" 
             className={`h-10 w-10 ${
             pressedKey === "D"
-                ? "bg-gray-500"
-                : dIsGreen()
-            } 
+                ? dIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : dIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
+                    : dIsGreen()
+                }
                 ${ // This is for hover effects
                     dIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1791,9 +1854,14 @@ export default function GamePlay() {
             <button key="F-key" 
             className={`h-10 w-10 ${
             pressedKey === "F"
-                ? "bg-gray-500"
-                : fIsGreen()
-            } 
+                ? fIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : fIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
+                    : fIsGreen()
+                }
                 ${ // This is for hover effects
                     fIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1819,9 +1887,14 @@ export default function GamePlay() {
             <button key="G-key" 
             className={`h-10 w-10 ${
             pressedKey === "G"
-                ? "bg-gray-500"
-                : gIsGreen()
-            } 
+                ? gIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : gIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
+                    : gIsGreen()
+                }
                 ${ // This is for hover effects
                     gIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1847,9 +1920,14 @@ export default function GamePlay() {
             <button key="H-key" 
             className={`h-10 w-10 ${
             pressedKey === "H"
-                ? "bg-gray-500"
-                : hIsGreen()
-            } 
+                ? hIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : hIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
+                    : hIsGreen()
+                }
                 ${ // This is for hover effects
                     hIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1875,9 +1953,14 @@ export default function GamePlay() {
             <button key="J-key" 
             className={`h-10 w-10 ${
             pressedKey === "J"
-                ? "bg-gray-500"
-                : jIsGreen()
-            } 
+                ? jIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : jIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
+                    : jIsGreen()
+                }
                 ${ // This is for hover effects
                     jIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1903,9 +1986,14 @@ export default function GamePlay() {
             <button key="K-key" 
             className={`h-10 w-10 ${
             pressedKey === "K"
-                ? "bg-gray-500"
-                : kIsGreen()
-            } 
+                ? kIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : kIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
+                    : kIsGreen()
+                }
                 ${ // This is for hover effects
                     kIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1931,9 +2019,14 @@ export default function GamePlay() {
             <button key="L-key" 
             className={`h-10 w-10 ${
             pressedKey === "L"
-                ? "bg-gray-500"
-                : lIsGreen()
-            } 
+                ? lIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : lIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
+                    : lIsGreen()
+                }
                 ${ // This is for hover effects
                     lIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -1975,9 +2068,14 @@ export default function GamePlay() {
             <button key="Z-key" 
             className={`h-10 w-10 ${
             pressedKey === "Z"
-                ? "bg-gray-500"
-                : zIsGreen()
-            } 
+                ? zIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : zIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
+                    : zIsGreen()
+                }
                 ${ // This is for hover effects
                     zIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -2003,9 +2101,14 @@ export default function GamePlay() {
             <button key="X-key" 
             className={`h-10 w-10 ${
             pressedKey === "X"
-                ? "bg-gray-500"
-                : xIsGreen()
-            } 
+                ? xIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : xIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
+                    : xIsGreen()
+                }
                 ${ // This is for hover effects
                     xIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -2031,9 +2134,14 @@ export default function GamePlay() {
             <button key="C-key" 
             className={`h-10 w-10 ${
             pressedKey === "C"
-                ? "bg-gray-500"
-                : cIsGreen()
-            } 
+                ? cIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : cIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
+                    : cIsGreen()
+                }
                 ${ // This is for hover effects
                     cIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -2059,9 +2167,14 @@ export default function GamePlay() {
             <button key="V-key" 
             className={`h-10 w-10 ${
             pressedKey === "V"
-                ? "bg-gray-500"
-                : vIsGreen()
-            } 
+                ? vIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : vIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
+                    : vIsGreen()
+                }
                 ${ // This is for hover effects
                     vIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -2087,9 +2200,14 @@ export default function GamePlay() {
             <button key="B-key" 
             className={`h-10 w-10 ${
             pressedKey === "B"
-                ? "bg-gray-500"
-                : bIsGreen()
-            } 
+                ? bIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : bIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
+                    : bIsGreen()
+                }
                 ${ // This is for hover effects
                     bIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -2115,9 +2233,14 @@ export default function GamePlay() {
             <button key="N-key" 
             className={`h-10 w-10 ${
             pressedKey === "N"
-                ? "bg-gray-500"
-                : nIsGreen()
-            } 
+                ? nIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : nIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
+                    : nIsGreen()
+                }
                 ${ // This is for hover effects
                     nIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
@@ -2143,9 +2266,14 @@ export default function GamePlay() {
             <button key="M-key" 
             className={`h-10 w-10 ${
             pressedKey === "M"
-                ? "bg-gray-500"
-                : mIsGreen()
-            } 
+                ? mIsGreen() === "bg-green-400"
+                        ? "bg-green-500"
+                        : mIsGreen() === "bg-yellow-400"
+                            ? "bg-yellow-500"
+                            : "bg-gray-500"
+
+                    : mIsGreen()
+                }
                 ${ // This is for hover effects
                     mIsGreen() === "bg-green-400"
                         ? "hover:bg-green-600"
