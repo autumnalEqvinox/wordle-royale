@@ -32,12 +32,17 @@ export default function KeyboardDetector({
       
       else if (event.key === "Enter") { //if there is an enter, save the current word and then delete what has been inputted
         event.preventDefault();
+
+        // check to see if there is a duplicate 
+        if (event.repeat) return;
+
         handleEnter(); // used to display pop up window when enter is pressed on the keyboard
         
-        if (text.length === MAX_LENGTH) {
-          setSubmitted((lines) => [...lines, text]); // append the text to the submitted guesses
-          setText(""); // clear the text since we are on a new guess attempt
-        }
+        {/* This is already handled in the play page code */}
+        // if (text.length === MAX_LENGTH) {
+        //   setSubmitted((lines) => [...lines, text]); // append the text to the submitted guesses
+        //   setText(""); // clear the text since we are on a new guess attempt
+        // }
       } 
       
       else if (
