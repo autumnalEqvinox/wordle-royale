@@ -14,34 +14,33 @@ export default function GamePlay() {
     const [guessedText, setGuessedText] = useState<string[]>([]);
     const [text, setText] = useState("");
     const [pressedKey, setPressedKey] = useState("");
-    const validGuess = "GIDDY";
+    const validGuess = "QUOTE";
 
     {/* Code for button letters color changing visibility */}
+    const qIsGreen = () => {
+        let color = "bg-gray-300";
+        let letter = "Q"
 
-   const qIsGreen = () => {
-    let color = "bg-gray-300";
-    let letter = "Q"
+        for (let row = 0; row < guessedText.length; row++) {
+            if (guessedText[row]?.includes(letter)) {
+                if (
+                    (guessedText[row][0] === letter && validGuess[0] === letter) ||
+                    (guessedText[row][1] === letter && validGuess[1] === letter) ||
+                    (guessedText[row][2] === letter && validGuess[2] === letter) ||
+                    (guessedText[row][3] === letter && validGuess[3] === letter) ||
+                    (guessedText[row][4] === letter && validGuess[4] === letter)
+                ) {
+                    return "bg-green-400";
+                }
 
-    for (let row = 0; row < guessedText.length; row++) {
-        if (guessedText[row]?.includes(letter)) {
-            if (
-                (guessedText[row][0] === letter && validGuess[0] === letter) ||
-                (guessedText[row][1] === letter && validGuess[1] === letter) ||
-                (guessedText[row][2] === letter && validGuess[2] === letter) ||
-                (guessedText[row][3] === letter && validGuess[3] === letter) ||
-                (guessedText[row][4] === letter && validGuess[4] === letter)
-            ) {
-                return "bg-green-400";
+                color = validGuess.includes(letter)
+                    ? "bg-yellow-400"
+                    : "bg-gray-400"
             }
-
-            color = validGuess.includes(letter)
-                ? "bg-yellow-400"
-                : "bg-gray-400"
         }
-    }
 
-    return color;
-};
+        return color;
+    };
 
     const wIsGreen = () => {
         let color = "bg-gray-300";
@@ -1428,7 +1427,13 @@ export default function GamePlay() {
                     // default color -- bg-gray-300
                     : qIsGreen()
                 }    
-                hover:bg-gray-500`}
+                ${ // This is for hover effects
+                    qIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : qIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
                 onClick={
                     () => {
                         setText((prev) => {
@@ -1449,8 +1454,14 @@ export default function GamePlay() {
                 pressedKey === "W" 
                     ? "bg-gray-500"
                     : wIsGreen()
-                }    
-                hover:bg-gray-500`}
+                } 
+                ${ // This is for hover effects
+                    wIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : wIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
                 onClick={
                     () => {
                         setText((prev) => {
@@ -1471,8 +1482,14 @@ export default function GamePlay() {
                 pressedKey === "E"
                     ? "bg-gray-500"
                     : eIsGreen()
-                }    
-                hover:bg-gray-500`}
+                } 
+                ${ // This is for hover effects
+                    eIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : eIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
                 onClick={
                     () => {
                         setText((prev) => {
@@ -1493,8 +1510,14 @@ export default function GamePlay() {
                 pressedKey === "R" 
                     ? "bg-gray-500"
                     : rIsGreen()
-                }    
-                hover:bg-gray-500`}
+                } 
+                ${ // This is for hover effects
+                    rIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : rIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
                 onClick={
                     () => {
                         setText((prev) => {
@@ -1515,8 +1538,14 @@ export default function GamePlay() {
                 pressedKey === "T"
                     ? "bg-gray-500"
                     : tIsGreen()
-                }    
-                hover:bg-gray-500`}
+                } 
+                ${ // This is for hover effects
+                    tIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : tIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
                 onClick={
                     () => {
                         setText((prev) => {
@@ -1537,8 +1566,14 @@ export default function GamePlay() {
                 pressedKey === "Y" 
                     ? "bg-gray-500"
                     : yIsGreen()
-                }    
-                hover:bg-gray-500`}
+                } 
+                ${ // This is for hover effects
+                    yIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : yIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
                 onClick={
                     () => {
                         setText((prev) => {
@@ -1559,8 +1594,14 @@ export default function GamePlay() {
                 pressedKey === "U"
                     ? "bg-gray-500"
                     : uIsGreen()
-                }    
-                hover:bg-gray-500`}
+                } 
+                ${ // This is for hover effects
+                    uIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : uIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
                 onClick={
                     () => {
                         setText((prev) => {
@@ -1581,8 +1622,14 @@ export default function GamePlay() {
                 pressedKey === "I" 
                     ? "bg-gray-500"
                     : iIsGreen()
-                }    
-                hover:bg-gray-500`}
+                } 
+                ${ // This is for hover effects
+                    iIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : iIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
                 onClick={
                     () => {
                         setText((prev) => {
@@ -1603,8 +1650,14 @@ export default function GamePlay() {
                 pressedKey === "O"
                     ? "bg-gray-500"
                     : oIsGreen()
-                }    
-                hover:bg-gray-500`}
+                } 
+                ${ // This is for hover effects
+                    oIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : oIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
                 onClick={
                     () => {
                         setText((prev) => {
@@ -1625,8 +1678,14 @@ export default function GamePlay() {
                 pressedKey === "P" 
                     ? "bg-gray-500"
                     : pIsGreen()
-                }    
-                hover:bg-gray-500`}
+                } 
+                ${ // This is for hover effects
+                    pIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : pIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
                 onClick={
                     () => {
                         setText((prev) => {
@@ -1650,8 +1709,14 @@ export default function GamePlay() {
             pressedKey === "A"
                 ? "bg-gray-500"
                 : aIsGreen()
-            }    
-            hover:bg-gray-500`}
+            } 
+                ${ // This is for hover effects
+                    aIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : aIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
             onClick={
                 () => {
                     setText((prev) => {
@@ -1672,8 +1737,14 @@ export default function GamePlay() {
             pressedKey === "S"
                 ? "bg-gray-500"
                 : sIsGreen()
-            }    
-            hover:bg-gray-500`}
+            } 
+                ${ // This is for hover effects
+                    sIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : sIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
             onClick={
                 () => {
                     setText((prev) => {
@@ -1694,8 +1765,14 @@ export default function GamePlay() {
             pressedKey === "D"
                 ? "bg-gray-500"
                 : dIsGreen()
-            }    
-            hover:bg-gray-500`}
+            } 
+                ${ // This is for hover effects
+                    dIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : dIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
             onClick={
                 () => {
                     setText((prev) => {
@@ -1716,8 +1793,14 @@ export default function GamePlay() {
             pressedKey === "F"
                 ? "bg-gray-500"
                 : fIsGreen()
-            }    
-            hover:bg-gray-500`}
+            } 
+                ${ // This is for hover effects
+                    fIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : fIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
             onClick={
                 () => {
                     setText((prev) => {
@@ -1738,8 +1821,14 @@ export default function GamePlay() {
             pressedKey === "G"
                 ? "bg-gray-500"
                 : gIsGreen()
-            }    
-            hover:bg-gray-500`}
+            } 
+                ${ // This is for hover effects
+                    gIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : gIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
             onClick={
                 () => {
                     setText((prev) => {
@@ -1760,8 +1849,14 @@ export default function GamePlay() {
             pressedKey === "H"
                 ? "bg-gray-500"
                 : hIsGreen()
-            }    
-            hover:bg-gray-500`}
+            } 
+                ${ // This is for hover effects
+                    hIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : hIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
             onClick={
                 () => {
                     setText((prev) => {
@@ -1782,8 +1877,14 @@ export default function GamePlay() {
             pressedKey === "J"
                 ? "bg-gray-500"
                 : jIsGreen()
-            }    
-            hover:bg-gray-500`}
+            } 
+                ${ // This is for hover effects
+                    jIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : jIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
             onClick={
                 () => {
                     setText((prev) => {
@@ -1804,8 +1905,14 @@ export default function GamePlay() {
             pressedKey === "K"
                 ? "bg-gray-500"
                 : kIsGreen()
-            }    
-            hover:bg-gray-500`}
+            } 
+                ${ // This is for hover effects
+                    kIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : kIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
             onClick={
                 () => {
                     setText((prev) => {
@@ -1826,8 +1933,14 @@ export default function GamePlay() {
             pressedKey === "L"
                 ? "bg-gray-500"
                 : lIsGreen()
-            }    
-            hover:bg-gray-500`}
+            } 
+                ${ // This is for hover effects
+                    lIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : lIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
             onClick={
                 () => {
                     setText((prev) => {
@@ -1864,8 +1977,14 @@ export default function GamePlay() {
             pressedKey === "Z"
                 ? "bg-gray-500"
                 : zIsGreen()
-            }    
-            hover:bg-gray-500`}
+            } 
+                ${ // This is for hover effects
+                    zIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : zIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
             onClick={
                 () => {
                     setText((prev) => {
@@ -1886,8 +2005,14 @@ export default function GamePlay() {
             pressedKey === "X"
                 ? "bg-gray-500"
                 : xIsGreen()
-            }    
-            hover:bg-gray-500`}
+            } 
+                ${ // This is for hover effects
+                    xIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : xIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
             onClick={
                 () => {
                     setText((prev) => {
@@ -1908,8 +2033,14 @@ export default function GamePlay() {
             pressedKey === "C"
                 ? "bg-gray-500"
                 : cIsGreen()
-            }    
-            hover:bg-gray-500`}
+            } 
+                ${ // This is for hover effects
+                    cIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : cIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
             onClick={
                 () => {
                     setText((prev) => {
@@ -1930,8 +2061,14 @@ export default function GamePlay() {
             pressedKey === "V"
                 ? "bg-gray-500"
                 : vIsGreen()
-            }    
-            hover:bg-gray-500`}
+            } 
+                ${ // This is for hover effects
+                    vIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : vIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
             onClick={
                 () => {
                     setText((prev) => {
@@ -1952,8 +2089,14 @@ export default function GamePlay() {
             pressedKey === "B"
                 ? "bg-gray-500"
                 : bIsGreen()
-            }    
-            hover:bg-gray-500`}
+            } 
+                ${ // This is for hover effects
+                    bIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : bIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
             onClick={
                 () => {
                     setText((prev) => {
@@ -1974,8 +2117,14 @@ export default function GamePlay() {
             pressedKey === "N"
                 ? "bg-gray-500"
                 : nIsGreen()
-            }    
-            hover:bg-gray-500`}
+            } 
+                ${ // This is for hover effects
+                    nIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : nIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
             onClick={
                 () => {
                     setText((prev) => {
@@ -1996,8 +2145,14 @@ export default function GamePlay() {
             pressedKey === "M"
                 ? "bg-gray-500"
                 : mIsGreen()
-            }    
-            hover:bg-gray-500`}
+            } 
+                ${ // This is for hover effects
+                    mIsGreen() === "bg-green-400"
+                        ? "hover:bg-green-600"
+                        : mIsGreen() === "bg-yellow-400"
+                            ? "hover:bg-yellow-500"
+                            : "hover:bg-gray-500"
+                }`}
             onClick={
                 () => {
                     setText((prev) => {
