@@ -9,10 +9,6 @@ export default function GamePlay() {
     const [hasWon, setHasWon] = useState(false);
 
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    
-    const row1 = ["QWERTYUIOP"];
-    const row2 = ["ASDFGHJKL"];
-    const row3 = ["ZXCVBNM"];
 
     const [guessedText, setGuessedText] = useState<string[]>([]);
     const [text, setText] = useState("");
