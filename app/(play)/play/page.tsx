@@ -4,6 +4,8 @@ import KeyboardDetector from "@/features/KeyboardDetector"
 import { useState } from "react"
 import { Delete } from "lucide-react"
 import  Leaderboard  from "@/components/Leaderboard";
+import { auth, db } from "@/app/lib/firebase";
+import { doc, updateDoc, increment } from "firebase/firestore";
 
 export default function GamePlay() {
     const MAX_LENGTH = 5;
@@ -15,6 +17,40 @@ export default function GamePlay() {
     const [guessedText, setGuessedText] = useState<string[]>([]);
     const [text, setText] = useState("");
     const [pressedKey, setPressedKey] = useState("");
+
+    async function savePlayerGuess() { // function to save player guesses to firestore 
+        console.log("1. savePlayerGuess started");
+
+        const user = auth.currentUser;
+
+        if (!user) { 
+            console.error("No user");
+            return;
+        }
+        try { 
+            const playerRef = doc(db, "playerStats", user.uid);
+
+            console.log("2. User UID:", user.uid);
+            console.log("3. Document path:", playerRef.path);
+
+            await updateDoc(playerRef, {
+                totalGuesses: increment(1)
+            });
+
+            console.log("guess saved ");
+
+        } catch (error) {
+            console.error("Unable to save guess:", error);
+        }
+    }
+
+    function handleGuessSubmit() {
+        if (text.length == MAX_LENGTH) {
+            setGuessedText((prev) => [...prev, text]);
+            setText(() => "");
+            void savePlayerGuess(); // call function to save current user guess
+        }
+    }
 
     // check for 5 inputs, and submit when the text is 5, then build an array of 5 to 
     // display the inputs
@@ -34,8 +70,8 @@ export default function GamePlay() {
         <KeyboardDetector
             text={text}
             setText={setText}
-            setSubmitted={setGuessedText}
             setPressedKey={setPressedKey}
+            onSubmit={handleGuessSubmit}
         />
         <main className="flex flex-col items-center p-14">
             <div className="grid grid-cols-5 grid-rows-6 gap-2">
@@ -534,14 +570,7 @@ export default function GamePlay() {
 
                     {/* Enter */}
                     <button 
-                        onClick={
-                            () => {
-                                if (text.length >= MAX_LENGTH) {
-                                  setGuessedText((prev) => [...prev, text]);
-                                    setText(() => "")
-                                    }
-                                 }
-                            }
+                        onClick={handleGuessSubmit} // changed from old code to just handleGuessSubmit, which will submit the guess and save it to firestore
                         className={`h-10 w-25 ${
                             pressedKey === "ENTER" 
                                 ? "bg-blue-400"
