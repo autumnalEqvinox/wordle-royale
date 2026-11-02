@@ -5,6 +5,7 @@ import { useState } from "react"
 import { Delete } from "lucide-react"
 
 export default function GamePlay() {
+    // this exists to change the length of the word if need be
     const [MAX_LENGTH, setMaxLength] = useState<number>(5);
     const [hasWon, setHasWon] = useState(false);
 
@@ -19,8 +20,9 @@ export default function GamePlay() {
         // keyboard input and enter button pressed
     const handleEnter = () => {
         // if the guess is valid, stop inputs or text
-        if (hasWon) 
+        if (hasWon) {
             return;
+        };
 
         if (text.length >= MAX_LENGTH) {
                 setGuessedText((prev) => [...prev, text]);
