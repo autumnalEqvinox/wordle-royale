@@ -1,6 +1,7 @@
 "use client"; 
 
 import { useEffect, useState } from "react";
+import { isValidWord } from "./validWords";
 
 const MAX_LENGTH = 5; //Maximum number of characters allowed, like wordle
 
@@ -33,6 +34,10 @@ export default function KeyboardDetector({
         event.preventDefault();
         
         if (text.length === MAX_LENGTH) {
+          if (!isValidWord(text)) { // not in the word list, so keep the letters and do not submit
+            alert("Not in word list");
+            return;
+          }
           setSubmitted((lines) => [...lines, text]); // append the text to the submitted guesses
           setText(""); // clear the text since we are on a new guess attempt
         }

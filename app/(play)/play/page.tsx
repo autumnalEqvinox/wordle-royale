@@ -3,6 +3,7 @@
 import KeyboardDetector from "@/features/KeyboardDetector"
 import { useState } from "react"
 import { Delete } from "lucide-react"
+import { isValidWord } from "@/features/validWords"
 
 export default function GamePlay() {
     const MAX_LENGTH = 5;
@@ -536,7 +537,12 @@ export default function GamePlay() {
                         onClick={
                             () => {
                                 if (text.length >= MAX_LENGTH) {
-                                  setGuessedText((prev) => [...prev, text]);
+                                    if (!isValidWord(text)) {
+                                        // not a real word: keep the letters so the player can fix them
+                                        alert("Not in word list");
+                                        return;
+                                    }
+                                    setGuessedText((prev) => [...prev, text]);
                                     setText(() => "")
                                     }
                                  }
