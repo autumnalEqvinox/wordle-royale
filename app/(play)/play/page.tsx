@@ -2402,7 +2402,7 @@ export default function GamePlay() {
                 onClick={() => setIsOpen(false)}
             >
                 <div className="rounded-lg bg-white p-8 text-black">
-                    <p className="text-xl">CONGRATS, THE CORRENT WORD IS '{validGuess}'!</p>
+                    <p className="text-xl">CONGRATS, THE CURRENT WORD IS '{validGuess}'!</p>
                     <p className="text-sm text-gray-600">A new word will be chosen in 10 seconds.</p>
                         <button onClick={() => setIsOpen(false)} className="bold text-red-800 text-xl hover:underline">
                             Back to Play
