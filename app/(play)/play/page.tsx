@@ -3,6 +3,16 @@
 import KeyboardDetector from "@/features/KeyboardDetector"
 import { useState } from "react"
 import { Delete } from "lucide-react"
+// import {
+//     doc,
+//     setDoc,
+//     collection,
+//     addDoc,
+//     serverTimestamp,
+// } from "firebase/firestore";
+// import { getFirestore } from "firebase/firestore";
+// import {db} from "../../lib/firebase";
+// import {doc, setDoc,collection, addDoc, serverTimestamp,} from "firebase/firestore";
 
 export default function GamePlay() {
     // this exists to change the length of the word if need be
@@ -15,6 +25,14 @@ export default function GamePlay() {
     const [text, setText] = useState("");
     const [pressedKey, setPressedKey] = useState("");
     const validGuess = "HOWDY"; // API call ???
+
+    // async function createRoom() {
+    //     await setDoc(doc(db, "rooms", "main"), {
+    //         currentRoundId: 1,
+    //         status: "ongoing",
+    //         winnerId: null,
+    //     });
+    // };
 
     // Enter handle logic for both
         // keyboard input and enter button pressed
