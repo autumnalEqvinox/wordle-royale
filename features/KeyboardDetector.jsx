@@ -40,7 +40,11 @@ export default function KeyboardDetector({
         if (event.repeat) 
           return;
 
+<<<<<<< HEAD
         onSubmit();        // I had to add onSubmit(); call so that word is actually submitted and updates stats.  
+=======
+        handleEnter(); // validates, submits the guess, and clears the text (same logic as the ENTER button)
+>>>>>>> origin/dev
       } 
       
       else if (
@@ -73,7 +77,11 @@ export default function KeyboardDetector({
         window.removeEventListener("keydown", handleKeyDown); //removes the listener when unmounted, avoiding leaks
         window.removeEventListener("keyup", handleKeyUp);
       }
+<<<<<<< HEAD
   }, [hasWon, setText, setPressedKey, onSubmit]);
+=======
+  }, [text, setText, setSubmitted, hasWon, handleEnter, setPressedKey]);
+>>>>>>> origin/dev
 
   return null;
 

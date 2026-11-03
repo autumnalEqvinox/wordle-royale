@@ -1,6 +1,7 @@
 "use client"
 
 import KeyboardDetector from "@/features/KeyboardDetector"
+<<<<<<< HEAD
 import PlayerPresence from "@/components/PlayerSession";
 import { useState, useEffect } from "react"
 import { Delete } from "lucide-react"
@@ -9,6 +10,14 @@ import { auth, db } from "@/app/lib/firebase";
 import { doc, updateDoc, getDoc, setDoc, increment } from "firebase/firestore";
 import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
+=======
+import { useEffect, useState } from "react"
+import { Delete } from "lucide-react"
+import { isValidWord, getRandomWord } from "@/features/validWords"
+import { doc, getDoc, setDoc } from "firebase/firestore"
+import { onAuthStateChanged } from "firebase/auth"
+import { auth, db } from "../../lib/firebase"
+>>>>>>> origin/dev
 
 export default function GamePlay() {
     // this exists to change the length of the word if need be
@@ -20,7 +29,63 @@ export default function GamePlay() {
     const [guessedText, setGuessedText] = useState<string[]>([]);
     const [text, setText] = useState("");
     const [pressedKey, setPressedKey] = useState("");
-    const validGuess = "HOWDY"; // API call ???
+    const [validGuess, setValidGuess] = useState("HOWDY"); // API call ???
+
+    // game/word in Firestore holds the word everyone is trying to guess (field: currentWord)
+    const saveWord = async (word: string) => {
+        try {
+            await setDoc(doc(db, "game", "word"), { currentWord: word }, { merge: true });
+        } catch (err) {
+            console.error("Failed to save game/word", err);
+        }
+    };
+
+    // on load, use the stored word, or pick and store one if there is none yet
+    useEffect(() => {
+        let cancelled = false;
+
+        // waits for Firebase to restore the session so Firestore sees the signed-in user
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            if (!user) return;
+            try {
+                const snap = await getDoc(doc(db, "game", "word"));
+                const saved = snap.data()?.currentWord;
+                if (cancelled) return;
+
+                if (typeof saved === "string" && isValidWord(saved)) {
+                    setValidGuess(saved);
+                } else {
+                    const word = getRandomWord();
+                    setValidGuess(word);
+                    await saveWord(word);
+                }
+            } catch (err) {
+                console.error("Failed to load game/word", err);
+            }
+        });
+
+        return () => {
+            cancelled = true;
+            unsubscribe();
+        };
+    }, []);
+
+    // after a win, wait 10 seconds, then clear the board and pick a new word
+    useEffect(() => {
+        if (!hasWon) return;
+
+        const timer = setTimeout(() => {
+            const nextWord = getRandomWord(validGuess);
+            setValidGuess(nextWord);
+            saveWord(nextWord); // store the new word in Firestore
+            setGuessedText([]);
+            setText("");
+            setIsOpen(false);
+            setHasWon(false);
+        }, 10000);
+
+        return () => clearTimeout(timer); // cancel if the page is left before the 10 seconds are up
+    }, [hasWon, validGuess]);
 
     async function initializePlayer(user: User) { // function to initialize player stats in firestore if they don't exist
         const playerRef = doc(db, "playerStats", user.uid);
@@ -84,6 +149,12 @@ export default function GamePlay() {
         };
 
         if (text.length >= MAX_LENGTH) {
+                // reject words that are not in the word list, keep the letters so the player can fix them
+                if (!isValidWord(text)) {
+                    alert("Not in word list");
+                    return;
+                }
+
                 setGuessedText((prev) => [...prev, text]);
         
                 void savePlayerGuess(text === validGuess); // added this to call the function to save the guess to Firestore - one submission function that trakcs wins and stores in firestore
@@ -2401,7 +2472,8 @@ export default function GamePlay() {
                 onClick={() => setIsOpen(false)}
             >
                 <div className="rounded-lg bg-white p-8 text-black">
-                    <p className="text-xl">CONGRATS, THE CORRENT WORD IS '{validGuess}'!</p>
+                    <p className="text-xl">CONGRATS, THE CURRENT WORD IS '{validGuess}'!</p>
+                    <p className="text-sm text-gray-600">A new word will be chosen in 10 seconds.</p>
                         <button onClick={() => setIsOpen(false)} className="bold text-red-800 text-xl hover:underline">
                             Back to Play
                         </button>
