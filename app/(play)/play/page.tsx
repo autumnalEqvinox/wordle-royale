@@ -2,12 +2,13 @@
 
 import KeyboardDetector from "@/features/KeyboardDetector"
 import PlayerPresence from "@/components/PlayerSession";
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Delete } from "lucide-react"
 import  Leaderboard  from "@/components/Leaderboard";
 import { auth, db } from "@/app/lib/firebase";
-import { doc, updateDoc, increment } from "firebase/firestore";
-
+import { doc, updateDoc, getDoc, setDoc, increment } from "firebase/firestore";
+import type { User } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function GamePlay() {
     // this exists to change the length of the word if need be
@@ -21,8 +22,32 @@ export default function GamePlay() {
     const [pressedKey, setPressedKey] = useState("");
     const validGuess = "HOWDY"; // API call ???
 
-    async function savePlayerGuess() { // function to save player guesses to firestore 
-        console.log("1. savePlayerGuess started");
+    async function initializePlayer(user: User) { // function to initialize player stats in firestore if they don't exist
+        const playerRef = doc(db, "playerStats", user.uid);
+        const playerSnapshot = await getDoc(playerRef);
+
+        if (!playerSnapshot.exists()) {  // if doc doesn't exist (if player doesn't exist), create it with base stats of 0 
+            await setDoc(playerRef, { // writes the new doc to firestore 
+                username: user.displayName || "Player",
+                wins: 0, 
+                streak: 0,
+                totalGuesses: 0
+            });
+        }
+    }
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                void initializePlayer(user).catch((error) => {
+                    console.error("error initializing player:", error);
+                }); 
+            }
+        });
+        return () => unsubscribe();
+    }, []);
+
+    async function savePlayerGuess(isCorrect: boolean) { // function to save player guesses to firestore 
 
         const user = auth.currentUser;
 
@@ -33,11 +58,10 @@ export default function GamePlay() {
         try { 
             const playerRef = doc(db, "playerStats", user.uid);
 
-            console.log("2. User UID:", user.uid);
-            console.log("3. Document path:", playerRef.path);
 
             await updateDoc(playerRef, {
-                totalGuesses: increment(1)
+                totalGuesses: increment(1),
+                ...(isCorrect ? { wins: increment(1) } : {})
             });
 
             console.log("guess saved ");
@@ -62,7 +86,7 @@ export default function GamePlay() {
         if (text.length >= MAX_LENGTH) {
                 setGuessedText((prev) => [...prev, text]);
         
-                void savePlayerGuess(); // added this to call the function to save the guess to Firestore - one submission function that trakcs wins and stores in firestore
+                void savePlayerGuess(text === validGuess); // added this to call the function to save the guess to Firestore - one submission function that trakcs wins and stores in firestore
                 
                 if (validGuess === text) {
                     setIsOpen(true); 
@@ -1539,7 +1563,7 @@ export default function GamePlay() {
                                 }
 
                 // there was an extra ENTER button logic here for some reason - I deleted it 
-                
+
                         return prev + "W";
                     });
                 }
