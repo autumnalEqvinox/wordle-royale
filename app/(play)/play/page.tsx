@@ -26,6 +26,12 @@ export default function GamePlay() {
         };
 
         if (text.length >= MAX_LENGTH) {
+                // reject words that are not in the word list, keep the letters so the player can fix them
+                if (!isValidWord(text)) {
+                    alert("Not in word list");
+                    return;
+                }
+
                 setGuessedText((prev) => [...prev, text]);
         
                 if (validGuess === text) {
