@@ -6,3 +6,13 @@ export const VALID_WORDS = new Set<string>(WORDS);
 export function isValidWord(word: string): boolean {
     return VALID_WORDS.has(word.toLowerCase());
 }
+
+// Picks a random word (uppercase, to match the game's letters), never the one passed in as `exclude`
+export function getRandomWord(exclude?: string): string {
+    const skip = exclude?.toLowerCase();
+    let word: string;
+    do {
+        word = WORDS[Math.floor(Math.random() * WORDS.length)];
+    } while (word === skip);
+    return word.toUpperCase();
+}

@@ -74,7 +74,7 @@ export default function KeyboardDetector({
         window.removeEventListener("keydown", handleKeyDown); //removes the listener when unmounted, avoiding leaks
         window.removeEventListener("keyup", handleKeyUp);
       }
-  }, [text, setText, setSubmitted]);
+  }, [text, setText, setSubmitted, hasWon, handleEnter, setPressedKey]);
 
   return null;
 
