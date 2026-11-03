@@ -3,16 +3,6 @@
 import KeyboardDetector from "@/features/KeyboardDetector"
 import { useState } from "react"
 import { Delete } from "lucide-react"
-// import {
-//     doc,
-//     setDoc,
-//     collection,
-//     addDoc,
-//     serverTimestamp,
-// } from "firebase/firestore";
-// import { getFirestore } from "firebase/firestore";
-// import {db} from "../../lib/firebase";
-// import {doc, setDoc,collection, addDoc, serverTimestamp,} from "firebase/firestore";
 
 export default function GamePlay() {
     // this exists to change the length of the word if need be
@@ -26,14 +16,115 @@ export default function GamePlay() {
     const [pressedKey, setPressedKey] = useState("");
     const validGuess = "HOWDY"; // API call ???
 
-    // async function createRoom() {
-    //     await setDoc(doc(db, "rooms", "main"), {
-    //         currentRoundId: 1,
-    //         status: "ongoing",
-    //         winnerId: null,
-    //     });
-    // };
+    // game/word in Firestore holds the word everyone is trying to guess (field: currentWord)
+    const saveWord = async (word: string) => {
+        try {
+            await setDoc(doc(db, "game", "word"), { currentWord: word }, { merge: true });
+        } catch (err) {
+            console.error("Failed to save game/word", err);
+        }
+    };
 
+    // on load, use the stored word, or pick and store one if there is none yet
+    useEffect(() => {
+        let cancelled = false;
+
+        // waits for Firebase to restore the session so Firestore sees the signed-in user
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            if (!user) return;
+            try {
+                const snap = await getDoc(doc(db, "game", "word"));
+                const saved = snap.data()?.currentWord;
+                if (cancelled) return;
+
+                if (typeof saved === "string" && isValidWord(saved)) {
+                    setValidGuess(saved);
+                } else {
+                    const word = getRandomWord();
+                    setValidGuess(word);
+                    await saveWord(word);
+                }
+            } catch (err) {
+                console.error("Failed to load game/word", err);
+            }
+        });
+
+        return () => {
+            cancelled = true;
+            unsubscribe();
+        };
+    }, []);
+
+    // after a win, wait 10 seconds, then clear the board and pick a new word
+    useEffect(() => {
+        if (!hasWon) return;
+
+        const timer = setTimeout(() => {
+            const nextWord = getRandomWord(validGuess);
+            setValidGuess(nextWord);
+            saveWord(nextWord); // store the new word in Firestore
+            setGuessedText([]);
+            setText("");
+            setIsOpen(false);
+            setHasWon(false);
+        }, 10000);
+
+        return () => clearTimeout(timer); // cancel if the page is left before the 10 seconds are up
+    }, [hasWon, validGuess]);
+
+    async function initializePlayer(user: User) { // function to initialize player stats in firestore if they don't exist
+        const playerRef = doc(db, "playerStats", user.uid);
+        const playerSnapshot = await getDoc(playerRef);
+
+        if (!playerSnapshot.exists()) {  // if doc doesn't exist (if player doesn't exist), create it with base stats of 0 
+            await setDoc(playerRef, { // writes the new doc to firestore 
+                username: user.displayName || "Player",
+                wins: 0, 
+                streak: 0,
+                totalGuesses: 0
+            });
+        }
+    }
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                void initializePlayer(user).catch((error) => {
+                    console.error("error initializing player:", error);
+                }); 
+            }
+        });
+        return () => unsubscribe();
+    }, []);
+
+    async function savePlayerGuess(isCorrect: boolean) { // function to save player guesses to firestore 
+
+        const user = auth.currentUser;
+
+        if (!user) { 
+            console.error("No user");
+            return;
+        }
+        try { 
+            const playerRef = doc(db, "playerStats", user.uid);
+
+
+            await updateDoc(playerRef, {
+                totalGuesses: increment(1),
+                ...(isCorrect ? { wins: increment(1) } : {})
+            });
+
+            console.log("guess saved ");
+
+        } catch (error) {
+            console.error("Unable to save guess:", error);
+        }
+    }
+
+
+
+    // check for 5 inputs, and submit when the text is 5, then build an array of 5 to 
+    // display the inputs
     // Enter handle logic for both
         // keyboard input and enter button pressed
     const handleEnter = () => {
@@ -43,8 +134,16 @@ export default function GamePlay() {
         };
 
         if (text.length >= MAX_LENGTH) {
+                // reject words that are not in the word list, keep the letters so the player can fix them
+                if (!isValidWord(text)) {
+                    alert("Not in word list");
+                    return;
+                }
+
                 setGuessedText((prev) => [...prev, text]);
         
+                void savePlayerGuess(text === validGuess); // added this to call the function to save the guess to Firestore - one submission function that trakcs wins and stores in firestore
+                
                 if (validGuess === text) {
                     setIsOpen(true); 
                     setHasWon(true);
@@ -723,10 +822,12 @@ export default function GamePlay() {
             hasWon={hasWon}
             text={text}
             setText={setText}
-            handleEnter={handleEnter}
-            setSubmitted={setGuessedText}
             setPressedKey={setPressedKey}
-            />
+            onSubmit={handleEnter}
+            // changed onSubmit ot handleEnter to connect keyboard to new combined functino that busmits guesses and logs to firestore + check for win 
+            // also removed redundant functions that were not needed anymore since the new function handles both keyboard and enter button submission
+        />
+            
         <main className="flex flex-col items-center p-14">
             <div className="grid grid-cols-5 grid-rows-6 gap-2">
                 {/* Row 1 */}
@@ -1516,6 +1617,8 @@ export default function GamePlay() {
                             if (hasWon || prev.length >= MAX_LENGTH) {
                                 return prev;
                                 }
+
+                // there was an extra ENTER button logic here for some reason - I deleted it 
 
                         return prev + "W";
                     });
@@ -2354,7 +2457,8 @@ export default function GamePlay() {
                 onClick={() => setIsOpen(false)}
             >
                 <div className="rounded-lg bg-white p-8 text-black">
-                    <p className="text-xl">CONGRATS, THE CORRENT WORD IS '{validGuess}'!</p>
+                    <p className="text-xl">CONGRATS, THE CURRENT WORD IS '{validGuess}'!</p>
+                    <p className="text-sm text-gray-600">A new word will be chosen in 10 seconds.</p>
                         <button onClick={() => setIsOpen(false)} className="bold text-red-800 text-xl hover:underline">
                             Back to Play
                         </button>
@@ -2365,6 +2469,8 @@ export default function GamePlay() {
         </div>
     </div>
         </main>
+        <Leaderboard/>
+        <PlayerPresence/>
         </>
     )
 }
