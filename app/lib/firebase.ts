@@ -3,6 +3,7 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth"; // added this for authentication feature 
 import {getFirestore} from "firebase/firestore";
+import { getDatabase } from "firebase/database";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -16,11 +17,15 @@ const firebaseConfig = {
   storageBucket: "wordleroyale-52773.firebasestorage.app",
   messagingSenderId: "659625531660",
   appId: "1:659625531660:web:f75a66c7d9f8e8aa2b1129",
-  measurementId: "G-8TSZLP6DXH"
+  measurementId: "G-8TSZLP6DXH",
+  databaseURL: "https://wordleroyale-52773-default-rtdb.firebaseio.com/"
 };
 
 // Initialize Firebase
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+
+// Initialize Realtime Database 
+export const rtdb = getDatabase(app);
 
 // firestore configs
 export const auth = getAuth(app);

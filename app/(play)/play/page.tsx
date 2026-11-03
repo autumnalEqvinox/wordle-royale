@@ -1,11 +1,13 @@
 "use client"
 
 import KeyboardDetector from "@/features/KeyboardDetector"
+import PlayerPresence from "@/components/PlayerSession";
 import { useState } from "react"
 import { Delete } from "lucide-react"
 import  Leaderboard  from "@/components/Leaderboard";
 import { auth, db } from "@/app/lib/firebase";
 import { doc, updateDoc, increment } from "firebase/firestore";
+
 
 export default function GamePlay() {
     const MAX_LENGTH = 5;
@@ -585,6 +587,7 @@ export default function GamePlay() {
         </div>
         </main>
         <Leaderboard/>
+        <PlayerPresence/>
         </>
     )
 }
