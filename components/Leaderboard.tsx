@@ -20,6 +20,7 @@ useEffect(() => {
     const playersCollection = collection(db, "playerStats");
 
     const unsubscribe = onSnapshot(playersCollection, (snapshot) => {
+        console.log("Leaderboard snapshot received:", snapshot.size);
         const playerData: Player[] = snapshot.docs.map((doc) => ({
             uid: doc.id,
             username: doc.data().username,

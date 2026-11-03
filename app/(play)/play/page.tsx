@@ -1,23 +1,15 @@
 "use client"
 
-import KeyboardDetector from "@/features/KeyboardDetector"
-<<<<<<< HEAD
+import KeyboardDetector from "@/features/KeyboardDetector";
 import PlayerPresence from "@/components/PlayerSession";
-import { useState, useEffect } from "react"
-import { Delete } from "lucide-react"
-import  Leaderboard  from "@/components/Leaderboard";
+import { useState, useEffect } from "react";
+import { Delete } from "lucide-react";
+import Leaderboard from "@/components/Leaderboard";
 import { auth, db } from "@/app/lib/firebase";
 import { doc, updateDoc, getDoc, setDoc, increment } from "firebase/firestore";
 import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
-=======
-import { useEffect, useState } from "react"
-import { Delete } from "lucide-react"
-import { isValidWord, getRandomWord } from "@/features/validWords"
-import { doc, getDoc, setDoc } from "firebase/firestore"
-import { onAuthStateChanged } from "firebase/auth"
-import { auth, db } from "../../lib/firebase"
->>>>>>> origin/dev
+import { isValidWord, getRandomWord } from "@/features/validWords";
 
 export default function GamePlay() {
     // this exists to change the length of the word if need be
