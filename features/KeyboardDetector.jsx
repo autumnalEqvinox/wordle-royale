@@ -41,13 +41,7 @@ export default function KeyboardDetector({
         if (event.repeat) 
           return;
 
-        handleEnter(); // used to display pop up window when enter is pressed on the keyboard
-        
-        {/* This is already handled in the play page code */}
-        // if (text.length === MAX_LENGTH) {
-        //   setSubmitted((lines) => [...lines, text]); // append the text to the submitted guesses
-        //   setText(""); // clear the text since we are on a new guess attempt
-        // }
+        handleEnter(); // validates, submits the guess, and clears the text (same logic as the ENTER button)
       } 
       
       else if (
@@ -80,7 +74,7 @@ export default function KeyboardDetector({
         window.removeEventListener("keydown", handleKeyDown); //removes the listener when unmounted, avoiding leaks
         window.removeEventListener("keyup", handleKeyUp);
       }
-  }, [text, setText, setSubmitted]);
+  }, [text, setText, setSubmitted, hasWon, handleEnter, setPressedKey]);
 
   return null;
 

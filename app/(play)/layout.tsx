@@ -238,7 +238,7 @@ function PaletteButton() {
               <X size={24} aria-hidden="true" />
             </button>
 
-            <h2>Choose a Color to differentiate yourself!</h2>
+            <h2>Choose a Color!</h2>
 
             <ColorWheel
               hue={hue}
