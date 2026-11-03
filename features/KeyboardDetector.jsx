@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 const MAX_LENGTH = 5; //Maximum number of characters allowed, like wordle
 
 export default function KeyboardDetector({
+    hasWon,
     text, 
     setText, 
     setPressedKey,
@@ -24,6 +25,9 @@ export default function KeyboardDetector({
         return;
       }
 
+      if (hasWon)
+        return;
+
       if (event.key === "Backspace") { //if there is a backspace, remove the last character
         event.preventDefault();
         setText((prev) => prev.slice(0, -1)); //slice(0, -1) returns everything except last character
@@ -31,14 +35,12 @@ export default function KeyboardDetector({
       
       else if (event.key === "Enter") { //if there is an enter, save the current word and then delete what has been inputted
         event.preventDefault();
-        onSubmit();
                 
-        // old code below - I had to add onSubmit(); call so that word is actually submitted and updates stats.  
-        
-        // if (text.length === MAX_LENGTH) {
-        //   setSubmitted((lines) => [...lines, text]); // append the text to the submitted guesses
-        //   setText(""); // clear the text since we are on a new guess attempt
-        
+        // check to see if there is a duplicate 
+        if (event.repeat) 
+          return;
+
+        onSubmit();        // I had to add onSubmit(); call so that word is actually submitted and updates stats.  
       } 
       
       else if (
@@ -71,7 +73,7 @@ export default function KeyboardDetector({
         window.removeEventListener("keydown", handleKeyDown); //removes the listener when unmounted, avoiding leaks
         window.removeEventListener("keyup", handleKeyUp);
       }
-  }, [setText, setPressedKey, onSubmit]);
+  }, [hasWon, setText, setPressedKey, onSubmit]);
 
   return null;
 
