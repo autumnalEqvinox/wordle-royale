@@ -44,7 +44,7 @@ export default function GamePlay() {
 
     const [userId, setUserId] = useState<string | null>(null);
 
-    const [currentRoundId, setCurrentRoundId] = useState<number | 0>(0);
+    const [currentRoundId, setCurrentRoundId] = useState<number | null>(null);
 
     // three states - gray, green, or yellow
     // const word_state = ["gray", "gray", "gray", "gray", "gray"];
@@ -93,55 +93,14 @@ export default function GamePlay() {
             // const nextRoomId = currentRoundId + 1;
             // const nextRoomRef = doc(db, "rooms", String(nextRoomId));
 
-            useEffect(() => {
-    if (!hasWon) return;
+            setGuessedText([]);
+            setText("");
+            setIsOpen(false);
+            setHasWon(false);
+        }, 10000);
 
-    if (currentRoundId === null) 
-        return;
-
-    const timer = setTimeout(() => {
-        const nextWord = getRandomWord(validGuess);
-        setValidGuess(nextWord);
-
-        // restart the guesses for a new round
-
-        // if (currentRoundId == null || typeof currentRoundId !== "number") return;
-        // // gets the nextRoomId calculated
-        // const nextRoomId = currentRoundId + 1;
-        // const nextRoomRef = doc(db, "rooms", String(nextRoomId));
-
-        // ADDED: Update the shared round and word in Firestore
-        void runTransaction(db, async (transaction) => {
-            const roomRef = doc(db, "rooms", "main");
-            const wordRef = doc(db, "game", "word");
-
-            const roomSnap = await transaction.get(roomRef);
-            const wordSnap = await transaction.get(wordRef);
-
-            // Only advance if this is still the active round
-            if (roomSnap.data()?.currentRoomId !== currentRoundId) {
-                return;
-            }
-
-            transaction.update(roomRef, {
-                currentRoomId: currentRoundId + 1
-            });
-
-            transaction.update(wordRef, {
-                currentWord: nextWord
-            });
-        }).catch((error) => {
-            console.error("Failed to advance round:", error);
-        });
-
-        setGuessedText([]);
-        setText("");
-        setIsOpen(false);
-        setHasWon(false);
-    }, 10000);
-
-    return () => clearTimeout(timer); // cancel if the page is left before the 10 seconds are up
-}, [hasWon, validGuess, currentRoundId]);
+      return () => clearTimeout(timer); // cancel if the page is left before the 10 seconds are up
+    }, [hasWon, validGuess, currentRoundId]);
 
 
     async function initializePlayer(user: User) { // function to initialize player stats in firestore if they don't exist
@@ -170,6 +129,7 @@ export default function GamePlay() {
         });
         return () => unsubscribe();
     }, []);
+
 
     useEffect(() => {
         if (!userId || currentRoundId === null) 
@@ -207,6 +167,7 @@ export default function GamePlay() {
         }, [userId, currentRoundId]); // if userId o currentRoundId changes/resets, 
             // then reset
 
+
     useEffect(() => {
         if (!userId)
             return;
@@ -214,7 +175,7 @@ export default function GamePlay() {
         const unsubscribe = onSnapshot(
             doc(db, "rooms", "main"), 
             (snapshot) => {
-                const roundId = snapshot.data()?.currentRoomId;
+                const roundId = snapshot.data()?.currentRoundId;
 
                 if (typeof roundId === "number") {
                     setCurrentRoundId(roundId);
@@ -233,6 +194,8 @@ export default function GamePlay() {
 
     // function to save player guesses to firestore 
     async function savePlayerGuess(isCorrect: boolean) { 
+        if (currentRoundId === null)
+            return;
 
         const user = auth.currentUser;
 
@@ -261,7 +224,6 @@ export default function GamePlay() {
             console.error("Unable to save guess:", error);
         }
     }
-
 
     // enter logic to stop guesses from be entered
     const handleEnter = () => {
