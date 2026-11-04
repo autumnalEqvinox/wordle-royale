@@ -1,4 +1,5 @@
 LEADERBOARD + PLAYER STATS PAGE DOCUMENTATION
+
 LEADERBAORD:
 <img width="1321" height="567" alt="image" src="https://github.com/user-attachments/assets/1c49dc8f-9512-4019-8f44-fb5838808aaa" />
 PLAYER STATS PAGE: 
