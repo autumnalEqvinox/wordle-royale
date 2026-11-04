@@ -17,6 +17,7 @@ export default function GamePlay() {
     const [hasWon, setHasWon] = useState(false);
 
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [secondsLeft, setSecondsLeft] = useState<number>(10); // visible countdown shown in the win popup
 
     const [guessedText, setGuessedText] = useState<string[]>([]);
     const [text, setText] = useState("");
@@ -67,6 +68,12 @@ export default function GamePlay() {
     useEffect(() => {
         if (!hasWon) return;
 
+        setSecondsLeft(10);
+        // tick the visible countdown once per second
+        const ticker = setInterval(() => {
+            setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0));
+        }, 1000);
+
         const timer = setTimeout(() => {
             const nextWord = getRandomWord(validGuess);
             setValidGuess(nextWord);
@@ -77,7 +84,10 @@ export default function GamePlay() {
             setHasWon(false);
         }, 10000);
 
-        return () => clearTimeout(timer); // cancel if the page is left before the 10 seconds are up
+        return () => {
+            clearTimeout(timer); // cancel if the page is left before the 10 seconds are up
+            clearInterval(ticker);
+        };
     }, [hasWon, validGuess]);
 
     async function initializePlayer(user: User) { // function to initialize player stats in firestore if they don't exist
@@ -875,6 +885,12 @@ export default function GamePlay() {
         />
             
         <main className="flex flex-col items-center p-14">
+            {/* Countdown shown on the page itself while waiting for the next word */}
+            {hasWon && (
+                <p className="mb-4 text-xl font-bold">
+                    New word in {secondsLeft} {secondsLeft === 1 ? "second" : "seconds"}...
+                </p>
+            )}
             <div className="grid grid-cols-5 grid-rows-6 gap-2">
                 {/* Row 1 */}
 
@@ -2504,7 +2520,7 @@ export default function GamePlay() {
             >
                 <div className="rounded-lg bg-white p-8 text-black">
                     <p className="text-xl">CONGRATS, THE CURRENT WORD IS '{validGuess}'!</p>
-                    <p className="text-sm text-gray-600">A new word will be chosen in 10 seconds.</p>
+                    <p className="text-sm text-gray-600">A new word will be chosen in {secondsLeft} {secondsLeft === 1 ? "second" : "seconds"}.</p>
                         <button onClick={() => setIsOpen(false)} className="bold text-red-800 text-xl hover:underline">
                             Back to Play
                         </button>
