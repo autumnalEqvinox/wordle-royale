@@ -1,6 +1,8 @@
 LEADERBOARD + PLAYER STATS PAGE DOCUMENTATION
-LEADERBAORD: <img width="1321" height="567" alt="image" src="https://github.com/user-attachments/assets/1c49dc8f-9512-4019-8f44-fb5838808aaa" />
-PLAYER STATS PAGE: <img width="740" height="607" alt="image" src="https://github.com/user-attachments/assets/7c329f7c-3753-4150-8178-02effe32c202" />
+LEADERBAORD:
+<img width="1321" height="567" alt="image" src="https://github.com/user-attachments/assets/1c49dc8f-9512-4019-8f44-fb5838808aaa" />
+PLAYER STATS PAGE: 
+<img width="740" height="607" alt="image" src="https://github.com/user-attachments/assets/7c329f7c-3753-4150-8178-02effe32c202" />
 
 The leaderboard displays the rank of users, their usernames, total wins, and total guesses. It also displays the current number of players that are playing. The playerstats page displays those same statistics with the addition of total games and a win rate. These statistics are stored in Firestore and uses Realtime Database to keep track of user sessions. Users should be able to view the leaderboard in play page with live updated statistics and the navigate to their own personal statistics page. 
 
