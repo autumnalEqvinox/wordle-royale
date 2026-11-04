@@ -2,7 +2,7 @@
 
 import KeyboardDetector from "@/features/KeyboardDetector";
 import PlayerPresence from "@/components/PlayerSession";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Delete } from "lucide-react";
 import Leaderboard from "@/components/Leaderboard";
 import { auth, db } from "@/app/lib/firebase";
@@ -15,7 +15,6 @@ import {
     query,
     increment, 
     collection, 
-    runTransaction,
     serverTimestamp, 
     orderBy, 
     onSnapshot, 
@@ -46,103 +45,202 @@ export default function GamePlay() {
 
     const [currentRoundId, setCurrentRoundId] = useState<number | 0>(0);
 
+    const [roomLoaded, setRoomLoaded] = useState(false);
+    const [completedAtMilli, setCompletedAtMilli] = useState<number | null>(null);
+    const [winnerId, setWinnerId] = useState<string | null>(null);
+    
+    const submittingGuess = useRef(false);
+
     // three states - gray, green, or yellow
     // const word_state = ["gray", "gray", "gray", "gray", "gray"];
-
+    
     // count how many letters are in the word and then set the failsafe to display for yellow
-
+    
     // on load, use the stored word, or pick and store one if there is none yet
+    // game/word
+    // useEffect(() => {
+        //     if (!userId) return;
+
+    //     const unsubscribe = onSnapshot(
+    //         doc(db, "game", "word"),
+    //         (snapshot) => {
+    //             const saved = snapshot.data()?.currentWord;
+
+    //             if (typeof saved === "string" && isValidWord(saved)) {
+    //                 setValidGuess(saved);
+    //             } else {
+    //                 console.error("No valid word in Firestore");
+    //             }
+    //         },
+    //         (error) => {
+    //             console.error("Failed to load game/word", error);
+    //         }
+    //     );
+
+    //     return () => unsubscribe();
+    // }, [userId]);
+    
+
+    // rooms/main
+        // useEffect(() => {
+        //     if (!userId)
+        //         return;
+
+        //     const unsubscribe = onSnapshot(
+        //         doc(db, "rooms", "main"), 
+        //         (snapshot) => {
+        //             const roundId = snapshot.data()?.currentRoomId;
+
+        //             if (typeof roundId === "number") {
+        //                 setCurrentRoundId(roundId);
+        //             }
+        //         },
+        //         (error) => {
+        //             console.error("Error loading current round:", error);
+        //         }
+        //     );
+
+        //     return unsubscribe;
+        //     // two things will happen. It will check the doc and see if the 
+        //     // round number matches the currentRoomId. If they do, set currentRoomId to the roundId
+        //     //, otherwise, throw an error for the console log just for developer side to see
+        // }, [userId]);
+    
+    // useEffect(() => {
+        //     if (!hasWon) return;
+
+    //     if (currentRoundId === null) 
+    //         return;
+    
+    //     const timer = setTimeout(() => {
+        //         const nextWord = getRandomWord(validGuess);
+        //         setValidGuess(nextWord);
+        
+        // restart the guesses for a new round
+        
+        // if (currentRoundId == null || typeof currentRoundId !== "number") return;
+        // // gets the nextRoomId calculated
+        // const nextRoomId = currentRoundId + 1;
+        // const nextRoomRef = doc(db, "rooms", String(nextRoomId));
+        
+        // create a function that deletes the guesses collection once the round is over 
+        //   (clears for the next round)
+        // const delGuesses = async () => {
+            //     // if (!hasWon) return;
+            //     // grab the current list of guesses
+    //     const curGuessesRef = collection(db, "rooms", "main", "guesses");
+        
+    //     // grab the contents for all guesses to clear/delete
+    //     const currentGuessesList = await getDocs(curGuessesRef);
+
+    //     // loop over every document in the collection of guesses
+    //     for (const document of currentGuessesList.docs) {
+    //         // delete the document
+    //         await deleteDoc(document.ref);
+    //     }
+    // }
+
+    {/* Central listener for both
+        game/word
+        rooms/main
+     */}
+    
     useEffect(() => {
-        if (!userId) return;
+        setRoomLoaded(false);
+
+        if(!userId)
+            return;
 
         const unsubscribe = onSnapshot(
-            doc(db, "game", "word"),
+            doc(db, "rooms", "main"), 
             (snapshot) => {
-                const saved = snapshot.data()?.currentWord;
+                const room = snapshot.data();
 
-                if (typeof saved === "string" && isValidWord(saved)) {
-                    setValidGuess(saved);
-                } else {
-                    console.error("No valid word in Firestore");
+                if (
+                    // if these things are not valid, throw an erorr
+                    !room || typeof room.currentRoomId !== "number" 
+                    || typeof room.currentWord !== "string"
+
+                    // if the valid_word is not the same as the current word everyone is going for, 
+                    // throw an error
+                    || !isValidWord(room.currentWord) 
+
+                    // the room status needs to be either playing or completed
+                    || !["playing", "completed"].includes(room.status)
+                ) {
+                    setRoomLoaded(false);
+                    console.error("missing or invalid room/main data");
+                    return;
                 }
+
+                // match the current room id to this room's id (since there is one)
+                setCurrentRoundId(room.currentRoomId);
+
+                // set the valid guess to the word in game/word
+                setValidGuess(room.currentWord);
+
+                // set the winner as whoever won, null if no winner yet
+                setWinnerId(room.winnerId ?? null);
+
+                // if there is a winner, store status as completed
+                const completed = room.status === "completed";
+            
+
+                // if there is a winner, show it 
+                // otherwise, keep going
+                setHasWon(completed);
+
+                // pop up the window if there is a winner, 
+                // don't if not
+                setIsOpen(completed);
+                
+                // show the guess by milliseconds
+                setCompletedAtMilli(
+                    room.completedAt?.toMillis() ?? null
+                );
+
+                setRoomLoaded(true);
             },
             (error) => {
-                console.error("Failed to load game/word", error);
+                setRoomLoaded(false);
+                console.error("error loading room:", error);
             }
-        );
+        ); 
 
-        return () => unsubscribe();
+        return unsubscribe;
     }, [userId]);
 
-    
-    // after a win, wait 10 seconds, then clear the board and pick a new word
+
+
+    // after a win, wait 10 seconds, then clear the board and 
+    // pick a new word
     useEffect(() => {
         if (!hasWon) return;
 
         if (currentRoundId === null) 
             return;
 
-        const timer = setTimeout(() => {
+        const timer = setTimeout(async () => {
+            // // grab and delete all the guesses ("refresh the database")
+            // await delGuesses();
+
             const nextWord = getRandomWord(validGuess);
             setValidGuess(nextWord);
-            
-            // restart the guesses for a new round
-            
-            // if (currentRoundId == null || typeof currentRoundId !== "number") return;
-            // // gets the nextRoomId calculated
-            // const nextRoomId = currentRoundId + 1;
-            // const nextRoomRef = doc(db, "rooms", String(nextRoomId));
 
-            useEffect(() => {
-    if (!hasWon) return;
+            setGuessedText([]);
+            setText("");
+            setIsOpen(false);
+            setHasWon(false);
 
-    if (currentRoundId === null) 
-        return;
 
-    const timer = setTimeout(() => {
-        const nextWord = getRandomWord(validGuess);
-        setValidGuess(nextWord);
 
-        // restart the guesses for a new round
+        }, 10000);
 
-        // if (currentRoundId == null || typeof currentRoundId !== "number") return;
-        // // gets the nextRoomId calculated
-        // const nextRoomId = currentRoundId + 1;
-        // const nextRoomRef = doc(db, "rooms", String(nextRoomId));
+        return () => clearTimeout(timer); // cancel if the page is left before the 10 seconds are up
+    }, [hasWon, validGuess, currentRoundId]);
 
-        // ADDED: Update the shared round and word in Firestore
-        void runTransaction(db, async (transaction) => {
-            const roomRef = doc(db, "rooms", "main");
-            const wordRef = doc(db, "game", "word");
 
-            const roomSnap = await transaction.get(roomRef);
-            const wordSnap = await transaction.get(wordRef);
-
-            // Only advance if this is still the active round
-            if (roomSnap.data()?.currentRoomId !== currentRoundId) {
-                return;
-            }
-
-            transaction.update(roomRef, {
-                currentRoomId: currentRoundId + 1
-            });
-
-            transaction.update(wordRef, {
-                currentWord: nextWord
-            });
-        }).catch((error) => {
-            console.error("Failed to advance round:", error);
-        });
-
-        setGuessedText([]);
-        setText("");
-        setIsOpen(false);
-        setHasWon(false);
-    }, 10000);
-
-    return () => clearTimeout(timer); // cancel if the page is left before the 10 seconds are up
-}, [hasWon, validGuess, currentRoundId]);
-
+    {/* Initialize the player if they don't exist */}
 
     async function initializePlayer(user: User) { // function to initialize player stats in firestore if they don't exist
         const playerRef = doc(db, "playerStats", user.uid);
@@ -152,8 +250,10 @@ export default function GamePlay() {
             await setDoc(playerRef, { // writes the new doc to firestore 
                 username: user.displayName || "Player",
                 wins: 0, 
-                streak: 0,
-                totalGuesses: 0
+                totalGuesses: 0,
+                totalGames: 0,
+                // streak: 0,
+                lastPlayedRoundId: null
             });
         }
     }
@@ -171,7 +271,11 @@ export default function GamePlay() {
         return () => unsubscribe();
     }, []);
 
+    // guesses listener
     useEffect(() => {
+        setGuessedText([]);
+        setText("");
+
         if (!userId || currentRoundId === null) 
             return;
 
@@ -204,63 +308,63 @@ export default function GamePlay() {
             }
         );
             return unsubscribe;
-        }, [userId, currentRoundId]); // if userId o currentRoundId changes/resets, 
+        }, [userId, currentRoundId]); // if userId or currentRoundId changes/resets, 
             // then reset
 
-    useEffect(() => {
-        if (!userId)
-            return;
+    
+    {/* Saved Player Guess */}
+    const user = auth.currentUser;
 
-        const unsubscribe = onSnapshot(
-            doc(db, "rooms", "main"), 
-            (snapshot) => {
-                const roundId = snapshot.data()?.currentRoomId;
-
-                if (typeof roundId === "number") {
-                    setCurrentRoundId(roundId);
-                }
-            },
-            (error) => {
-                console.error("Error loading current round:", error);
-            }
-        );
-
-        return unsubscribe;
-        // two things will happen. It will check the doc and see if the 
-        // round number matches the currentRoomId. If they do, set currentRoomId to the roundId
-        //, otherwise, throw an error for the console log just for developer side to see
-    }, [userId]);
-
-    // function to save player guesses to firestore 
-    async function savePlayerGuess(isCorrect: boolean) { 
-
-        const user = auth.currentUser;
-
-        if (!user) { 
-            console.error("No user");
-            return;
-        }
-        try { 
-            const playerRef = doc(db, "playerStats", user.uid);
-
-            await addDoc(collection(db, "rooms", "main", "guesses"), {
-                word: text,
-                userID: user.uid,
-                roundId: currentRoundId,
-                submittedAt: serverTimestamp()
-            })
-
-            await updateDoc(playerRef, {
-                totalGuesses: increment(1),
-                ...(isCorrect ? { wins: increment(1) } : {})
-            });
-
-            console.log("guess saved ");
-
-        } catch (error) {
-            console.error("Unable to save guess:", error);
-        }
+    if (!user || currentRoundId === null) {
+        throw new Error("the player or the round is not ready yet.");
     }
+
+    // grab the player's documents
+    await initializePlayer(user);
+
+    const submittedRoundId = currentRoundId;
+    const roomRef = doc(db, "rooms", "main");
+    const playerRef = doc(db, "playerStats", user.uid);
+
+    const guessRefSheet = doc(
+        collection(db, "rooms", "main", "guesses")
+    );
+
+    // just gonna come back and work on this, it's too much and not enough time
+    
+
+
+    // {/* Old code for this */}
+    // function to save player guesses to firestore 
+    // async function savePlayerGuess(isCorrect: boolean) { 
+
+    //     const user = auth.currentUser;
+
+    //     if (!user) { 
+    //         console.error("No user");
+    //         return;
+    //     }
+    //     try { 
+    //         const playerRef = doc(db, "playerStats", user.uid);
+
+    //         await addDoc(collection(db, "rooms", "main", "guesses"), {
+    //             word: text,
+    //             userID: user.uid,
+    //             roundId: currentRoundId,
+    //             submittedAt: serverTimestamp()
+    //         })
+
+    //         await updateDoc(playerRef, {
+    //             totalGuesses: increment(1),
+    //             ...(isCorrect ? { wins: increment(1) } : {})
+    //         });
+
+    //         console.log("guess saved ");
+
+    //     } catch (error) {
+    //         console.error("Unable to save guess:", error);
+    //     }
+    // }
 
 
     // enter logic to stop guesses from be entered
