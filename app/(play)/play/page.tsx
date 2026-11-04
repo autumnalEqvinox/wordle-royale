@@ -46,7 +46,7 @@ export default function GamePlay() {
 
     const [userId, setUserId] = useState<string | null>(null);
 
-    const [currentRoundId, setCurrentRoundId] = useState<number | null>(null);
+    const [curRoundId, setCurRoundId] = useState<number | null>(null);
 
     // three states - gray, green, or yellow
     // const word_state = ["gray", "gray", "gray", "gray", "gray"];
@@ -56,42 +56,48 @@ export default function GamePlay() {
     // game/word in Firestore holds the word everyone is trying to guess (field: currentWord) 
     // generates random UID for new round (field: roundId) whenever saveWord() is called to store a new word in Firestore
     const saveWord = async (word: string) => {
-        try {
-            await setDoc(doc(db, "game", "word"), { currentWord: word, roundId: crypto.randomUUID() }, { merge: true }); // crypto.randomUUID() generates unique ID whenever saveWord() creates new round 
-        } catch (err) {
-            console.error("Failed to save game/word", err);
-        }
-    };
+    try {
+        await setDoc(
+            doc(db, "game", "word"),
+            {
+                currentWord: word,
+                roundId: crypto.randomUUID()
+            },
+            { merge: true }
+        );
+    } catch (err) {
+        console.error("Failed to save game/word", err);
+    }
+};
+
 
     // on load, use the stored word, or pick and store one if there is none yet
     useEffect(() => {
-        if (!userId) return;
+    if (!userId) return;
 
-        const unsubscribe = onSnapshot(
-            doc(db, "game", "word"),
-            (snapshot) => {
-                const saved = snapshot.data()?.currentWord;
+    const unsubscribe = onSnapshot(
+        doc(db, "game", "word"),
+        (snapshot) => {
+            const saved = snapshot.data()?.currentWord;
 
-                if (typeof saved === "string" && isValidWord(saved)) {
-                    setValidGuess(saved);
-                } else {
-                    console.error("No valid word in Firestore");
-                }
-            },
-            (error) => {
-                console.error("Failed to load game/word", error);
+            if (typeof saved === "string" && isValidWord(saved)) {
+                setValidGuess(saved);
+            } else {
+                console.error("No valid word in Firestore");
             }
-        );
-
+        },
+        (error) => {
+            console.error("Failed to load game/word", error);
+        }
+    );
         return () => unsubscribe();
     }, [userId]);
 
-    
     // after a win, wait 10 seconds, then clear the board and pick a new word
     useEffect(() => {
         if (!hasWon) return;
 
-        if (currentRoundId === null) 
+        if (curRoundId === null) 
             return;
 
         setSecondsLeft(10);
@@ -103,12 +109,13 @@ export default function GamePlay() {
         const timer = setTimeout(() => {
             const nextWord = getRandomWord(validGuess);
             setValidGuess(nextWord);
+            saveWord(nextWord);
             
             // restart the guesses for a new round
             
-            // if (currentRoundId == null || typeof currentRoundId !== "number") return;
+            // if (curRoundId == null || typeof curRoundId !== "number") return;
             // // gets the nextRoomId calculated
-            // const nextRoomId = currentRoundId + 1;
+            // const nextRoomId = curRoundId + 1;
             // const nextRoomRef = doc(db, "rooms", String(nextRoomId));
 
             setGuessedText([]);
@@ -121,7 +128,7 @@ export default function GamePlay() {
             clearTimeout(timer); // cancel if the page is left before the 10 seconds are up
             clearInterval(ticker);
         };
-    }, [hasWon, validGuess]);
+    }, [hasWon, validGuess, curRoundId]);
 
     async function initializePlayer(user: User) { // function to initialize player stats in firestore if they don't exist
         const playerRef = doc(db, "playerStats", user.uid);
@@ -152,11 +159,11 @@ export default function GamePlay() {
     }, []);
 
     useEffect(() => {
-        if (!userId || currentRoundId === null) return;
+        if (!userId || curRoundId === null) return;
 
         const queryOfGuesses = query(
             collection(db, "rooms", "main", "guesses"),
-            where("roundId", "==", currentRoundId),
+            where("roundId", "==", curRoundId),
             orderBy("submittedAt", "asc")
         );
 
@@ -175,7 +182,8 @@ export default function GamePlay() {
         );
 
         return unsubscribe;
-    }, [userId, currentRoundId]);
+    }, [userId, curRoundId]);
+
 
     useEffect(() => {
         if (!userId) return;
@@ -183,12 +191,12 @@ export default function GamePlay() {
         const unsubscribe = onSnapshot(
             doc(db, "rooms", "main"),
             (snapshot) => {
-                const roundId = snapshot.data()?.currentRoundId;
+                const roundId = snapshot.data()?.currentRoundID;
 
                 if (typeof roundId === "number") {
-                    setCurrentRoundId(roundId);
+                    setCurRoundId(roundId);
                 } else {
-                    setCurrentRoundId(null);
+                    setCurRoundId(null);
                     console.error(
                         "rooms/main is missing a numeric currentRoundId"
                     );
@@ -211,7 +219,7 @@ export default function GamePlay() {
             return;
         }
 
-        if (currentRoundId === null) {
+        if (curRoundId === null) {
             console.error("Current round has not loaded");
             return;
         }
@@ -222,7 +230,7 @@ export default function GamePlay() {
             await addDoc(collection(db, "rooms", "main", "guesses"), {
                 word: text,
                 userID: user.uid,
-                roundId: currentRoundId,
+                roundId: curRoundId,
                 submittedAt: serverTimestamp()
             });
 
