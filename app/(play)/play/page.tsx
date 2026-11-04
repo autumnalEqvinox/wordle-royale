@@ -17,7 +17,8 @@ import {
     collection, 
     serverTimestamp, 
     orderBy, 
-    onSnapshot } from "firebase/firestore";
+    onSnapshot, 
+    where } from "firebase/firestore";
 import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { isValidWord, getRandomWord } from "@/features/validWords";
@@ -40,6 +41,10 @@ export default function GamePlay() {
     const [pressedKey, setPressedKey] = useState("");
     const [validGuess, setValidGuess] = useState("HOWDY"); // API call ???
 
+    const [userId, setUserId] = useState<string | null>(null);
+
+    const [currentRoundId, setCurrentRoundId] = useState<number | 0>(0);
+
     // three states - gray, green, or yellow
     // const word_state = ["gray", "gray", "gray", "gray", "gray"];
 
@@ -47,43 +52,46 @@ export default function GamePlay() {
 
     // on load, use the stored word, or pick and store one if there is none yet
     useEffect(() => {
-        let cancelled = false;
+        if (!userId) return;
 
-        // waits for Firebase to restore the session so Firestore sees the signed-in user
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            if (!user) return;
-            try {
-                const snap = await getDoc(doc(db, "game", "word"));
-                const saved = snap.data()?.currentWord;
-                if (cancelled) return;
+        const unsubscribe = onSnapshot(
+            doc(db, "game", "word"),
+            (snapshot) => {
+                const saved = snapshot.data()?.currentWord;
 
                 if (typeof saved === "string" && isValidWord(saved)) {
                     setValidGuess(saved);
                 } else {
-                    const word = getRandomWord();
-                    setValidGuess(word);
-                    // await saveWord(word);
+                    console.error("No valid word in Firestore");
                 }
-            } catch (err) {
-                console.error("Failed to load game/word", err);
+            },
+            (error) => {
+                console.error("Failed to load game/word", error);
             }
-        });
+        );
 
-        return () => {
-            cancelled = true;
-            unsubscribe();
-        };
-    }, []);
+        return () => unsubscribe();
+    }, [userId]);
 
     
     // after a win, wait 10 seconds, then clear the board and pick a new word
     useEffect(() => {
         if (!hasWon) return;
 
+        if (currentRoundId === null) 
+            return;
+
         const timer = setTimeout(() => {
             const nextWord = getRandomWord(validGuess);
             setValidGuess(nextWord);
-            // saveWord(nextWord); // store the new word in Firestore
+            
+            // restart the guesses for a new round
+            
+            // if (currentRoundId == null || typeof currentRoundId !== "number") return;
+            // // gets the nextRoomId calculated
+            // const nextRoomId = currentRoundId + 1;
+            // const nextRoomRef = doc(db, "rooms", String(nextRoomId));
+
             setGuessedText([]);
             setText("");
             setIsOpen(false);
@@ -109,6 +117,8 @@ export default function GamePlay() {
     
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
+            setUserId(user?.uid ?? null)
+            
             if (user) {
                 void initializePlayer(user).catch((error) => {
                     console.error("error initializing player:", error);
@@ -119,19 +129,65 @@ export default function GamePlay() {
     }, []);
 
     useEffect(() => {
+        if (!userId || currentRoundId === null) 
+            return;
+
         // query grabs the collection of guesses and uses a where clause to 
         // sort the data
         const queryOfGuesses = query(
             // grab the collection of guesses
             collection(db, "rooms", "main", "guesses"), 
+            
             // this is our where clause that determines how to query the information
-            orderBy("submittedBy", "asc") // sort by most recent guesses so it is fresh
+            where("roundId", "==", currentRoundId),
+            
+            orderBy("submittedAt", "asc") // sort by most recent guesses so it is fresh
         );
 
+        // used ai for this part
+        // this uses the userId to keep track of the data for the guesses and displays them for the user to see
+        const unsubscribe = onSnapshot(
+            queryOfGuesses, 
+            (snapshot) => {
+                setGuessedText(
+                    snapshot.docs.map(
+                        (document) => document.data().word as string
+                    )
+                );
+            },
+            
+            (error) => {
+                console.error("Error with loading guesses:", error)
+            }
+        );
+            return unsubscribe;
+        }, [userId, currentRoundId]); // if userId o currentRoundId changes/resets, 
+            // then reset
 
-    })
+    useEffect(() => {
+        if (!userId)
+            return;
 
-    
+        const unsubscribe = onSnapshot(
+            doc(db, "rooms", "main"), 
+            (snapshot) => {
+                const roundId = snapshot.data()?.currentRoomId;
+
+                if (typeof roundId === "number") {
+                    setCurrentRoundId(roundId);
+                }
+            },
+            (error) => {
+                console.error("Error loading current round:", error);
+            }
+        );
+
+        return unsubscribe;
+        // two things will happen. It will check the doc and see if the 
+        // round number matches the currentRoomId. If they do, set currentRoomId to the roundId
+        //, otherwise, throw an error for the console log just for developer side to see
+    }, [userId]);
+
     // function to save player guesses to firestore 
     async function savePlayerGuess(isCorrect: boolean) { 
 
@@ -147,6 +203,7 @@ export default function GamePlay() {
             await addDoc(collection(db, "rooms", "main", "guesses"), {
                 word: text,
                 userID: user.uid,
+                roundId: currentRoundId,
                 submittedAt: serverTimestamp()
             })
 
