@@ -12,9 +12,12 @@ import {
     getDoc, 
     setDoc, 
     addDoc, 
+    query,
     increment, 
     collection, 
-    serverTimestamp } from "firebase/firestore";
+    serverTimestamp, 
+    orderBy, 
+    onSnapshot } from "firebase/firestore";
 import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { isValidWord, getRandomWord } from "@/features/validWords";
@@ -114,10 +117,20 @@ export default function GamePlay() {
         });
         return () => unsubscribe();
     }, []);
-    
-    // useEffect(() => {
-    //     const playerRef = doc(db, "playerStats", User.uid);
-    // })
+
+    useEffect(() => {
+        // query grabs the collection of guesses and uses a where clause to 
+        // sort the data
+        const queryOfGuesses = query(
+            // grab the collection of guesses
+            collection(db, "rooms", "main", "guesses"), 
+            // this is our where clause that determines how to query the information
+            orderBy("submittedBy", "asc") // sort by most recent guesses so it is fresh
+        );
+
+
+    })
+
     
     // function to save player guesses to firestore 
     async function savePlayerGuess(isCorrect: boolean) { 
@@ -157,9 +170,13 @@ export default function GamePlay() {
             return;
         };
 
+        if (text.length === MAX_LENGTH && text === guessedText[guessedText.length-1]) {
+            alert("No duplicates.");
+            return;
+        }
+
         if (text.length >= MAX_LENGTH) {
                 
-
                 // reject words that are not in the word list, keep the letters so the player can fix them
                 if (!isValidWord(text)) {
                     alert("Not in word list");
