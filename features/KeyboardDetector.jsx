@@ -8,9 +8,8 @@ export default function KeyboardDetector({
     hasWon,
     text, 
     setText, 
-    handleEnter,
-    setSubmitted,
     setPressedKey,
+    onSubmit,
   }) {
   // // const [text, setText] = useState(""); //where the currently typed text is stored
   const [lastKey, setLastKey] = useState(null); //shows what the last typed key is, for testing purposes
@@ -36,12 +35,12 @@ export default function KeyboardDetector({
       
       else if (event.key === "Enter") { //if there is an enter, save the current word and then delete what has been inputted
         event.preventDefault();
-
+                
         // check to see if there is a duplicate 
         if (event.repeat) 
           return;
 
-        handleEnter(); // validates, submits the guess, and clears the text (same logic as the ENTER button)
+        onSubmit();        // I had to add onSubmit(); call so that word is actually submitted and updates stats.  
       } 
       
       else if (
@@ -74,7 +73,7 @@ export default function KeyboardDetector({
         window.removeEventListener("keydown", handleKeyDown); //removes the listener when unmounted, avoiding leaks
         window.removeEventListener("keyup", handleKeyUp);
       }
-  }, [text, setText, setSubmitted, hasWon, handleEnter, setPressedKey]);
+  }, [hasWon, setText, setPressedKey, onSubmit]);
 
   return null;
 

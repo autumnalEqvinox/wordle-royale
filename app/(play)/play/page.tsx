@@ -1,12 +1,15 @@
 "use client"
 
-import KeyboardDetector from "@/features/KeyboardDetector"
-import { useEffect, useState } from "react"
-import { Delete } from "lucide-react"
-import { isValidWord, getRandomWord } from "@/features/validWords"
-import { doc, getDoc, setDoc } from "firebase/firestore"
-import { onAuthStateChanged } from "firebase/auth"
-import { auth, db } from "../../lib/firebase"
+import KeyboardDetector from "@/features/KeyboardDetector";
+import PlayerPresence from "@/components/PlayerSession";
+import { useState, useEffect } from "react";
+import { Delete } from "lucide-react";
+import Leaderboard from "@/components/Leaderboard";
+import { auth, db } from "@/app/lib/firebase";
+import { doc, updateDoc, getDoc, setDoc, increment, runTransaction } from "firebase/firestore";
+import type { User } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
+import { isValidWord, getRandomWord } from "@/features/validWords";
 
 export default function GamePlay() {
     // this exists to change the length of the word if need be
@@ -14,16 +17,18 @@ export default function GamePlay() {
     const [hasWon, setHasWon] = useState(false);
 
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [secondsLeft, setSecondsLeft] = useState<number>(10); // visible countdown shown in the win popup
 
     const [guessedText, setGuessedText] = useState<string[]>([]);
     const [text, setText] = useState("");
     const [pressedKey, setPressedKey] = useState("");
     const [validGuess, setValidGuess] = useState("HOWDY"); // API call ???
 
-    // game/word in Firestore holds the word everyone is trying to guess (field: currentWord)
+    // game/word in Firestore holds the word everyone is trying to guess (field: currentWord) 
+    // generates random UID for new round (field: roundId) whenever saveWord() is called to store a new word in Firestore
     const saveWord = async (word: string) => {
         try {
-            await setDoc(doc(db, "game", "word"), { currentWord: word }, { merge: true });
+            await setDoc(doc(db, "game", "word"), { currentWord: word, roundId: crypto.randomUUID() }, { merge: true }); // crypto.randomUUID() generates unique ID whenever saveWord() creates new round 
         } catch (err) {
             console.error("Failed to save game/word", err);
         }
@@ -63,6 +68,12 @@ export default function GamePlay() {
     useEffect(() => {
         if (!hasWon) return;
 
+        setSecondsLeft(10);
+        // tick the visible countdown once per second
+        const ticker = setInterval(() => {
+            setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0));
+        }, 1000);
+
         const timer = setTimeout(() => {
             const nextWord = getRandomWord(validGuess);
             setValidGuess(nextWord);
@@ -73,9 +84,103 @@ export default function GamePlay() {
             setHasWon(false);
         }, 10000);
 
-        return () => clearTimeout(timer); // cancel if the page is left before the 10 seconds are up
+        return () => {
+            clearTimeout(timer); // cancel if the page is left before the 10 seconds are up
+            clearInterval(ticker);
+        };
     }, [hasWon, validGuess]);
 
+    async function initializePlayer(user: User) { // function to initialize player stats in firestore if they don't exist
+        const playerRef = doc(db, "playerStats", user.uid);
+        const playerSnapshot = await getDoc(playerRef);
+
+        if (!playerSnapshot.exists()) {  // if doc doesn't exist (if player doesn't exist), create it with base stats of 0 
+            await setDoc(playerRef, { // writes the new doc to firestore 
+                username: user.displayName || "Player",
+                wins: 0, 
+                totalGuesses: 0,
+                totalGames: 0,
+                lastPlayedRoundId: null
+            });
+        }
+    }
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                void initializePlayer(user).catch((error) => {
+                    console.error("error initializing player:", error);
+                }); 
+            }
+        });
+        return () => unsubscribe();
+    }, []);
+
+
+    async function savePlayerGuess(isCorrect: boolean) {
+        const user = auth.currentUser;
+
+        if (!user) {
+            console.error("No user logged in");
+            return;
+        }
+
+        try {
+            const playerRef = doc(db, "playerStats", user.uid);
+            const gameRef = doc(db, "game", "word");
+
+            await runTransaction(db, async (transaction) => {
+                // Get current game and player information
+                const gameSnapshot = await transaction.get(gameRef);
+                const playerSnapshot = await transaction.get(playerRef);
+
+                if (!gameSnapshot.exists() || !playerSnapshot.exists()) {
+                    throw new Error("Game or player document not found");
+                }
+
+                const currentRoundId = gameSnapshot.data().roundId;
+                const lastPlayedRoundId =
+                    playerSnapshot.data().lastPlayedRoundId ?? null;
+
+                if (typeof currentRoundId !== "string") {
+                    throw new Error("Invalid round ID");
+                }
+
+                // Make sure this browser is using the current word
+                if (gameSnapshot.data().currentWord !== validGuess) {
+                    throw new Error("The round has changed. Refresh the game.");
+                }
+
+                // Has the player already participated in this round?
+                const isNewRound = lastPlayedRoundId !== currentRoundId;
+
+                transaction.update(playerRef, {
+                    totalGuesses: increment(1),
+
+                    ...(isCorrect
+                        ? { wins: increment(1) }
+                        : {}),
+
+                    ...(isNewRound
+                        ? {
+                            totalGames: increment(1),
+                            lastPlayedRoundId: currentRoundId
+                        }
+                        : {})
+                });
+            });
+
+            console.log("Player statistics updated");
+        } catch (error) {
+            console.error("Unable to save guess:", error);
+        }
+    }
+
+
+
+
+    // check for 5 inputs, and submit when the text is 5, then build an array of 5 to 
+    // display the inputs
     // Enter handle logic for both
         // keyboard input and enter button pressed
     const handleEnter = () => {
@@ -93,6 +198,8 @@ export default function GamePlay() {
 
                 setGuessedText((prev) => [...prev, text]);
         
+                void savePlayerGuess(text === validGuess); // added this to call the function to save the guess to Firestore - one submission function that trakcs wins and stores in firestore
+                
                 if (validGuess === text) {
                     setIsOpen(true); 
                     setHasWon(true);
@@ -771,11 +878,19 @@ export default function GamePlay() {
             hasWon={hasWon}
             text={text}
             setText={setText}
-            handleEnter={handleEnter}
-            setSubmitted={setGuessedText}
             setPressedKey={setPressedKey}
-            />
+            onSubmit={handleEnter}
+            // changed onSubmit ot handleEnter to connect keyboard to new combined functino that busmits guesses and logs to firestore + check for win 
+            // also removed redundant functions that were not needed anymore since the new function handles both keyboard and enter button submission
+        />
+            
         <main className="flex flex-col items-center p-14">
+            {/* Countdown shown on the page itself while waiting for the next word */}
+            {hasWon && (
+                <p className="mb-4 text-xl font-bold">
+                    New word in {secondsLeft} {secondsLeft === 1 ? "second" : "seconds"}...
+                </p>
+            )}
             <div className="grid grid-cols-5 grid-rows-6 gap-2">
                 {/* Row 1 */}
 
@@ -1564,6 +1679,8 @@ export default function GamePlay() {
                             if (hasWon || prev.length >= MAX_LENGTH) {
                                 return prev;
                                 }
+
+                // there was an extra ENTER button logic here for some reason - I deleted it 
 
                         return prev + "W";
                     });
@@ -2402,8 +2519,8 @@ export default function GamePlay() {
                 onClick={() => setIsOpen(false)}
             >
                 <div className="rounded-lg bg-white p-8 text-black">
-                    <p className="text-xl">CONGRATS, THE CORRENT WORD IS '{validGuess}'!</p>
-                    <p className="text-sm text-gray-600">A new word will be chosen in 10 seconds.</p>
+                    <p className="text-xl">CONGRATS, THE CURRENT WORD IS '{validGuess}'!</p>
+                    <p className="text-sm text-gray-600">A new word will be chosen in {secondsLeft} {secondsLeft === 1 ? "second" : "seconds"}.</p>
                         <button onClick={() => setIsOpen(false)} className="bold text-red-800 text-xl hover:underline">
                             Back to Play
                         </button>
@@ -2414,6 +2531,8 @@ export default function GamePlay() {
         </div>
     </div>
         </main>
+        <Leaderboard/>
+        <PlayerPresence/>
         </>
     )
 }
