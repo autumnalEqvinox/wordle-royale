@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+LEADERBOARD + PLAYER STATS PAGE DOCUMENTATION
+LEADERBAORD: <img width="1321" height="567" alt="image" src="https://github.com/user-attachments/assets/1c49dc8f-9512-4019-8f44-fb5838808aaa" />
+PLAYER STATS PAGE: <img width="740" height="607" alt="image" src="https://github.com/user-attachments/assets/7c329f7c-3753-4150-8178-02effe32c202" />
 
-## Getting Started
+The leaderboard displays the rank of users, their usernames, total wins, and total guesses. It also displays the current number of players that are playing. The playerstats page displays those same statistics with the addition of total games and a win rate. These statistics are stored in Firestore and uses Realtime Database to keep track of user sessions. Users should be able to view the leaderboard in play page with live updated statistics and the navigate to their own personal statistics page. 
 
-First, run the development server:
+COMPONENTS:
+- Leaderboard.tsx - responsible for displaying player stats on play page 
+- PlayerSession.tsx - tracks active player connections using Realtime Database
+- personalstats/page.tsx - displays users' personal stats on separate page
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+FUNCTIONS:
+- initializePlayer() - create Firestore statistics document for new players (when they enter play)
+- savePlayerGuess() - update guesses, wins, and total games using Firestore
+- onSnapshot() - automatically update leaderboard through Firestore DB changes
+- saveWord() - generate new round ID when a new word is saved
+- sort() - ranks players on the leaderboard based on wins
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+DATABASE COLLECTIONS:
+- playerStats - information on each player's stats
+- game - new field "uniquegameID"
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
