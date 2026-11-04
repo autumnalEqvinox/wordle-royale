@@ -10,7 +10,6 @@ export default function Leaderboard() {
         uid: string; 
         username: string; 
         wins: number; 
-        streak: number;
         totalGuesses: number;
     }
 
@@ -26,7 +25,6 @@ useEffect(() => {
             uid: doc.id,
             username: doc.data().username,
             wins: doc.data().wins,
-            streak: doc.data().streak,
             totalGuesses: doc.data().totalGuesses
         }));
 
@@ -78,7 +76,6 @@ useEffect(() => {
                             <th className="py-2 px-4 border-b">Rank</th>
                             <th className="py-2 px-4 border-b">Username</th>
                             <th className="py-2 px-4 border-b">Wins</th>
-                            <th className="py-2 px-4 border-b">Streak</th>
                             <th className="py-2 px-4 border-b">Total Guesses</th>
                         </tr>
                     </thead>
@@ -90,7 +87,6 @@ useEffect(() => {
                                 <td className="py-2 px-4 border-b">{index + 1}</td>
                                 <td className="py-2 px-4 border-b">{player.username}</td>
                                 <td className="py-2 px-4 border-b">{player.wins}</td>
-                                <td className="py-2 px-4 border-b">{player.streak}</td>
                                 <td className="py-2 px-4 border-b">{player.totalGuesses}</td>
                             </tr>
                         ))}
