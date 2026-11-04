@@ -1,12 +1,13 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Palette, LogOut, X } from "lucide-react";
+import { Palette, LogOut, X, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { setDoc, getDoc, doc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../lib/firebase";
+import Link from "next/link";
 
 const WHEEL_SIZE = 220;
 
@@ -290,15 +291,18 @@ export default function PlayLayout({ children }: { children: ReactNode }) {
 
   return (
     <div>
-      <header style={{ display: "flex", justifyContent: "flex-start" }}>
+      <header style={{ display: "flex", justifyContent: "flex-start", gap: "30px" }}>
         <button onClick={() => router.push("/login")} aria-label="Log Out">
           <LogOut size={35} aria-hidden="true" />
         </button>
-        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-          <PaletteButton />
-        </div>
-      </header>
 
+          <PaletteButton />
+          
+          <Link href="/personalstats" aria-label="View Personal Stats">
+            <User size={35} aria-hidden="true" />
+          </Link>
+          
+      </header>
       {children}
     </div>
   );

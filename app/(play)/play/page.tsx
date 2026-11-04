@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { Delete } from "lucide-react";
 import Leaderboard from "@/components/Leaderboard";
 import { auth, db } from "@/app/lib/firebase";
-import { doc, updateDoc, getDoc, setDoc, increment } from "firebase/firestore";
+import { doc, updateDoc, getDoc, setDoc, increment, runTransaction } from "firebase/firestore";
 import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { isValidWord, getRandomWord } from "@/features/validWords";
@@ -23,10 +23,11 @@ export default function GamePlay() {
     const [pressedKey, setPressedKey] = useState("");
     const [validGuess, setValidGuess] = useState("HOWDY"); // API call ???
 
-    // game/word in Firestore holds the word everyone is trying to guess (field: currentWord)
+    // game/word in Firestore holds the word everyone is trying to guess (field: currentWord) 
+    // generates random UID for new round (field: roundId) whenever saveWord() is called to store a new word in Firestore
     const saveWord = async (word: string) => {
         try {
-            await setDoc(doc(db, "game", "word"), { currentWord: word }, { merge: true });
+            await setDoc(doc(db, "game", "word"), { currentWord: word, roundId: crypto.randomUUID() }, { merge: true }); // crypto.randomUUID() generates unique ID whenever saveWord() creates new round 
         } catch (err) {
             console.error("Failed to save game/word", err);
         }
@@ -87,8 +88,9 @@ export default function GamePlay() {
             await setDoc(playerRef, { // writes the new doc to firestore 
                 username: user.displayName || "Player",
                 wins: 0, 
-                streak: 0,
-                totalGuesses: 0
+                totalGuesses: 0,
+                totalGames: 0,
+                lastPlayedRoundId: null
             });
         }
     }
@@ -104,29 +106,66 @@ export default function GamePlay() {
         return () => unsubscribe();
     }, []);
 
-    async function savePlayerGuess(isCorrect: boolean) { // function to save player guesses to firestore 
 
+    async function savePlayerGuess(isCorrect: boolean) {
         const user = auth.currentUser;
 
-        if (!user) { 
-            console.error("No user");
+        if (!user) {
+            console.error("No user logged in");
             return;
         }
-        try { 
+
+        try {
             const playerRef = doc(db, "playerStats", user.uid);
+            const gameRef = doc(db, "game", "word");
 
+            await runTransaction(db, async (transaction) => {
+                // Get current game and player information
+                const gameSnapshot = await transaction.get(gameRef);
+                const playerSnapshot = await transaction.get(playerRef);
 
-            await updateDoc(playerRef, {
-                totalGuesses: increment(1),
-                ...(isCorrect ? { wins: increment(1) } : {})
+                if (!gameSnapshot.exists() || !playerSnapshot.exists()) {
+                    throw new Error("Game or player document not found");
+                }
+
+                const currentRoundId = gameSnapshot.data().roundId;
+                const lastPlayedRoundId =
+                    playerSnapshot.data().lastPlayedRoundId ?? null;
+
+                if (typeof currentRoundId !== "string") {
+                    throw new Error("Invalid round ID");
+                }
+
+                // Make sure this browser is using the current word
+                if (gameSnapshot.data().currentWord !== validGuess) {
+                    throw new Error("The round has changed. Refresh the game.");
+                }
+
+                // Has the player already participated in this round?
+                const isNewRound = lastPlayedRoundId !== currentRoundId;
+
+                transaction.update(playerRef, {
+                    totalGuesses: increment(1),
+
+                    ...(isCorrect
+                        ? { wins: increment(1) }
+                        : {}),
+
+                    ...(isNewRound
+                        ? {
+                            totalGames: increment(1),
+                            lastPlayedRoundId: currentRoundId
+                        }
+                        : {})
+                });
             });
 
-            console.log("guess saved ");
-
+            console.log("Player statistics updated");
         } catch (error) {
             console.error("Unable to save guess:", error);
         }
     }
+
 
 
 
