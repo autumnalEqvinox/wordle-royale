@@ -15,6 +15,7 @@ import {
     query,
     increment, 
     collection, 
+    runTransaction,
     serverTimestamp, 
     orderBy, 
     onSnapshot, 
@@ -92,14 +93,56 @@ export default function GamePlay() {
             // const nextRoomId = currentRoundId + 1;
             // const nextRoomRef = doc(db, "rooms", String(nextRoomId));
 
-            setGuessedText([]);
-            setText("");
-            setIsOpen(false);
-            setHasWon(false);
-        }, 10000);
+            useEffect(() => {
+    if (!hasWon) return;
 
-        return () => clearTimeout(timer); // cancel if the page is left before the 10 seconds are up
-    }, [hasWon, validGuess]);
+    if (currentRoundId === null) 
+        return;
+
+    const timer = setTimeout(() => {
+        const nextWord = getRandomWord(validGuess);
+        setValidGuess(nextWord);
+
+        // restart the guesses for a new round
+
+        // if (currentRoundId == null || typeof currentRoundId !== "number") return;
+        // // gets the nextRoomId calculated
+        // const nextRoomId = currentRoundId + 1;
+        // const nextRoomRef = doc(db, "rooms", String(nextRoomId));
+
+        // ADDED: Update the shared round and word in Firestore
+        void runTransaction(db, async (transaction) => {
+            const roomRef = doc(db, "rooms", "main");
+            const wordRef = doc(db, "game", "word");
+
+            const roomSnap = await transaction.get(roomRef);
+            const wordSnap = await transaction.get(wordRef);
+
+            // Only advance if this is still the active round
+            if (roomSnap.data()?.currentRoomId !== currentRoundId) {
+                return;
+            }
+
+            transaction.update(roomRef, {
+                currentRoomId: currentRoundId + 1
+            });
+
+            transaction.update(wordRef, {
+                currentWord: nextWord
+            });
+        }).catch((error) => {
+            console.error("Failed to advance round:", error);
+        });
+
+        setGuessedText([]);
+        setText("");
+        setIsOpen(false);
+        setHasWon(false);
+    }, 10000);
+
+    return () => clearTimeout(timer); // cancel if the page is left before the 10 seconds are up
+}, [hasWon, validGuess, currentRoundId]);
+
 
     async function initializePlayer(user: User) { // function to initialize player stats in firestore if they don't exist
         const playerRef = doc(db, "playerStats", user.uid);
