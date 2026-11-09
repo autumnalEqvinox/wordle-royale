@@ -10,15 +10,18 @@ import {
     doc,
     updateDoc,
     getDoc,
+    getDocs,
     setDoc,
     addDoc,
+    deleteDoc,
     query,
     increment,
     collection,
     serverTimestamp,
     orderBy,
     onSnapshot,
-    where
+    where, 
+    runTransaction
 } from "firebase/firestore";
 import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
@@ -43,10 +46,10 @@ export default function GamePlay() {
     const [pressedKey, setPressedKey] = useState("");
     const [validGuess, setValidGuess] = useState("HOWDY"); // API call ???
 
-
     const [userId, setUserId] = useState<string | null>(null);
+    const [curRoundId, setCurRoundId] = useState<number | null>(1);
 
-    const [curRoundId, setCurRoundId] = useState<number | null>(null);
+    const roomNames = `round-${curRoundId ?? 1}`;
 
     // three states - gray, green, or yellow
     // const word_state = ["gray", "gray", "gray", "gray", "gray"];
@@ -91,7 +94,6 @@ export default function GamePlay() {
         }
     );
 
-
     // want to check what round it is on in the database, 
     // and then if there is no curRoundId, then initialize it
     
@@ -101,34 +103,105 @@ export default function GamePlay() {
 
     // after a win, wait 10 seconds, then clear the board and pick a new word
     useEffect(() => {
-        if (!hasWon) return;
-
-        if (curRoundId === null) 
+        const user = auth.currentUser;
+        
+        if (!hasWon || curRoundId === null ||user === null)
             return;
+        
+        // check the guessed valid word, grab the user id, and then plug him as the winner
+        const roomRef = doc(db, "rooms", roomNames);
 
+
+        // record the winner if the room is ongoing
+        const saveWinner = async () => {
+            try { 
+                await runTransaction(db, async (transaction) => {
+
+                    // get current room
+                    const roomSnapshot = await transaction.get(roomRef);
+
+                    if (!roomSnapshot.exists()) {
+                        throw new Error("Room does not exist");
+                    }
+
+                    // do a check to see if someone won (shared state)
+                    if (roomSnapshot.data().status === "completed") {
+                        return;
+                    }
+
+                    // just a check to see if we are in the same round
+                    if (roomSnapshot.data().currentRoomID !== curRoundId) {
+                        return;
+                    }
+
+                    // save the winner and close the room
+                    transaction.update(roomRef, {
+                        status: "completed",
+                        winnerID: user.uid
+                    });
+                });
+            } catch (error) {
+                console.error("Couldnot save the winner: ", error);
+            }
+        };
+
+        saveWinner();
+        // close the current room
+        // updateDoc(roomRef, {
+        //     currentRoomID: curRoundId,
+        //     status: "completed",
+        //     winnerID: user.uid
+        // }).catch((error) => 
+        //     console.error("Could not save the winner,", error)
+        // );
+
+        // setCurRoundId(curRoundId+1);
+        
         setSecondsLeft(10);
-
+        
         const ticker = setInterval(() => {
             setSecondsLeft((prev) => Math.max(0, prev - 1));
         }, 1000);
 
-        const timer = setTimeout(() => {
-            // make a new room and set status as completed
-            setCurRoundId(curRoundId+1);
-
+        const timer = setTimeout(async () => {
             const nextWord = getRandomWord(validGuess);
-            setValidGuess(nextWord);
-            saveWord(nextWord);
             
-            // restart the guesses for a new round
+            // create a new room for guesses to be stored
+            // try {
+            //     await setDoc(newRoomRef, {
+            //         currentRoomID: nextRoundId,
+            //         status: "on-going",
+            //         winnerID: null
+            //     });
+
+            //     // await setValidGuess(nextWord);
+            //     await saveWord(nextWord); 
+            //     await updateDoc(doc(db, "rooms", roomNames), {
+            //         currentRoomID: nextRoundId,
+            //     });
+            // } catch (error) {
+            //     console.log("Could not create a valid room.", error);
+            //     return;
+            // }
+
+            {/* Want to delete the guesses, then reloop this information */}
+            // get the reference to all of the guesses for this round
+            const guessesRef = collection(db, "rooms", "round-1", "guesses");
+
+            // grab all of the previous guesses and place them into a "list"
+            const oldGuesses = await getDocs(guessesRef);
             
-            // if (curRoundId == null || typeof curRoundId !== "number") return;
-            // // gets the nextRoomId calculated
-            // const nextRoomId = curRoundId + 1;
-            // const nextRoomRef = doc(db, "rooms", String(nextRoomId));
+            // run a loop that deletes every previous guess to clear the database of guesses
+            for (const guess of oldGuesses.docs) {
+                await deleteDoc(guess.ref);
+            }
+            
+            // save the next word as the next word to guess
+            await saveWord(nextWord);
 
             setGuessedText([]);
             setText("");
+            // saveWord(nextWord);
             setIsOpen(false);
             setHasWon(false);
         }, 10000);
@@ -175,7 +248,7 @@ export default function GamePlay() {
         if (!userId || curRoundId === null) return;
 
         const queryOfGuesses = query(
-            collection(db, "rooms", "main", "guesses"),
+            collection(db, "rooms", roomNames, "guesses"),
             where("roundId", "==", curRoundId),
             orderBy("submittedAt", "asc")
         );
@@ -202,8 +275,12 @@ export default function GamePlay() {
     useEffect(() => {
         if (!userId) return;
 
+        const roomRef = doc(db, "rooms", roomNames);
+        console.log("roomNames error: ", roomNames);
+        console.log("roomRef: ", roomRef);
+
         const unsubscribe = onSnapshot(
-            doc(db, "rooms", "main"),
+            roomRef,
             (snapshot) => {
                 // just to see why the currentRoomID isn't working: 
                 console.log("Room exists:", snapshot.exists());
@@ -230,7 +307,9 @@ export default function GamePlay() {
         );
 
         return unsubscribe;
+
     }, [userId]);
+
 
 
     // Save the guess and update player statistics.
@@ -250,12 +329,13 @@ export default function GamePlay() {
         try {
             const playerRef = doc(db, "playerStats", user.uid);
 
-            await addDoc(collection(db, "rooms", "main", "guesses"), {
+            await addDoc(collection(db, "rooms", roomNames, "guesses"), {
                 word: text,
-                userID: user.uid,
+                submittedBy: user.uid,
                 roundId: curRoundId,
                 submittedAt: serverTimestamp()
             });
+            console.log("guess saves to: ", roomNames);
 
             await updateDoc(playerRef, {
                 totalGuesses: increment(1),
@@ -283,11 +363,6 @@ export default function GamePlay() {
         // }
 
         if (text.length !== MAX_LENGTH) return;
-
-        if (text === guessedText[guessedText.length - 1]) {
-            alert("No duplicates.");
-            return;
-        }
 
         if (!isValidWord(text)) {
             alert("Not in word list");
