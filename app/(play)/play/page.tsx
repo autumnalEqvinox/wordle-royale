@@ -175,7 +175,7 @@ export default function GamePlay() {
         if (!userId || curRoundId === null) return;
 
         const queryOfGuesses = query(
-            collection(db, "rooms", "main", "guesses"),
+            collection(db, "rooms", "round-1", "guesses"),
             where("roundId", "==", curRoundId),
             orderBy("submittedAt", "asc")
         );
@@ -203,7 +203,7 @@ export default function GamePlay() {
         if (!userId) return;
 
         const unsubscribe = onSnapshot(
-            doc(db, "rooms", "main"),
+            doc(db, "rooms", "round-1"),
             (snapshot) => {
                 // just to see why the currentRoomID isn't working: 
                 console.log("Room exists:", snapshot.exists());
@@ -250,19 +250,33 @@ export default function GamePlay() {
         try {
             const playerRef = doc(db, "playerStats", user.uid);
 
-            await addDoc(collection(db, "rooms", "main", "guesses"), {
-                word: text,
-                userID: user.uid,
-                roundId: curRoundId,
-                submittedAt: serverTimestamp()
-            });
+            // First: save the guess
+            try {
+                await addDoc(collection(db, "rooms", "round-1", "guesses"), {
+                    word: text,
+                    submittedBy: user.uid,
+                    roundId: curRoundId,
+                    submittedAt: serverTimestamp()
+                });
 
-            await updateDoc(playerRef, {
-                totalGuesses: increment(1),
-                ...(isCorrect ? { wins: increment(1) } : {})
-            });
+                console.log("SUCCESS: Guess saved");
+            } catch (error) {
+                console.error("FAILED: Saving guess to rooms", error);
+                return;
+            }
 
-            console.log("guess saved");
+            // Second: update statistics
+            try {
+                await updateDoc(playerRef, {
+                    totalGuesses: increment(1),
+                    ...(isCorrect ? { wins: increment(1) } : {})
+                });
+
+                console.log("SUCCESS: Player stats updated");
+            } catch (error) {
+                console.error("FAILED: Updating playerStats", error);
+            }
+
         } catch (error) {
             console.error("Unable to save guess:", error);
         }
@@ -304,7 +318,6 @@ export default function GamePlay() {
         void savePlayerGuess(text === validGuess);
         setText("");
     };
-
         // gonna have to change the code from instead of guessedText last 5 guesses, 
         //       I need to adjust to check for every word. probably just keep the state of before and 
         // then update the letters over time. like keeping a state of 5 letters, and then
