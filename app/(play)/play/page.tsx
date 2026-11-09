@@ -18,6 +18,7 @@ import {
     serverTimestamp,
     orderBy,
     onSnapshot,
+    getDocFromServer,
     where
 } from "firebase/firestore";
 import type { User } from "firebase/auth";
@@ -46,7 +47,7 @@ export default function GamePlay() {
 
     const [userId, setUserId] = useState<string | null>(null);
 
-    const [currentRoundId, setCurrentRoundId] = useState<number | null>(null);
+    const [curRoundId, setCurRoundId] = useState<number | null>(null);
 
     // three states - gray, green, or yellow
     // const word_state = ["gray", "gray", "gray", "gray", "gray"];
@@ -56,42 +57,54 @@ export default function GamePlay() {
     // game/word in Firestore holds the word everyone is trying to guess (field: currentWord) 
     // generates random UID for new round (field: roundId) whenever saveWord() is called to store a new word in Firestore
     const saveWord = async (word: string) => {
-        try {
-            await setDoc(doc(db, "game", "word"), { currentWord: word, roundId: crypto.randomUUID() }, { merge: true }); // crypto.randomUUID() generates unique ID whenever saveWord() creates new round 
-        } catch (err) {
-            console.error("Failed to save game/word", err);
-        }
-    };
+    try {
+        await setDoc(
+            doc(db, "game", "word"),
+            {
+                currentWord: word,
+                roundId: crypto.randomUUID()
+            },
+            { merge: true }
+        );
+    } catch (err) {
+        console.error("Failed to save game/word", err);
+    }
+};
+
 
     // on load, use the stored word, or pick and store one if there is none yet
     useEffect(() => {
-        if (!userId) return;
+    if (!userId) return;
 
-        const unsubscribe = onSnapshot(
-            doc(db, "game", "word"),
-            (snapshot) => {
-                const saved = snapshot.data()?.currentWord;
+    const unsubscribe = onSnapshot(
+        doc(db, "game", "word"),
+        (snapshot) => {
+            const saved = snapshot.data()?.currentWord;
 
-                if (typeof saved === "string" && isValidWord(saved)) {
-                    setValidGuess(saved);
-                } else {
-                    console.error("No valid word in Firestore");
-                }
-            },
-            (error) => {
-                console.error("Failed to load game/word", error);
+            if (typeof saved === "string" && isValidWord(saved)) {
+                setValidGuess(saved);
+            } else {
+                console.error("No valid word in Firestore");
             }
-        );
+        },
+        (error) => {
+            console.error("Failed to load game/word", error);
+        }
+    );
+
+
+    // want to check what round it is on in the database, 
+    // and then if there is no curRoundId, then initialize it
+    
 
         return () => unsubscribe();
     }, [userId]);
 
-    
     // after a win, wait 10 seconds, then clear the board and pick a new word
     useEffect(() => {
         if (!hasWon) return;
 
-        if (currentRoundId === null) 
+        if (curRoundId === null) 
             return;
 
         setSecondsLeft(10);
@@ -100,15 +113,29 @@ export default function GamePlay() {
             setSecondsLeft((prev) => Math.max(0, prev - 1));
         }, 1000);
 
-        const timer = setTimeout(() => {
+        const timer = setTimeout(async () => {
+            // make a new room and set status as completed
+            // setCurRoundId(curRoundId+1);
+
             const nextWord = getRandomWord(validGuess);
             setValidGuess(nextWord);
+            saveWord(nextWord);
             
+            try {
+                await updateDoc(doc(db, "rooms", "round-1"), {
+                    currentRoomID: curRoundId + 1, 
+                    status: "on-going",
+                    winnerID: null
+                })
+            } catch (error) {
+                console.error("Failed to update room: ", error);
+            }
+
             // restart the guesses for a new round
             
-            // if (currentRoundId == null || typeof currentRoundId !== "number") return;
+            // if (curRoundId == null || typeof curRoundId !== "number") return;
             // // gets the nextRoomId calculated
-            // const nextRoomId = currentRoundId + 1;
+            // const nextRoomId = curRoundId + 1;
             // const nextRoomRef = doc(db, "rooms", String(nextRoomId));
 
             setGuessedText([]);
@@ -121,7 +148,8 @@ export default function GamePlay() {
             clearTimeout(timer); // cancel if the page is left before the 10 seconds are up
             clearInterval(ticker);
         };
-    }, [hasWon, validGuess]);
+    }, [hasWon, validGuess, curRoundId]);
+
 
     async function initializePlayer(user: User) { // function to initialize player stats in firestore if they don't exist
         const playerRef = doc(db, "playerStats", user.uid);
@@ -138,6 +166,7 @@ export default function GamePlay() {
         }
     }
     
+    // user Initialization activaes when a user joins
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUserId(user?.uid ?? null)
@@ -151,17 +180,19 @@ export default function GamePlay() {
         return () => unsubscribe();
     }, []);
 
+
+    // list all of the guesses from oldest to newest (last 5 guesses)
     useEffect(() => {
-        if (!userId || currentRoundId === null) return;
+        if (!userId || curRoundId === null) return;
 
         const queryOfGuesses = query(
-            collection(db, "rooms", "main", "guesses"),
-            where("roundId", "==", currentRoundId),
+            collection(db, "rooms", "round-1", "guesses"),
+            where("roundId", "==", curRoundId),
             orderBy("submittedAt", "asc")
         );
 
         const unsubscribe = onSnapshot(
-            queryOfGuesses,
+            queryOfGuesses, // use the query and display a 'snapshot' of the last guesses
             (snapshot) => {
                 setGuessedText(
                     snapshot.docs.map(
@@ -169,26 +200,36 @@ export default function GamePlay() {
                     )
                 );
             },
-            (error) => {
+            (error) => { // if there is an error grabbing the guesses, throw an error
                 console.error("Error with loading guesses:", error);
             }
         );
 
         return unsubscribe;
-    }, [userId, currentRoundId]);
+    }, [userId, curRoundId]);
 
+
+    {/* set the round number id to the recent one for rooms/main */}
     useEffect(() => {
         if (!userId) return;
 
         const unsubscribe = onSnapshot(
-            doc(db, "rooms", "main"),
+            doc(db, "rooms", "round-1"),
             (snapshot) => {
-                const roundId = snapshot.data()?.currentRoundId;
+                // just to see why the currentRoomID isn't working: 
+                console.log("Room exists:", snapshot.exists());
+                console.log("Room data:", snapshot.data());
+                console.log("Round ID:", snapshot.data()?.currentRoomID);
+                console.log("Round ID type:", typeof snapshot.data()?.currentRoomID);
 
+
+                const roundId = snapshot.data()?.currentRoomID;
+                console.log(roundId);
+                
                 if (typeof roundId === "number") {
-                    setCurrentRoundId(roundId);
+                    setCurRoundId(roundId);
                 } else {
-                    setCurrentRoundId(null);
+                    setCurRoundId(null);
                     console.error(
                         "rooms/main is missing a numeric currentRoundId"
                     );
@@ -202,6 +243,7 @@ export default function GamePlay() {
         return unsubscribe;
     }, [userId]);
 
+
     // Save the guess and update player statistics.
     async function savePlayerGuess(isCorrect: boolean) {
         const user = auth.currentUser;
@@ -211,7 +253,7 @@ export default function GamePlay() {
             return;
         }
 
-        if (currentRoundId === null) {
+        if (curRoundId === null) {
             console.error("Current round has not loaded");
             return;
         }
@@ -219,19 +261,57 @@ export default function GamePlay() {
         try {
             const playerRef = doc(db, "playerStats", user.uid);
 
-            await addDoc(collection(db, "rooms", "main", "guesses"), {
-                word: text,
-                userID: user.uid,
-                roundId: currentRoundId,
-                submittedAt: serverTimestamp()
-            });
+            const roomSnapshot = await getDocFromServer(
+                doc(db, "rooms", "round-1")
+            );
 
-            await updateDoc(playerRef, {
-                totalGuesses: increment(1),
-                ...(isCorrect ? { wins: increment(1) } : {})
-            });
+            if (roomSnapshot.data()?.currentRoomID !== curRoundId) {
+                console.error("Round numbers do not match!");
+                return;
+            }
 
-            console.log("guess saved");
+            if (roomSnapshot.data()?.status !== "on-going") {
+                console.error("Round is not currently ongoing!");
+                return;
+            }
+
+            // First: save the guess
+            try {
+                addDoc(collection(db, "rooms", "round-1", "guesses"), {
+                    word: text,
+                    submittedBy: user.uid,
+                    roundId: curRoundId,
+                    submittedAt: serverTimestamp()
+                });
+
+                console.log("React round ID:", curRoundId);
+
+                const roomSnapshot = await getDoc(doc(db, "rooms", "round-1"));
+
+                console.log("Logged in user:", auth.currentUser?.uid);
+                console.log("React round:", curRoundId);
+                console.log("Database round:", roomSnapshot.data()?.currentRoomID);
+                console.log("Room status:", roomSnapshot.data()?.status);
+                console.log("Guess:", text);
+
+                console.log("SUCCESS: Guess saved");
+            } catch (error) {
+                console.error("FAILED: Saving guess to rooms", error);
+                return;
+            }
+
+            // Second: update statistics
+            try {
+                await updateDoc(playerRef, {
+                    totalGuesses: increment(1),
+                    ...(isCorrect ? { wins: increment(1) } : {})
+                });
+
+                console.log("SUCCESS: Player stats updated");
+            } catch (error) {
+                console.error("FAILED: Updating playerStats", error);
+            }
+
         } catch (error) {
             console.error("Unable to save guess:", error);
         }
@@ -273,7 +353,6 @@ export default function GamePlay() {
         void savePlayerGuess(text === validGuess);
         setText("");
     };
-
         // gonna have to change the code from instead of guessedText last 5 guesses, 
         //       I need to adjust to check for every word. probably just keep the state of before and 
         // then update the letters over time. like keeping a state of 5 letters, and then
