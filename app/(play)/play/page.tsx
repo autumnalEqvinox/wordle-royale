@@ -18,6 +18,7 @@ import {
     serverTimestamp,
     orderBy,
     onSnapshot,
+    getDocFromServer,
     where
 } from "firebase/firestore";
 import type { User } from "firebase/auth";
@@ -112,14 +113,24 @@ export default function GamePlay() {
             setSecondsLeft((prev) => Math.max(0, prev - 1));
         }, 1000);
 
-        const timer = setTimeout(() => {
+        const timer = setTimeout(async () => {
             // make a new room and set status as completed
-            setCurRoundId(curRoundId+1);
+            // setCurRoundId(curRoundId+1);
 
             const nextWord = getRandomWord(validGuess);
             setValidGuess(nextWord);
             saveWord(nextWord);
             
+            try {
+                await updateDoc(doc(db, "rooms", "round-1"), {
+                    currentRoomID: curRoundId + 1, 
+                    status: "on-going",
+                    winnerID: null
+                })
+            } catch (error) {
+                console.error("Failed to update room: ", error);
+            }
+
             // restart the guesses for a new round
             
             // if (curRoundId == null || typeof curRoundId !== "number") return;
@@ -250,14 +261,38 @@ export default function GamePlay() {
         try {
             const playerRef = doc(db, "playerStats", user.uid);
 
+            const roomSnapshot = await getDocFromServer(
+                doc(db, "rooms", "round-1")
+            );
+
+            if (roomSnapshot.data()?.currentRoomID !== curRoundId) {
+                console.error("Round numbers do not match!");
+                return;
+            }
+
+            if (roomSnapshot.data()?.status !== "on-going") {
+                console.error("Round is not currently ongoing!");
+                return;
+            }
+
             // First: save the guess
             try {
-                await addDoc(collection(db, "rooms", "round-1", "guesses"), {
+                addDoc(collection(db, "rooms", "round-1", "guesses"), {
                     word: text,
                     submittedBy: user.uid,
                     roundId: curRoundId,
                     submittedAt: serverTimestamp()
                 });
+
+                console.log("React round ID:", curRoundId);
+
+                const roomSnapshot = await getDoc(doc(db, "rooms", "round-1"));
+
+                console.log("Logged in user:", auth.currentUser?.uid);
+                console.log("React round:", curRoundId);
+                console.log("Database round:", roomSnapshot.data()?.currentRoomID);
+                console.log("Room status:", roomSnapshot.data()?.status);
+                console.log("Guess:", text);
 
                 console.log("SUCCESS: Guess saved");
             } catch (error) {
