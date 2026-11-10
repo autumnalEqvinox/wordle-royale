@@ -28,8 +28,7 @@ import { isValidWord, getRandomWord } from "@/features/validWords";
 export default function GamePlay() {
     // this exists to change the length of the word if need be
     const [MAX_LENGTH, setMaxLength] = useState<number>(5);
-    const [hasWon, setHasWon] = useState(false);
-
+    
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [secondsLeft, setSecondsLeft] = useState<number>(10); // visible countdown shown in the win popup
 
@@ -56,6 +55,23 @@ export default function GamePlay() {
 
     // game/word in Firestore holds the word everyone is trying to guess (field: currentWord) 
     // generates random UID for new round (field: roundId) whenever saveWord() is called to store a new word in Firestore
+    const [hasWon, setHasWon] = useState(false);
+
+    // const firebaseHasWon = () => {
+    //     const hasWonRef = doc(db, "game", "hasWon");
+    //     if (hasWon) {
+    //         updateDoc(hasWonRef, {
+    //             has_won: true
+    //         });
+    //     if (!hasWon) {
+    //         updateDoc(hasWonRef, {
+    //             has_won: false
+    //         });
+    //         }
+    //     }
+    // }
+
+
     const saveWord = async (word: string) => {
     try {
         await setDoc(
@@ -99,6 +115,8 @@ export default function GamePlay() {
 
         return () => unsubscribe();
     }, [userId]);
+
+    
 
     // after a win, wait 10 seconds, then clear the board and pick a new word
     useEffect(() => {
@@ -1041,7 +1059,7 @@ export default function GamePlay() {
             // changed onSubmit ot handleEnter to connect keyboard to new combined functino that busmits guesses and logs to firestore + check for win 
             // also removed redundant functions that were not needed anymore since the new function handles both keyboard and enter button submission
         />
-            
+            {/* p-14 */}
         <main className="flex flex-col items-center p-14">
             {/* Countdown shown on the page itself while waiting for the next word */}
             {hasWon && (
@@ -1283,8 +1301,15 @@ export default function GamePlay() {
                                     : validGuess[4] != guessedText[guessedTextLength+1][4]
                                         ? "bg-gray-400"
                                         : ""
-                    }`}
+                    }`} 
                     >
+                    {/* 
+                        Add some hidden feature that when clicked 
+                            shows some accomplishment, 
+                            or gives a hint 
+                            or does something really mean 
+                    */}
+
                     {guessedText[guessedTextLength+1] != null && guessedText[guessedTextLength+1] != "" 
                         ? guessedText[guessedTextLength+1][4] 
                         : guessedText.length == guessedTextLength+1
@@ -1778,8 +1803,8 @@ export default function GamePlay() {
             </div>
 
     {/* {This is the keyboard buttons} */}
-        <div className="flex flex-col items-center gap-2 mt-8">
-            <div key={100} className="flex gap-2">
+        <div className="flex flex-col items-center gap-2 mt-8 w-full max-w-full">
+            <div key={100} className="flex w-full justify-center gap-1 sm:gap-2">
                 <button key="Q-key" 
                 className={`h-10 w-10 ${
                 pressedKey === "Q"
@@ -2114,7 +2139,7 @@ export default function GamePlay() {
         </div>
 
     {/* Row 2 */}
-        <div key={102} className="flex gap-2">
+        <div key={102} className="flex w-full justify-center gap-1 sm:gap-2">
             <button key="A-key" 
             className={`h-10 w-10 ${
             pressedKey === "A"
@@ -2427,7 +2452,7 @@ export default function GamePlay() {
 
         </div>
 
-        <div key={103} className="flex gap-2">
+        <div key={103} className="flex w-full justify-center gap-1 sm:gap-2">
             <button key="Z-key" 
             className={`h-10 w-10 ${
             pressedKey === "Z"
