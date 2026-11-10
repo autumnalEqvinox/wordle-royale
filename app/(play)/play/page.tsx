@@ -1048,6 +1048,27 @@ export default function GamePlay() {
             return color;
         };
 
+    const greenLetterDisplay = (placement: number) => {
+        // our placement is a check comparison with every letter 
+        // in that column to the valid guess, 
+        // and if it is ever true, then show 
+        // it on the top for everyone to see
+        let isGreen = false;
+
+        for (let columnNumber=0; columnNumber < guessedText.length; columnNumber++) {
+            if (
+                guessedText[columnNumber][placement] === validGuess[placement]
+            ) {
+                isGreen = true;
+            }
+        }
+
+        // should return true or false to use to determine 
+        // if it is good to display the correct letter to help 
+        // everyone out
+        return isGreen;
+    };
+
         return (
             <>
         <KeyboardDetector
@@ -1060,13 +1081,57 @@ export default function GamePlay() {
             // also removed redundant functions that were not needed anymore since the new function handles both keyboard and enter button submission
         />
             {/* p-14 */}
-        <main className="flex flex-col items-center p-14">
+        <main className="flex flex-col items-center">
             {/* Countdown shown on the page itself while waiting for the next word */}
             {hasWon && (
                 <p className="mb-4 text-xl font-bold">
                     New word in {secondsLeft} {secondsLeft === 1 ? "second" : "seconds"}...
                 </p>
             )}
+
+            {/* show the valid letters once they are guessed */}
+            <div className="flex grid grid-cols-5 grid-rows-1 gap-2 py-2">
+                <div className={`flex h-15 w-15 items-center justify-center ${greenLetterDisplay(0) ? "border-2" : ""} text-3xl font-bold text-green-500`}>
+                    {
+                        greenLetterDisplay(0)
+                            ? validGuess[0]
+                            : ""
+                    }
+                </div>
+
+            <div className={`flex h-15 w-15 items-center justify-center ${greenLetterDisplay(1) ? "border-2" : ""} text-3xl font-bold text-green-500`}>
+                    {
+                        greenLetterDisplay(1)
+                            ? validGuess[1]
+                            : ""
+                    }
+                </div>
+
+            <div className={`flex h-15 w-15 items-center justify-center ${greenLetterDisplay(2) ? "border-2" : ""} text-3xl font-bold text-green-500`}>
+                    {
+                        greenLetterDisplay(2)
+                            ? validGuess[2]
+                            : ""
+                    }
+                </div>
+
+            <div className={`flex h-15 w-15 items-center justify-center ${greenLetterDisplay(3) ? "border-2" : ""} text-3xl font-bold text-green-500`}>
+                    {
+                        greenLetterDisplay(3)
+                            ? validGuess[3]
+                            : ""
+                    }
+                </div>
+
+            <div className={`flex h-15 w-15 items-center justify-center ${greenLetterDisplay(4) ? "border-2" : ""} text-3xl font-bold text-green-500`}>
+                    {
+                        greenLetterDisplay(4)
+                            ? validGuess[4]
+                            : ""
+                    }
+                </div>
+        </div>
+
             <div className="grid grid-cols-5 grid-rows-6 gap-2">
                 {/* Row 1 */}
 
