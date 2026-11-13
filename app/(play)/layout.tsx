@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Palette, LogOut, X, User } from "lucide-react";
+import { Activity, Palette, LogOut, X, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { setDoc, getDoc, doc } from "firebase/firestore";
@@ -297,6 +297,10 @@ export default function PlayLayout({ children }: { children: ReactNode }) {
         </button>
 
           <PaletteButton />
+
+          <Link href="/dashboard" aria-label="View Runtime Dashboard">
+            <Activity size={35} aria-hidden="true" />
+          </Link>
           
           <Link href="/personalstats" aria-label="View Personal Stats">
             <User size={35} aria-hidden="true" />
