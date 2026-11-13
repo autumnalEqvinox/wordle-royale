@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { Activity, Palette, LogOut, X, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { setDoc, getDoc, doc } from "firebase/firestore";
+import { setDoc, getDoc, doc, onSnapshot } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../lib/firebase";
 import Link from "next/link";
@@ -288,6 +288,33 @@ function PaletteButton() {
 
 export default function PlayLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const [isDev, setIsDev] = useState(false);
+
+  useEffect(() => {
+    let unsubscribeProfile: (() => void) | undefined;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      unsubscribeProfile?.();
+      unsubscribeProfile = undefined;
+      setIsDev(false);
+
+      if (!user) return;
+
+      unsubscribeProfile = onSnapshot(
+        doc(db, "users", user.uid),
+        (snapshot) => setIsDev(snapshot.data()?.isDev === true),
+        (error) => {
+          console.error("Failed to load developer access:", error);
+          setIsDev(false);
+        },
+      );
+    });
+
+    return () => {
+      unsubscribeAuth();
+      unsubscribeProfile?.();
+    };
+  }, []);
 
   return (
     <div>
@@ -298,9 +325,11 @@ export default function PlayLayout({ children }: { children: ReactNode }) {
 
           <PaletteButton />
 
-          <Link href="/dashboard" aria-label="View Runtime Dashboard">
-            <Activity size={35} aria-hidden="true" />
-          </Link>
+          {isDev && (
+            <Link href="/dashboard" aria-label="View Runtime Dashboard">
+              <Activity size={35} aria-hidden="true" />
+            </Link>
+          )}
           
           <Link href="/personalstats" aria-label="View Personal Stats">
             <User size={35} aria-hidden="true" />

@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { onAuthStateChanged } from "firebase/auth";
 import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
 import { onValue, ref } from "firebase/database";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { db, rtdb } from "@/app/lib/firebase";
+import { auth, db, rtdb } from "@/app/lib/firebase";
 
 type RoomStats = {
   id: number | null;
@@ -40,6 +42,10 @@ function MetricCard({
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const [access, setAccess] = useState<
+    "checking" | "allowed" | "signed-out" | "not-developer"
+  >("checking");
   const [network, setNetwork] = useState<{
     online: boolean;
     type: string | null;
@@ -56,6 +62,47 @@ export default function DashboardPage() {
     count: number;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let unsubscribeProfile: (() => void) | undefined;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      unsubscribeProfile?.();
+      unsubscribeProfile = undefined;
+
+      if (!user) {
+        setAccess("signed-out");
+        return;
+      }
+
+      setAccess("checking");
+      unsubscribeProfile = onSnapshot(
+        doc(db, "users", user.uid),
+        (snapshot) => {
+          setAccess(
+            snapshot.data()?.isDev === true ? "allowed" : "not-developer",
+          );
+        },
+        (listenerError) => {
+          console.error("Error verifying dashboard access:", listenerError);
+          setAccess("not-developer");
+        },
+      );
+    });
+
+    return () => {
+      unsubscribeAuth();
+      unsubscribeProfile?.();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (access === "signed-out") {
+      router.replace("/login");
+    } else if (access === "not-developer") {
+      router.replace("/play");
+    }
+  }, [access, router]);
 
   useEffect(() => {
     const connection = (navigator as NavigatorWithNetworkInformation).connection;
@@ -84,6 +131,8 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
+    if (access !== "allowed") return;
+
     const unsubscribeConnection = onValue(
       ref(rtdb, ".info/connected"),
       (snapshot) => setFirebaseConnected(snapshot.val() === true),
@@ -162,11 +211,12 @@ export default function DashboardPage() {
       unsubscribePlayers();
       unsubscribeRoom();
     };
-  }, []);
+  }, [access]);
 
   const currentRoundId = room?.id;
 
   useEffect(() => {
+    if (access !== "allowed") return;
     if (currentRoundId === undefined || currentRoundId === null) return;
 
     const guessesQuery = query(
@@ -183,7 +233,7 @@ export default function DashboardPage() {
         setError("Could not load current round guesses.");
       },
     );
-  }, [currentRoundId]);
+  }, [access, currentRoundId]);
 
   const currentRoundGuessCount =
     currentRoundId === null
@@ -199,6 +249,16 @@ export default function DashboardPage() {
     totalWins === null ||
     room === null ||
     currentRoundGuessCount === null;
+
+  if (access !== "allowed") {
+    return (
+      <main className="min-h-screen bg-white px-5 py-8 text-slate-950 sm:px-8">
+        <p aria-live="polite">
+          {access === "checking" ? "Checking developer access…" : "Redirecting…"}
+        </p>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-white px-5 py-8 text-slate-950 sm:px-8">
