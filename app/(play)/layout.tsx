@@ -5,7 +5,7 @@ import { Palette, LogOut, X, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { setDoc, getDoc, doc } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, sendEmailVerification, signOut, type User as FirebaseUser } from "firebase/auth";
 import { auth, db } from "../lib/firebase";
 import Link from "next/link";
 
@@ -286,23 +286,120 @@ function PaletteButton() {
   );
 }
 
+
+// chat made this 
 export default function PlayLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const [session, setSession] = useState<{
+    user: FirebaseUser;
+    verified: boolean;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    return onAuthStateChanged(auth, (user) => {
+      setSession(user ? { user, verified: user.emailVerified } : null);
+      setMessage("");
+      setLoading(false);
+
+      if (!user) router.replace("/login");
+    });
+  }, [router]);
+
+  async function handleVerification(action: "check" | "resend") {
+    if (!session || busy) return;
+
+    const { user } = session;
+    setBusy(true);
+    setMessage("");
+
+    try {
+      if (action === "resend") {
+        await sendEmailVerification(user);
+        if (auth.currentUser === user) {
+          setMessage("Verification email sent. Check your inbox and spam folder.");
+        }
+        return;
+      }
+
+      await user.reload();
+      if (auth.currentUser !== user) return;
+
+      setSession({ user, verified: user.emailVerified });
+
+      if (!user.emailVerified) {
+        setMessage("Open the link in your email, then check again.");
+      }
+    } catch (error) {
+      console.error("Email verification failed:", error);
+      setMessage("Could not complete the request. Please try again in a moment.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Logout failed:", error);
+      setMessage("Could not log out. Please try again.");
+    }
+  }
+
+  if (loading) return <p>Loading...</p>;
+  if (!session) return null;
+
+  if (!session.verified) {
+    return (
+      <main className="mx-auto max-w-md space-y-4 p-6">
+        <h1 className="text-2xl font-bold">Verify your email to play</h1>
+        <p>Open the verification link sent to {session.user.email}.</p>
+
+        <div className="flex flex-wrap gap-4">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => handleVerification("check")}
+          >
+            I verified my email
+          </button>
+
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => handleVerification("resend")}
+          >
+            Resend email
+          </button>
+
+          <button type="button" disabled={busy} onClick={handleLogout}>
+            Log out
+          </button>
+        </div>
+
+        <p role="status">{message}</p>
+      </main>
+    );
+  }
 
   return (
     <div>
       <header style={{ display: "flex", justifyContent: "flex-start", gap: "30px" }}>
-        <button onClick={() => router.push("/login")} aria-label="Log Out">
+        <button type="button" onClick={handleLogout} aria-label="Log out">
           <LogOut size={35} aria-hidden="true" />
         </button>
 
-          <PaletteButton />
-          
-          <Link href="/personalstats" aria-label="View Personal Stats">
-            <User size={35} aria-hidden="true" />
-          </Link>
-          
+        <PaletteButton />
+
+        <Link href="/personalstats" aria-label="View Personal Stats">
+          <User size={35} aria-hidden="true" />
+        </Link>
       </header>
+
+      {message && <p role="status">{message}</p>}
       {children}
     </div>
   );

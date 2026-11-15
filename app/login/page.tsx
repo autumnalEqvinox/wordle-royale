@@ -6,7 +6,7 @@ import type {User} from "firebase/auth";
 import { Swords } from "lucide-react"
 import Link from "next/link"
 
-export default function Login() {
+export default  function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [user, setUser] = useState<User|null>(null);
@@ -24,7 +24,7 @@ export default function Login() {
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         try { 
-            await signInWithEmailAndPassword(auth, email, password);
+            await signInWithEmailAndPassword(auth, email.trim(), password);
             alert("logged in successfully");
         }
         catch (error) {
@@ -81,7 +81,7 @@ export default function Login() {
                         placeholder="Enter your email"
                         required
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) =>setEmail(e.target.value)}
                     />
                     <input
                         type="password"

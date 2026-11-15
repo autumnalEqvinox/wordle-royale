@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import {createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup} from "firebase/auth"; 
 import {auth, db} from "../lib/firebase";
 import {doc, setDoc} from "firebase/firestore";
+import { sendEmailVerification } from "firebase/auth";
+
 
 export default function Signup() {
     const [username, setUsername] = useState("");
@@ -11,6 +13,8 @@ export default function Signup() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const router = useRouter();
+    const trimmedEmail = email.trim();
+
 
     async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault(); // Prevent the default form submission behavior
@@ -26,19 +30,26 @@ export default function Signup() {
         }
 
         try { 
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await createUserWithEmailAndPassword(auth, trimmedEmail, password);
             await updateProfile(userCredential.user, {displayName: username});
             await setDoc(doc(db, "users", userCredential.user.uid), { // create firestore document, doc() determiens which doc to access, db is firestore database
                 username: username,
-                email: email,
+                email: userCredential.user.email ?? trimmedEmail,
             });
-            alert("created account");
+            try {
+                await sendEmailVerification(userCredential.user);
+                alert("created account");
+            } catch (error) {
+                console.error("Can't send verification email:", error);
+                alert("Account created, but no verification email was sent. Please check your email settings.");
+            }
             router.push("/login");
         } 
         catch (error) {
         console.error("Signup failed:", error);
         alert("Cannot create account. Check information and try again.");
         }
+
     }
 
     
@@ -79,7 +90,7 @@ export default function Signup() {
                     placeholder="Enter your email"
                     required
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {setEmail(e.target.value)}}
                 />
                 <input 
                     type="password"
