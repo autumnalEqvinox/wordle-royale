@@ -103,7 +103,6 @@ export default function GamePlay() {
     // want to check what round it is on in the database, 
     // and then if there is no curRoundId, then initialize it
     
-
         return () => unsubscribe();
     }, [userId]);
 
@@ -132,15 +131,11 @@ export default function GamePlay() {
         }, 1000);
 
         const timer = setTimeout(async () => {
-            setGuessedText([]);
             setText("");
+            setGuessedText([]);
 
             // make a new room and set status as completed
             // setCurRoundId(curRoundId+1);
-            const nextWord = getRandomWord(validGuess);
-            setValidGuess(nextWord);
-            saveWord(nextWord);
-            
             try {
                 await updateDoc(doc(db, "rooms", "round-1"), {
                     currentRoomID: curRoundId + 1, 
@@ -152,7 +147,11 @@ export default function GamePlay() {
             }
             
             const setHasWonRef = doc(db, "game", "has_won");
-
+            
+            const nextWord = getRandomWord(validGuess);
+            setValidGuess(nextWord);
+            saveWord(nextWord);
+            
             setIsOpen(false);
             setHasWon(false);
             await updateDoc(
@@ -161,13 +160,13 @@ export default function GamePlay() {
                 }
             );
 
-
         }, 10000);
         
         return () => {
             clearTimeout(timer); // cancel if the page is left before the 10 seconds are up
             clearInterval(ticker);
         };
+        
     }, [hasWon, validGuess, curRoundId]);
 
 
@@ -2790,7 +2789,7 @@ export default function GamePlay() {
 
             {/* Window for guessed word*/}
             {/* isOpen && */} 
-            {hasWon && (
+            {isOpen && hasWon && (
             <div className="fixed inset-0 flex items-center justify-center bg-black/50" 
                 onClick={() => setIsOpen(false)}
             >
