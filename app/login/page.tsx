@@ -3,7 +3,7 @@ import {useState, useEffect} from "react";
 import {auth} from "../lib/firebase";
 import {signInWithEmailAndPassword, onAuthStateChanged, signOut} from "firebase/auth";
 import type {User} from "firebase/auth";
-import { Swords } from "lucide-react"
+import { Swords, ArrowLeftToLine, LogOut } from "lucide-react"
 import Link from "next/link"
 
 export default  function Login() {
@@ -49,6 +49,10 @@ export default  function Login() {
     return (
         <div className="flex flex-col items-center justify-center">
 
+            <Link href="/" aria-label="Back to home" className="flex w-fit self-start text-black">
+                <LogOut size={35} aria-hidden="true" />
+            </Link>
+            
             <h1 className="text-4xl text-black font-bold mb-4">Login Page</h1>
 
             {loading ? (

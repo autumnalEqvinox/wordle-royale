@@ -5,6 +5,9 @@ import {createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signI
 import {auth, db} from "../lib/firebase";
 import {doc, setDoc} from "firebase/firestore";
 import { sendEmailVerification } from "firebase/auth";
+import { LogOut } from "lucide-react"
+import Link from "next/link"
+
 
 
 export default function Signup() {
@@ -76,6 +79,9 @@ export default function Signup() {
 
     return (
         <div className="flex flex-col items-center justify-center">
+            <Link href="/" aria-label="Back to home" className="flex w-fit self-start text-black">
+                <LogOut size={35} aria-hidden="true" />
+            </Link>
             <h1 className="text-4xl text-black font-bold mb-4">Sign Up Page</h1>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <input 

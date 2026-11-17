@@ -22,6 +22,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import { isValidWord, getRandomWord } from "@/features/validWords";
 
 export default function GamePlay() {
+    // additional timer constants 
+    const [resetAtMs, setResetAtMs] = useState<number | null>(null);
     // this exists to change the length of the word if need be
     const [MAX_LENGTH, setMaxLength] = useState<number>(5);
     
@@ -101,14 +103,17 @@ export default function GamePlay() {
 
     // after a win, wait 10 seconds, then clear the board and pick a new word
     // updated to match with new round storing system: curRoundId -> finishedRoundId, saves new word and increments currentRoomID in one transaction, clears board and closes the win popup after the transaction completes, removes validGuess from dependency array (word update alone doesn't restart countdown )
+    // there was reset errors so I had to add additional logic for timing 
     useEffect(() => {
-        if (!hasWon || curRoundId === null) return;
+        if (!hasWon || curRoundId === null || resetAtMs === null) return;
 
-        const finishedRoundId = curRoundId 
-        setSecondsLeft(10);
+        const finishedRoundId = curRoundId;
+        const remainingMs = () => Math.max(0, resetAtMs - Date.now());
+
+        setSecondsLeft(Math.ceil(remainingMs() / 1000));
 
         const ticker = setInterval(() => {
-            setSecondsLeft((prev) => Math.max(0, prev - 1));
+            setSecondsLeft(Math.ceil(remainingMs() / 1000));
         }, 1000);
 
         const timer = setTimeout(async () => {
@@ -129,7 +134,7 @@ export default function GamePlay() {
                     }
 
                     transaction.set(wordRef, {currentWord: getRandomWord(currentWord), roundId: crypto.randomUUID(),}, {merge: true});
-                    transaction.update(roomRef, {currentRoomID: finishedRoundId + 1, status:"on-going", winnerID:null,});
+                    transaction.update(roomRef, {currentRoomID: finishedRoundId + 1, status:"on-going", winnerID:null, resetAtMs:null});
                 });
                 setGuessedText([]);
                 setText("");
@@ -138,12 +143,12 @@ export default function GamePlay() {
             } catch (error) {
                 console.error("error resetting round", error);
             }
-        }, 10000);
+        }, remainingMs());
         return () => {
             clearTimeout(timer); // cancel if the page is left before the 10 seconds are up
             clearInterval(ticker);
         };
-    }, [hasWon, validGuess, curRoundId]);
+    }, [hasWon, curRoundId, resetAtMs]);
 
 
 
@@ -214,6 +219,12 @@ export default function GamePlay() {
         const unsubscribe = onSnapshot(
             doc(db, "rooms", "round-1"),
             (snapshot) => {
+                const room = snapshot.data();
+                const won = room?.status === "won";
+                const deadline = room?.resetAtMs;
+
+                setHasWon(won);
+                setResetAtMs(won && typeof deadline === "number" ? deadline : null);
                 // just to see why the currentRoomID isn't working: 
                 console.log("Room exists:", snapshot.exists());
                 console.log("Room data:", snapshot.data());
@@ -279,7 +290,13 @@ export default function GamePlay() {
                     ? { totalGames: increment(1), lastPlayedRoundId: roundId }
                     : {}),
             }, { merge: true });
-
+            if (isCorrect) {
+                transaction.update(roomRef, {
+                status: "won",
+                winnerID: user.uid,
+                resetAtMs: Date.now() + 10_000,
+            });
+        }
             return true;
         });
     }
