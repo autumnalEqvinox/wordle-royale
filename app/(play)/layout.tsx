@@ -428,7 +428,7 @@ export default function PlayLayout({ children }: { children: ReactNode }) {
   //   };
   // }, []);
 
-  //return (
+  return (
   
     <div>
       <header style={{ display: "flex", justifyContent: "flex-start", gap: "30px" }}>
