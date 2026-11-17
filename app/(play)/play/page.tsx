@@ -55,22 +55,13 @@ export default function GamePlay() {
 
     // game/word in Firestore holds the word everyone is trying to guess (field: currentWord) 
     // generates random UID for new round (field: roundId) whenever saveWord() is called to store a new word in Firestore
+    
+    {/* Changing hasWon to be a state that checks our database */}
+    // const [hasWon, setHasWon] = useState(false); // Old code
+
+    // new code to check the database: need to work with line 2575 for isOpen and hasWon popUp window
+    // const hasWonRef = doc(db, "game", "has_won");
     const [hasWon, setHasWon] = useState(false);
-
-    // const firebaseHasWon = () => {
-    //     const hasWonRef = doc(db, "game", "hasWon");
-    //     if (hasWon) {
-    //         updateDoc(hasWonRef, {
-    //             has_won: true
-    //         });
-    //     if (!hasWon) {
-    //         updateDoc(hasWonRef, {
-    //             has_won: false
-    //         });
-    //         }
-    //     }
-    // }
-
 
     const saveWord = async (word: string) => {
     try {
@@ -112,7 +103,6 @@ export default function GamePlay() {
     // want to check what round it is on in the database, 
     // and then if there is no curRoundId, then initialize it
     
-
         return () => unsubscribe();
     }, [userId]);
 
@@ -120,25 +110,32 @@ export default function GamePlay() {
 
     // after a win, wait 10 seconds, then clear the board and pick a new word
     useEffect(() => {
-        if (!hasWon) return;
+        const user = auth.currentUser;
 
-        if (curRoundId === null) 
-            return;
+        if (!hasWon ||
+            curRoundId === null ||
+            user === null
+        ) return;
 
         setSecondsLeft(10);
+        
+        // restart the guesses for a new round
+        
+        // if (curRoundId == null || typeof curRoundId !== "number") return;
+        // // gets the nextRoomId calculated
+        // const nextRoomId = curRoundId + 1;
+        // const nextRoomRef = doc(db, "rooms", String(nextRoomId));
 
         const ticker = setInterval(() => {
             setSecondsLeft((prev) => Math.max(0, prev - 1));
         }, 1000);
 
         const timer = setTimeout(async () => {
+            setText("");
+            setGuessedText([]);
+
             // make a new room and set status as completed
             // setCurRoundId(curRoundId+1);
-
-            const nextWord = getRandomWord(validGuess);
-            setValidGuess(nextWord);
-            saveWord(nextWord);
-            
             try {
                 await updateDoc(doc(db, "rooms", "round-1"), {
                     currentRoomID: curRoundId + 1, 
@@ -148,24 +145,28 @@ export default function GamePlay() {
             } catch (error) {
                 console.error("Failed to update room: ", error);
             }
-
-            // restart the guesses for a new round
             
-            // if (curRoundId == null || typeof curRoundId !== "number") return;
-            // // gets the nextRoomId calculated
-            // const nextRoomId = curRoundId + 1;
-            // const nextRoomRef = doc(db, "rooms", String(nextRoomId));
-
-            setGuessedText([]);
-            setText("");
+            const setHasWonRef = doc(db, "game", "has_won");
+            
+            const nextWord = getRandomWord(validGuess);
+            setValidGuess(nextWord);
+            saveWord(nextWord);
+            
             setIsOpen(false);
             setHasWon(false);
-        }, 10000);
+            await updateDoc(
+                setHasWonRef, {
+                    won: false
+                }
+            );
 
+        }, 10000);
+        
         return () => {
             clearTimeout(timer); // cancel if the page is left before the 10 seconds are up
             clearInterval(ticker);
         };
+        
     }, [hasWon, validGuess, curRoundId]);
 
 
@@ -335,8 +336,30 @@ export default function GamePlay() {
         }
     }
 
+    {/* listens and sets true or false our setHasWon, global state */}
+    useEffect(() => {
+        if (!userId) return;
+
+        const winRef = doc(db, "game", "has_won");
+
+        const unsubscribe = onSnapshot(
+            winRef,
+            (snapshot) => {
+                const won = snapshot.data()?.won === true;
+
+                setHasWon(won);
+                setIsOpen(won);
+            },
+            (error) => {
+                console.error("Unable to listen to game/has_won:", error);
+            }
+        );
+
+        return unsubscribe;
+    }, [userId]);
+
     // Handle Enter from the keyboard or on-screen button.
-    const handleEnter = () => {
+    const handleEnter = async () => {
         if (hasWon) return;
 
         if (!userId) {
@@ -363,9 +386,17 @@ export default function GamePlay() {
 
         setGuessedText((prev) => [...prev, text]);
 
+        const setHasWonRef = doc(db, "game", "has_won");
+
         if (validGuess === text) {
-            setIsOpen(true);
+            await updateDoc(
+                setHasWonRef, {
+                    won: true
+                }
+            );
+
             setHasWon(true);
+            setIsOpen(true);
         }
 
         void savePlayerGuess(text === validGuess);
@@ -393,14 +424,6 @@ export default function GamePlay() {
                 ) {
                     return "bg-green-400";
                 }
-
-                // switch () {
-                //     case (guessedText[row][0] === letter && validGuess[0] === letter): return true;
-                //     (guessedText[row][1] === letter && validGuess[1] === letter) ||
-                //     (guessedText[row][2] === letter && validGuess[2] === letter) ||
-                //     (guessedText[row][3] === letter && validGuess[3] === letter) ||
-                //     (guessedText[row][4] === letter && validGuess[4] === letter)
-                // } 
 
                 color = validGuess.includes(letter)
                     ? "bg-yellow-400"
@@ -1047,6 +1070,9 @@ export default function GamePlay() {
 
             return color;
         };
+
+
+    {/* Create a frequency  */}
 
     const greenLetterDisplay = (placement: number) => {
         // our placement is a check comparison with every letter 
@@ -2762,7 +2788,8 @@ export default function GamePlay() {
             </button>
 
             {/* Window for guessed word*/}
-            {isOpen && (
+            {/* isOpen && */} 
+            {isOpen && hasWon && (
             <div className="fixed inset-0 flex items-center justify-center bg-black/50" 
                 onClick={() => setIsOpen(false)}
             >
