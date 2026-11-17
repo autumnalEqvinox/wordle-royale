@@ -1,10 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Palette, LogOut, X, User } from "lucide-react";
+import { Activity, Palette, LogOut, X, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { setDoc, getDoc, doc } from "firebase/firestore";
+import { setDoc, getDoc, doc, onSnapshot } from "firebase/firestore";
 import { onAuthStateChanged, sendEmailVerification, signOut, type User as FirebaseUser } from "firebase/auth";
 import { auth, db } from "../lib/firebase";
 import Link from "next/link";
@@ -349,6 +349,23 @@ export default function PlayLayout({ children }: { children: ReactNode }) {
     }
   }
 
+  const [isDev, setIsDev] = useState(false);
+  const verifiedUid = session?.verified ? session.user.uid : undefined;
+
+  useEffect(() => {
+    setIsDev(false);
+    if (!verifiedUid) return;
+
+    return onSnapshot(
+      doc(db, "users", verifiedUid),
+      (snapshot) => setIsDev(snapshot.data()?.isDev === true),
+      (error) => {
+        console.error("Failed to load developer access:", error);
+        setIsDev(false);
+      },
+    );
+  }, [verifiedUid]);
+
   if (loading) return <p>Loading...</p>;
   if (!session) return null;
 
@@ -385,6 +402,32 @@ export default function PlayLayout({ children }: { children: ReactNode }) {
     );
   }
 
+  useEffect(() => {
+    let unsubscribeProfile: (() => void) | undefined;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      unsubscribeProfile?.();
+      unsubscribeProfile = undefined;
+      setIsDev(false);
+
+      if (!user) return;
+
+      unsubscribeProfile = onSnapshot(
+        doc(db, "users", user.uid),
+        (snapshot) => setIsDev(snapshot.data()?.isDev === true),
+        (error) => {
+          console.error("Failed to load developer access:", error);
+          setIsDev(false);
+        },
+      );
+    });
+
+    return () => {
+      unsubscribeAuth();
+      unsubscribeProfile?.();
+    };
+  }, []);
+
   return (
     <div>
       <header style={{ display: "flex", justifyContent: "flex-start", gap: "30px" }}>
@@ -392,11 +435,18 @@ export default function PlayLayout({ children }: { children: ReactNode }) {
           <LogOut size={35} aria-hidden="true" />
         </button>
 
-        <PaletteButton />
+  <PaletteButton />
 
-        <Link href="/personalstats" aria-label="View Personal Stats">
-          <User size={35} aria-hidden="true" />
-        </Link>
+  {isDev && (
+    <Link href="/dashboard" aria-label="View Runtime Dashboard">
+      <Activity size={35} aria-hidden="true" />
+    </Link>
+  )}
+
+  <Link href="/personalstats" aria-label="View Personal Stats">
+    <User size={35} aria-hidden="true" />
+  </Link>
+          
       </header>
 
       {message && <p role="status">{message}</p>}
