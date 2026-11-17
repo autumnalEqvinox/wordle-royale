@@ -402,33 +402,34 @@ export default function PlayLayout({ children }: { children: ReactNode }) {
     );
   }
 
-  useEffect(() => {
-    let unsubscribeProfile: (() => void) | undefined;
+  // useEffect(() => {
+  //   let unsubscribeProfile: (() => void) | undefined;
 
-    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-      unsubscribeProfile?.();
-      unsubscribeProfile = undefined;
-      setIsDev(false);
+  //   const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+  //     unsubscribeProfile?.();
+  //     unsubscribeProfile = undefined;
+  //     setIsDev(false);
 
-      if (!user) return;
+  //     if (!user) return;
 
-      unsubscribeProfile = onSnapshot(
-        doc(db, "users", user.uid),
-        (snapshot) => setIsDev(snapshot.data()?.isDev === true),
-        (error) => {
-          console.error("Failed to load developer access:", error);
-          setIsDev(false);
-        },
-      );
-    });
+  //     unsubscribeProfile = onSnapshot(
+  //       doc(db, "users", user.uid),
+  //       (snapshot) => setIsDev(snapshot.data()?.isDev === true),
+  //       (error) => {
+  //         console.error("Failed to load developer access:", error);
+  //         setIsDev(false);
+  //       },
+  //     );
+  //   });
 
-    return () => {
-      unsubscribeAuth();
-      unsubscribeProfile?.();
-    };
-  }, []);
+  //   return () => {
+  //     unsubscribeAuth();
+  //     unsubscribeProfile?.();
+  //   };
+  // }, []);
 
-  return (
+  //return (
+  
     <div>
       <header style={{ display: "flex", justifyContent: "flex-start", gap: "30px" }}>
         <button type="button" onClick={handleLogout} aria-label="Log out">
