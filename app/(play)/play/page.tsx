@@ -2793,13 +2793,13 @@ export default function GamePlay() {
             </button>
 
             {/* Window for guessed word*/}
-            {isOpen && hasWon && roundWinner && (
+            {hasWon && roundWinner && (
 
             <div className="fixed inset-0 flex items-center justify-center bg-black/50" 
                 onClick={() => setIsOpen(false)}
             >
                 <div className="rounded-lg bg-white p-8 text-black">
-                    <p className="text-xl">{roundWinner.name} has won {roundWinner.roundId}!</p>
+                    <p className="text-xl">{roundWinner.name} has won round {roundWinner.roundId}!</p>
                     <p> Word was {roundWinner.word} </p>
                     <p className="text-sm text-gray-600">A new word will be chosen in {secondsLeft} {secondsLeft === 1 ? "second" : "seconds"}.</p>
                         <button onClick={() => setIsOpen(false)} className="bold text-red-800 text-xl hover:underline">
