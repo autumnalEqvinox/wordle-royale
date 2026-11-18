@@ -26,6 +26,12 @@ import type { User } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { isValidWord, getRandomWord } from "@/features/validWords";
 
+type GuessFeedItem = {
+    id: string;
+    username: string;
+    word: string;
+};
+
 export default function GamePlay() {
     // round winner constants  
     const [roundWinner, setRoundWinner] = useState<{
@@ -44,6 +50,16 @@ export default function GamePlay() {
     // need to store guesses in the database, and display the last 5 recent on the
     // the screen, so the letter colors can still work and change
     const [guessedText, setGuessedText] = useState<string[]>([]);
+    const [guessFeed, setGuessFeed] = useState<GuessFeedItem[]>([]);
+    const usernameCache = useRef(new Map<string, Promise<string>>());
+    const guessFeedContainerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const feedContainer = guessFeedContainerRef.current;
+        if (feedContainer) {
+            feedContainer.scrollTop = feedContainer.scrollHeight;
+        }
+    }, [guessFeed]);
 
     // get the last 5 guesses from guessedText by getting the max between 0 (starting), and the max length - 5
     const guessedTextLength = Math.max(0, guessedText.length-5);
@@ -212,6 +228,7 @@ export default function GamePlay() {
     useEffect(() => {
         if (!userId || curRoundId === null) return;
 
+        let isActive = true;
         const queryOfGuesses = query(
             collection(db, "rooms", "round-1", "guesses"),
             where("roundId", "==", curRoundId),
@@ -221,18 +238,73 @@ export default function GamePlay() {
         const unsubscribe = onSnapshot(
             queryOfGuesses, // use the query and display a 'snapshot' of the last guesses
             (snapshot) => {
-                setGuessedText(
-                    snapshot.docs.map(
-                        (document) => document.data().word as string
-                    )
-                );
+                const guesses = snapshot.docs.flatMap((document) => {
+                    const data = document.data();
+                    if (typeof data.word !== "string") return [];
+
+                    return [{
+                        id: document.id,
+                        word: data.word,
+                        submittedBy: typeof data.submittedBy === "string"
+                            ? data.submittedBy
+                            : null,
+                    }];
+                });
+                setGuessedText(guesses.map((guess) => guess.word));
+                setGuessFeed(guesses.map(({ id, word }) => ({
+                    id,
+                    word,
+                    username: "Loading...",
+                })));
+
+                void Promise.all(guesses.map(async (guess) => {
+                    const submittedBy = guess.submittedBy;
+                    if (!submittedBy) {
+                        return { id: guess.id, username: "Player" };
+                    }
+
+                    let usernameRequest = usernameCache.current.get(submittedBy);
+                    if (!usernameRequest) {
+                        usernameRequest = getDoc(doc(db, "playerStats", submittedBy))
+                            .then((playerSnapshot) => {
+                                const username = playerSnapshot.data()?.username;
+                                return typeof username === "string" && username.trim()
+                                    ? username
+                                    : "Player";
+                            })
+                            .catch((error: unknown) => {
+                                usernameCache.current.delete(submittedBy);
+                                throw error;
+                            });
+                        usernameCache.current.set(submittedBy, usernameRequest);
+                    }
+
+                    try {
+                        return {
+                            id: guess.id,
+                            username: await usernameRequest,
+                        };
+                    } catch (error) {
+                        console.error(`Failed to load username for ${submittedBy}:`, error);
+                        return { id: guess.id, username: "Player" };
+                    }
+                })).then((resolvedUsernames) => {
+                    if (!isActive) return;
+                    setGuessFeed((currentFeed) => currentFeed.map((item) => {
+                        const resolved = resolvedUsernames.find(({ id }) => id === item.id);
+                        return resolved ? { ...item, username: resolved.username } : item;
+                    }));
+                });
             },
             (error) => { // if there is an error grabbing the guesses, throw an error
                 console.error("Error with loading guesses:", error);
             }
         );
 
-        return unsubscribe;
+        return () => {
+            isActive = false;
+            unsubscribe();
+        };
     }, [userId, curRoundId]);
 
 
@@ -1112,7 +1184,8 @@ export default function GamePlay() {
             // also removed redundant functions that were not needed anymore since the new function handles both keyboard and enter button submission
         />
             {/* p-14 */}
-        <main className="flex flex-col items-center">
+        <main className="grid grid-cols-1 items-start lg:grid-cols-[minmax(0,1fr)_332px_minmax(0,1fr)] lg:gap-x-6">
+            <div className="flex flex-col items-center lg:col-start-2">
             {/* Countdown shown on the page itself while waiting for the next word */}
             {hasWon && (
                 <p className="mb-4 text-xl font-bold">
@@ -2811,6 +2884,34 @@ export default function GamePlay() {
             )}
         </div>
     </div>
+            </div>
+        {userId && curRoundId !== null && (
+            <section
+                aria-label="Guess feed"
+                className="mt-6 w-full max-w-sm border border-gray-400 p-3 lg:col-start-3 lg:row-start-1 lg:mt-24"
+            >
+                <h2 className="mb-2 font-semibold">Guess feed</h2>
+                <div
+                    ref={guessFeedContainerRef}
+                    className="max-h-80 overflow-y-auto pr-3"
+                    aria-live="polite"
+                >
+                    {guessFeed.length === 0 ? (
+                        <p className="text-sm text-gray-500">No guesses yet.</p>
+                    ) : (
+                        guessFeed.map(({ id, username, word }) => (
+                            <div
+                                key={id}
+                                className="flex items-center justify-between gap-4 border-b border-gray-200 py-2 last:border-b-0"
+                            >
+                                <span className="truncate">{username}</span>
+                                <span className="shrink-0 font-mono">{word}</span>
+                            </div>
+                        ))
+                    )}
+                </div>
+            </section>
+        )}
         </main>
         <Leaderboard/>
         <PlayerPresence/>
