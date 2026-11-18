@@ -64,22 +64,22 @@ export default function GamePlay() {
 
     const savingGuess = useRef(false);
 
-    {/* Yellow indicator */}
-    const letterChecker = (letter: string) => {
-        let count = 0;
+    // {/* Yellow indicator */}
+    // const letterChecker = (letter: string) => {
+    //     let count = 0;
 
-        for (let i = 0; i < 5; i++) {
-            if (!validGuess[i].includes(letter)) {
-                return 0;
-            } else if (validGuess[i] === letter) {
-                count += 0;
-            } else {
-                count ++;
-            }
-        }
+    //     for (let i = 0; i < 5; i++) {
+    //         if (!validGuess[i].includes(letter)) {
+    //             return 0;
+    //         } else if (validGuess[i] === letter) {
+    //             count += 0;
+    //         } else {
+    //             count ++;
+    //         }
+    //     }
 
-        return count;
-    }
+    //     return count;
+    // }
 
     
     {/* Grab each letter and return how many duplicates, and then save
