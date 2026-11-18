@@ -314,7 +314,7 @@ export default function GamePlay() {
                     if (!isActive) return;
                     setGuessFeed((currentFeed) => currentFeed.map((item) => {
                         const resolved = resolvedUsernames.find(({ id }) => id === item.id);
-                        return resolved ? { ...item, username: resolved.username } : item;
+                        return { ...item, username: resolved?.username ?? item.username };
                     }));
                 });
             },
