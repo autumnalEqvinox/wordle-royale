@@ -9,6 +9,7 @@ import { auth, db } from "@/app/lib/firebase";
 import {
     doc,
     updateDoc,
+    getDoc,
     query,
     increment,
     collection,
