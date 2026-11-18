@@ -2763,7 +2763,8 @@ export default function GamePlay() {
             </button>
 
             {/* Window for guessed word*/}
-            {isOpen && hasWon && (
+            {/* isOpen && */}
+            {hasWon && (
             <div className="fixed inset-0 flex items-center justify-center bg-black/50" 
                 onClick={() => setIsOpen(false)}
             >
