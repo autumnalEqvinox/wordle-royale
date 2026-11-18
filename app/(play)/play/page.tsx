@@ -8,12 +8,17 @@ import Leaderboard from "@/components/Leaderboard";
 import { auth, db } from "@/app/lib/firebase";
 import {
     doc,
+    updateDoc,
+    getDoc,
+    setDoc,
+    addDoc,
     query,
     increment,
     collection,
     serverTimestamp,
     orderBy,
     onSnapshot,
+    getDocFromServer,
     runTransaction,
     where
 } from "firebase/firestore";
@@ -117,22 +122,22 @@ export default function GamePlay() {
         }, 1000);
 
         const timer = setTimeout(async () => {
-            // make a new room and set status as completed
-            // setCurRoundId(curRoundId+1);
             const roomRef = doc(db, "rooms", "round-1");
             const wordRef = doc(db, "game", "word");
-
+            const setHasWonRef = doc(db, "game", "has_won");
+            
             try {
+                
                 await runTransaction(db, async(transaction) => {
                     const room = await transaction.get(roomRef);
                     if (room.data()?.currentRoomID !== finishedRoundId) return;
-
+                    
                     const wordSnapshot = await transaction.get(wordRef);
                     const currentWord = wordSnapshot.data()?.currentWord;
                     if (typeof currentWord !== "string") {
                         throw new Error("Word missing from db");
                     }
-
+                    
                     transaction.set(wordRef, {currentWord: getRandomWord(currentWord), roundId: crypto.randomUUID(),}, {merge: true});
                     transaction.update(roomRef, {currentRoomID: finishedRoundId + 1, status:"on-going", winnerID:null, resetAtMs:null});
                 });
@@ -140,6 +145,12 @@ export default function GamePlay() {
                 setText("");
                 setIsOpen(false);
                 setHasWon(false);
+                
+                await updateDoc(
+                    setHasWonRef, {
+                        won: false
+                    }
+                );
             } catch (error) {
                 console.error("error resetting round", error);
             }
@@ -331,6 +342,8 @@ export default function GamePlay() {
         const isCorrect = word === validGuess;
         savingGuess.current = true; 
 
+        // reference for hasWon reference
+        const setHasWonRef = doc(db, "game", "has_won");
 
         try { 
             const saved = await savePlayerGuess(word, isCorrect);
@@ -341,6 +354,12 @@ export default function GamePlay() {
             setText((current) => current === word ? "" : current);
 
             if (isCorrect) {
+                await updateDoc(
+                    setHasWonRef, {
+                        won: true
+                    }
+                );
+
                 setIsOpen(true);
                 setHasWon(true);
             }
@@ -2744,7 +2763,7 @@ export default function GamePlay() {
             </button>
 
             {/* Window for guessed word*/}
-            {isOpen && (
+            {isOpen && hasWon && (
             <div className="fixed inset-0 flex items-center justify-center bg-black/50" 
                 onClick={() => setIsOpen(false)}
             >
