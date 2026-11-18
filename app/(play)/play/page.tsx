@@ -22,6 +22,12 @@ import { onAuthStateChanged } from "firebase/auth";
 import { isValidWord, getRandomWord } from "@/features/validWords";
 
 export default function GamePlay() {
+    // round winner constants  
+    const [roundWinner, setRoundWinner] = useState<{
+    roundId: number;
+    name: string;
+    word: string;
+} | null>(null);
     // additional timer constants 
     const [resetAtMs, setResetAtMs] = useState<number | null>(null);
     // this exists to change the length of the word if need be
@@ -124,8 +130,15 @@ export default function GamePlay() {
 
             try {
                 await runTransaction(db, async(transaction) => {
-                    const room = await transaction.get(roomRef);
-                    if (room.data()?.currentRoomID !== finishedRoundId) return;
+                    const roomSnapshot = await transaction.get(roomRef);
+                    const room = roomSnapshot.data();
+                    if (
+                        room?.currentRoomID !== finishedRoundId || 
+                        room?.status !== "won" || 
+                        room?.resetAtMs !== resetAtMs
+                    ) {
+                        return;
+                    }
 
                     const wordSnapshot = await transaction.get(wordRef);
                     const currentWord = wordSnapshot.data()?.currentWord;
@@ -134,7 +147,7 @@ export default function GamePlay() {
                     }
 
                     transaction.set(wordRef, {currentWord: getRandomWord(currentWord), roundId: crypto.randomUUID(),}, {merge: true});
-                    transaction.update(roomRef, {currentRoomID: finishedRoundId + 1, status:"on-going", winnerID:null, resetAtMs:null});
+                    transaction.update(roomRef, {currentRoomID: finishedRoundId + 1, status:"on-going", winnerID:null, winnerName:null, winningWord: null, resetAtMs:null});
                 });
                 setGuessedText([]);
                 setText("");
@@ -220,29 +233,36 @@ export default function GamePlay() {
             doc(db, "rooms", "round-1"),
             (snapshot) => {
                 const room = snapshot.data();
+                const roundId = room?.currentRoomID;
                 const won = room?.status === "won";
                 const deadline = room?.resetAtMs;
 
+                setCurRoundId(typeof roundId === "number" ? roundId : null);
                 setHasWon(won);
                 setResetAtMs(won && typeof deadline === "number" ? deadline : null);
+                setRoundWinner(
+                    won && typeof roundId === "number"
+                        ? {
+                            roundId,
+                            name:
+                                typeof room?.winnerName === "string"
+                                    ? room.winnerName
+                                    : "player",
+                            word: 
+                                typeof room?.winningWord === "string"
+                                    ? room.winningWord
+                                    : "",
+                        }
+                        : null
+                );
+
+                setIsOpen(won);
                 // just to see why the currentRoomID isn't working: 
                 console.log("Room exists:", snapshot.exists());
                 console.log("Room data:", snapshot.data());
                 console.log("Round ID:", snapshot.data()?.currentRoomID);
                 console.log("Round ID type:", typeof snapshot.data()?.currentRoomID);
 
-
-                const roundId = snapshot.data()?.currentRoomID;
-                console.log(roundId);
-                
-                if (typeof roundId === "number") {
-                    setCurRoundId(roundId);
-                } else {
-                    setCurRoundId(null);
-                    console.error(
-                        "rooms/main is missing a numeric currentRoundId"
-                    );
-                }
             },
             (error) => {
                 console.error("Error loading current round:", error);
@@ -254,7 +274,7 @@ export default function GamePlay() {
 
 
     // Save the guess and update player statistics.
-    async function savePlayerGuess(word: string, isCorrect: boolean) {
+    async function savePlayerGuess(word: string) {
         const user = auth.currentUser;
         const roundId = curRoundId;
 
@@ -262,16 +282,26 @@ export default function GamePlay() {
         await initializePlayer(user);
 
         const roomRef = doc(db, "rooms", "round-1");
+        const wordRef = doc(db, "game", "word");
         const playerRef = doc(db, "playerStats", user.uid);
         const guessRef = doc(collection(roomRef, "guesses"));
+        const resultRef = doc(db, "rooms", "round-1", "roundResults", String(roundId));
 
         return runTransaction(db, async (transaction) => {
             const room = (await transaction.get(roomRef)).data();
             const player = (await transaction.get(playerRef)).data();
+            const game = (await transaction.get(wordRef)).data();
 
             if (room?.currentRoomID !== roundId || room.status !== "on-going") {
                 return false;
             }
+
+            if (!player || typeof game?.currentWord !== "string") {
+                throw new Error("Word/ player is missing");
+            }
+
+            const isCorrect = word ===game.currentWord;
+            const winnerName = player.username || user.displayName || "Player";
 
             const firstGuessThisRound = player?.lastPlayedRoundId !== roundId;
 
@@ -283,19 +313,30 @@ export default function GamePlay() {
             });
 
             transaction.set(playerRef, {
-                ...(player ? {} : { username: user.displayName || "Player" }),
                 totalGuesses: increment(1),
                 wins: increment(isCorrect ? 1 : 0),
                 ...(firstGuessThisRound
                     ? { totalGames: increment(1), lastPlayedRoundId: roundId }
                     : {}),
             }, { merge: true });
+
             if (isCorrect) {
                 transaction.update(roomRef, {
                 status: "won",
                 winnerID: user.uid,
+                winnerName,
+                winningWord: word,
                 resetAtMs: Date.now() + 10_000,
             });
+
+            transaction.set(resultRef, {
+                roundId,
+                winnerID: user.uid,
+                winnerName,
+                winningWord: word,
+                winningGuessID: guessRef.id,
+                wonAt: serverTimestamp(),
+            })
         }
             return true;
         });
@@ -328,22 +369,17 @@ export default function GamePlay() {
         }
 
         const word = text;
-        const isCorrect = word === validGuess;
         savingGuess.current = true; 
 
 
         try { 
-            const saved = await savePlayerGuess(word, isCorrect);
+            const saved = await savePlayerGuess(word);
             if (!saved) {
                 alert("No more guessing");
                 return;
             }
             setText((current) => current === word ? "" : current);
 
-            if (isCorrect) {
-                setIsOpen(true);
-                setHasWon(true);
-            }
         } catch (error) {
             console.error("couldn't save guess:", error);
             alert("Couldn't save guess. Please try again");
@@ -2744,12 +2780,13 @@ export default function GamePlay() {
             </button>
 
             {/* Window for guessed word*/}
-            {isOpen && (
+            {isOpen && hasWon && roundWinner && (
             <div className="fixed inset-0 flex items-center justify-center bg-black/50" 
                 onClick={() => setIsOpen(false)}
             >
                 <div className="rounded-lg bg-white p-8 text-black">
-                    <p className="text-xl">CONGRATS, THE CURRENT WORD IS '{validGuess}'!</p>
+                    <p className="text-xl">{roundWinner.name} has won {roundWinner.roundId}!</p>
+                    <p> Word was {roundWinner.word} </p>
                     <p className="text-sm text-gray-600">A new word will be chosen in {secondsLeft} {secondsLeft === 1 ? "second" : "seconds"}.</p>
                         <button onClick={() => setIsOpen(false)} className="bold text-red-800 text-xl hover:underline">
                             Back to Play
