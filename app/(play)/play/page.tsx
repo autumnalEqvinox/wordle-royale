@@ -9,16 +9,12 @@ import { auth, db } from "@/app/lib/firebase";
 import {
     doc,
     updateDoc,
-    getDoc,
-    setDoc,
-    addDoc,
     query,
     increment,
     collection,
     serverTimestamp,
     orderBy,
     onSnapshot,
-    getDocFromServer,
     runTransaction,
     where
 } from "firebase/firestore";
@@ -82,20 +78,46 @@ export default function GamePlay() {
     // generates random UID for new round (field: roundId) whenever saveWord() is called to store a new word in Firestore
     const [hasWon, setHasWon] = useState(false);
 
-    // const firebaseHasWon = () => {
-    //     const hasWonRef = doc(db, "game", "hasWon");
-    //     if (hasWon) {
-    //         updateDoc(hasWonRef, {
-    //             has_won: true
-    //         });
-    //     if (!hasWon) {
-    //         updateDoc(hasWonRef, {
-    //             has_won: false
-    //         });
-    //         }
-    //     }
-    // }
     const savingGuess = useRef(false);
+
+    {/* Yellow indicator */}
+    const letterChecker = (letter: string) => {
+        let count = 0;
+
+        for (let i = 0; i < 5; i++) {
+            if (!validGuess[i].includes(letter)) {
+                return 0;
+            } else if (validGuess[i] === letter) {
+                count += 0;
+            } else {
+                count ++;
+            }
+        }
+
+        return count;
+    }
+
+    
+    {/* Grab each letter and return how many duplicates, and then save
+        each of the values for each of the rows */}
+
+    const letterDuplicateCheck = (letter: string, row: number, box: number) => {
+        const guess = guessedText[row];
+        let count = 0;
+        for (const answerLetter of validGuess) {
+            if (answerLetter === letter) {
+                count++;
+            }
+        }
+
+        for (let i = 0; i < guess.length; i++) {
+            if (guess[i] === letter && (validGuess[i] === letter || i < box)) {
+                count--;
+            }
+        }
+
+        return count > 0;
+    };
 
 
     // on load, use the stored word, or pick and store one if there is none yet
@@ -478,6 +500,10 @@ export default function GamePlay() {
         //       I need to adjust to check for every word. probably just keep the state of before and 
         // then update the letters over time. like keeping a state of 5 letters, and then
         // sending and updating it over time, saves space and code
+
+
+        {/*  for loop to check how many letter are in the valid word  */}
+
 
 
     {/* Code for button letters color changing visibility */}
@@ -1172,6 +1198,10 @@ export default function GamePlay() {
         return isGreen;
     };
 
+
+    // maybe have it where if there are any yellows not in those spots, return how many, and run one pull for each one
+    // if validWord[0] == green, skip; if gray, skip; if yellow, do a frequency and show how many are valid
+
         return (
             <>
         <KeyboardDetector
@@ -1247,12 +1277,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[0] === guessedText[guessedTextLength][0]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength][0])
-                                    ? "bg-yellow-400"
-                                    : validGuess[0] != guessedText[guessedTextLength][0]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength][0], guessedTextLength, 0)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                 >
                     
                     {guessedText[guessedTextLength] != null && guessedText[guessedTextLength] != "" // checks to see if there is a submission
@@ -1276,12 +1304,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[1] === guessedText[guessedTextLength][1]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength][1])
-                                    ? "bg-yellow-400"
-                                    : validGuess[1] != guessedText[guessedTextLength][1]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength][1], guessedTextLength, 1)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength] != null && guessedText[guessedTextLength] != "" 
                         ? guessedText[guessedTextLength][1] 
@@ -1300,12 +1326,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[2] === guessedText[guessedTextLength][2]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength][2])
-                                    ? "bg-yellow-400"
-                                    : validGuess[2] != guessedText[guessedTextLength][2]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength][2], guessedTextLength, 2)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength] != null && guessedText[guessedTextLength] != "" 
                         ? guessedText[guessedTextLength][2] 
@@ -1323,12 +1347,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[3] === guessedText[guessedTextLength][3]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength][3])
-                                    ? "bg-yellow-400"
-                                    : validGuess[3] != guessedText[guessedTextLength][3]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength][3], guessedTextLength, 3)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength] != null && guessedText[guessedTextLength] != "" 
                         ? guessedText[guessedTextLength][3] 
@@ -1346,12 +1368,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[4] === guessedText[guessedTextLength][4]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength][4])
-                                    ? "bg-yellow-400"
-                                    : validGuess[4] != guessedText[guessedTextLength][4]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength][4], guessedTextLength, 4)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength] != null && guessedText[guessedTextLength] != "" 
                         ? guessedText[guessedTextLength][4] 
@@ -1370,12 +1390,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[0] === guessedText[guessedTextLength+1][0]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength+1][0])
-                                    ? "bg-yellow-400"
-                                    : validGuess[0] != guessedText[guessedTextLength+1][0]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+1][0], guessedTextLength+1, 0)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength+1] != null && guessedText[guessedTextLength+1] != "" 
                         ? guessedText[guessedTextLength+1][0] 
@@ -1394,12 +1412,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[1] === guessedText[guessedTextLength+1][1]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength+1][1])
-                                    ? "bg-yellow-400"
-                                    : validGuess[1] != guessedText[guessedTextLength+1][1]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+1][1], guessedTextLength+1, 1)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
 
                     {guessedText[guessedTextLength+1] != null && guessedText[guessedTextLength+1] != "" 
@@ -1419,12 +1435,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[2] === guessedText[guessedTextLength+1][2]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength+1][2])
-                                    ? "bg-yellow-400"
-                                    : validGuess[2] != guessedText[guessedTextLength+1][2]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+1][2], guessedTextLength+1, 2)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength+1] != null && guessedText[guessedTextLength+1] != "" 
                         ? guessedText[guessedTextLength+1][2] 
@@ -1442,12 +1456,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[3] === guessedText[guessedTextLength+1][3]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength+1][3])
-                                    ? "bg-yellow-400"
-                                    : validGuess[3] != guessedText[guessedTextLength+1][3]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+1][3], guessedTextLength+1, 3)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength+1] != null && guessedText[guessedTextLength+1] != "" 
                         ? guessedText[guessedTextLength+1][3] 
@@ -1465,12 +1477,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[4] === guessedText[guessedTextLength+1][4]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength+1][4])
-                                    ? "bg-yellow-400"
-                                    : validGuess[4] != guessedText[guessedTextLength+1][4]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`} 
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+1][4], guessedTextLength+1, 4)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {/* 
                         Add some hidden feature that when clicked 
@@ -1497,12 +1507,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[0] === guessedText[guessedTextLength+2][0]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength+2][0])
-                                    ? "bg-yellow-400"
-                                    : validGuess[0] != guessedText[guessedTextLength+2][0]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+2][0], guessedTextLength+2, 0)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength+2] != null && guessedText[guessedTextLength+2] != "" 
                         ? guessedText[guessedTextLength+2][0] 
@@ -1521,12 +1529,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[1] === guessedText[guessedTextLength+2][1]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength+2][1])
-                                    ? "bg-yellow-400"
-                                    : validGuess[1] != guessedText[guessedTextLength+2][1]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+2][1], guessedTextLength+2, 1)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength+2] != null && guessedText[guessedTextLength+2] != "" 
                         ? guessedText[guessedTextLength+2][1] 
@@ -1545,12 +1551,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[2] === guessedText[guessedTextLength+2][2]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength+2][2])
-                                    ? "bg-yellow-400"
-                                    : validGuess[2] != guessedText[guessedTextLength+2][2]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+2][2], guessedTextLength+2, 2)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength+2] != null && guessedText[guessedTextLength+2] != "" 
                         ? guessedText[guessedTextLength+2][2] 
@@ -1568,12 +1572,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[3] === guessedText[guessedTextLength+2][3]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength+2][3])
-                                    ? "bg-yellow-400"
-                                    : validGuess[3] != guessedText[guessedTextLength+2][3]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+2][3], guessedTextLength+2, 3)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength+2] != null && guessedText[guessedTextLength+2] != "" 
                         ? guessedText[guessedTextLength+2][3] 
@@ -1592,12 +1594,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[4] === guessedText[guessedTextLength+2][4]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength+2][4])
-                                    ? "bg-yellow-400"
-                                    : validGuess[4] != guessedText[guessedTextLength+2][4]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+2][4], guessedTextLength+2, 4)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength+2] != null && guessedText[guessedTextLength+2] != "" 
                         ? guessedText[guessedTextLength +2][4] 
@@ -1617,12 +1617,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[0] === guessedText[guessedTextLength + 3][0]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength + 3][0])
-                                    ? "bg-yellow-400"
-                                    : validGuess[0] != guessedText[guessedTextLength + 3][0]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+3][0], guessedTextLength+3, 0)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength + 3] != null && guessedText[guessedTextLength + 3] != "" 
                         ? guessedText[guessedTextLength + 3][0] 
@@ -1641,12 +1639,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[1] === guessedText[guessedTextLength + 3][1]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength + 3][1])
-                                    ? "bg-yellow-400"
-                                    : validGuess[1] != guessedText[guessedTextLength + 3][1]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+3][1], guessedTextLength+3, 1)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength + 3] != null && guessedText[guessedTextLength + 3] != "" 
                         ? guessedText[guessedTextLength + 3][1] 
@@ -1665,12 +1661,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[2] === guessedText[guessedTextLength + 3][2]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength + 3][2])
-                                    ? "bg-yellow-400"
-                                    : validGuess[2] != guessedText[guessedTextLength + 3][2]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+3][2], guessedTextLength+3, 2)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength + 3] != null && guessedText[guessedTextLength + 3] != "" 
                         ? guessedText[guessedTextLength + 3][2] 
@@ -1688,12 +1682,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[3] === guessedText[guessedTextLength + 3][3]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength + 3][3])
-                                    ? "bg-yellow-400"
-                                    : validGuess[3] != guessedText[guessedTextLength + 3][3]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+3][3], guessedTextLength+3, 3)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength + 3] != null && guessedText[guessedTextLength + 3] != "" 
                         ? guessedText[guessedTextLength + 3][3] 
@@ -1711,12 +1703,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[4] === guessedText[guessedTextLength + 3][4]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength + 3][4])
-                                    ? "bg-yellow-400"
-                                    : validGuess[4] != guessedText[guessedTextLength + 3][4]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+3][4], guessedTextLength+3, 4)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength + 3] != null && guessedText[guessedTextLength + 3] != "" 
                         ? guessedText[guessedTextLength + 3][4] 
@@ -1735,12 +1725,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[0] === guessedText[guessedTextLength + 4][0]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength + 4][0])
-                                    ? "bg-yellow-400"
-                                    : validGuess[0] != guessedText[guessedTextLength + 4][0]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+4][0], guessedTextLength+4, 0)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength + 4] != null && guessedText[guessedTextLength + 4] != "" 
                         ? guessedText[guessedTextLength + 4][0] 
@@ -1759,12 +1747,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[1] === guessedText[guessedTextLength + 4][1]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength + 4][1])
-                                    ? "bg-yellow-400"
-                                    : validGuess[1] != guessedText[guessedTextLength + 4][1]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+4][1], guessedTextLength+4, 1)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength + 4] != null && guessedText[guessedTextLength + 4] != "" 
                         ? guessedText[guessedTextLength + 4][1] 
@@ -1783,12 +1769,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[2] === guessedText[guessedTextLength + 4][2]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength + 4][2])
-                                    ? "bg-yellow-400"
-                                    : validGuess[2] != guessedText[guessedTextLength + 4][2]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+4][2], guessedTextLength+4, 2)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength + 4] != null && guessedText[guessedTextLength + 4] != "" 
                         ? guessedText[guessedTextLength + 4][2] 
@@ -1807,12 +1791,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[3] === guessedText[guessedTextLength + 4][3]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength + 4][3])
-                                    ? "bg-yellow-400"
-                                    : validGuess[3] != guessedText[guessedTextLength + 4][3]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+4][3], guessedTextLength+4, 3)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength + 4] != null && guessedText[guessedTextLength + 4] != "" 
                         ? guessedText[guessedTextLength + 4][3] 
@@ -1831,12 +1813,10 @@ export default function GamePlay() {
                             ? ""
                             : validGuess[4] === guessedText[guessedTextLength + 4][4]
                                 ? "bg-green-400"
-                                : validGuess.includes(guessedText[guessedTextLength + 4][4])
-                                    ? "bg-yellow-400"
-                                    : validGuess[4] != guessedText[guessedTextLength + 4][4]
-                                        ? "bg-gray-400"
-                                        : ""
-                    }`}
+                                : !letterDuplicateCheck(guessedText[guessedTextLength+4][4], guessedTextLength+4, 4)
+                                    ? "bg-gray-400"
+                                    : "bg-yellow-400"
+                            }`}
                     >
                     {guessedText[guessedTextLength + 4] != null && guessedText[guessedTextLength + 4] != "" 
                         ? guessedText[guessedTextLength + 4][4] 
@@ -2866,7 +2846,7 @@ export default function GamePlay() {
             </button>
 
             {/* Window for guessed word*/}
-            {hasWon && roundWinner && (
+            {isOpen && hasWon && roundWinner && (
 
             <div className="fixed inset-0 flex items-center justify-center bg-black/50" 
                 onClick={() => setIsOpen(false)}
