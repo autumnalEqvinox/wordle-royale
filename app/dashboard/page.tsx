@@ -48,6 +48,7 @@ export default function DashboardPage() {
   >("checking");
   const [network, setNetwork] = useState<{
     online: boolean;
+    connectionInfoAvailable: boolean;
     type: string | null;
     rtt: number | null;
   } | null>(null);
@@ -109,6 +110,7 @@ export default function DashboardPage() {
     const updateNetwork = () => {
       setNetwork({
         online: navigator.onLine,
+        connectionInfoAvailable: connection !== undefined,
         type: connection?.effectiveType ?? connection?.type ?? null,
         rtt:
           typeof connection?.rtt === "number" &&
@@ -332,14 +334,23 @@ export default function DashboardPage() {
             <div>
               <dt className="text-sm text-slate-600">Connection type</dt>
               <dd className="mt-1 font-medium">
-                {network?.type ?? "Not reported by browser"}
+                {network === null
+                  ? "Checking…"
+                  : network.type ??
+                    (network.connectionInfoAvailable
+                      ? "Not reported by browser"
+                      : "Unavailable in this browser")}
               </dd>
             </div>
             <div>
               <dt className="text-sm text-slate-600">Estimated network RTT</dt>
               <dd className="mt-1 font-medium">
                 {network?.rtt === null || network === null
-                  ? "Not reported by browser"
+                  ? network === null
+                    ? "Checking…"
+                    : network.connectionInfoAvailable
+                      ? "Not reported by browser"
+                      : "Unavailable in this browser"
                   : `${network.rtt} ms`}
               </dd>
             </div>
@@ -357,8 +368,8 @@ export default function DashboardPage() {
             </div>
           </dl>
           <p className="mt-4 text-sm text-slate-500">
-            Network type and RTT are browser estimates and may not be available
-            on every device.
+            Network type and RTT are browser estimates. Some browsers do not
+            expose this information.
           </p>
         </section>
 
