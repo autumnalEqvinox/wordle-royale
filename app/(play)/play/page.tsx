@@ -81,6 +81,32 @@ export default function GamePlay() {
 
     const savingGuess = useRef(false);
 
+    const [backgroundColor, setBackgroundColor] = useState<string>();
+
+    useEffect(() => {
+    let unsubscribeProfile: (() => void) | undefined;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+        unsubscribeProfile?.();
+        setBackgroundColor(undefined);
+
+        if (!user) return;
+
+        const userRef = doc(db, "users", user.uid);
+
+        unsubscribeProfile = onSnapshot(userRef, (snapshot) => {
+        const color = snapshot.data()?.color;
+        setBackgroundColor(typeof color === "string" ? color : undefined);
+        });
+    });
+
+    return () => {
+        unsubscribeAuth();
+        unsubscribeProfile?.();
+    };
+    }, []);
+
+
     {/* Yellow indicator */}
     const letterChecker = (letter: string) => {
         let count = 0;
@@ -1215,7 +1241,8 @@ export default function GamePlay() {
             // also removed redundant functions that were not needed anymore since the new function handles both keyboard and enter button submission
         />
             {/* p-14 */}
-        <main className="grid grid-cols-1 items-start lg:grid-cols-[minmax(0,1fr)_332px_minmax(0,1fr)] lg:gap-x-6">
+        <main className={`grid grid-cols-1 items-start bg-white
+                        lg:grid-cols-[minmax(0,1fr)_332px_minmax(0,1fr)] lg:gap-x-6`}>
             <div className="flex flex-col items-center lg:col-start-2">
             {/* Countdown shown on the page itself while waiting for the next word */}
             {hasWon && (
@@ -2884,6 +2911,7 @@ export default function GamePlay() {
                             <div
                                 key={id}
                                 className="flex items-center justify-between gap-4 border-b border-gray-200 py-2 last:border-b-0"
+                                style={{ backgroundColor }}
                             >
                                 <span className="truncate">{username}</span>
                                 <span className="shrink-0 font-mono">{word}</span>
