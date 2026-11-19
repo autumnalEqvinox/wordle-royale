@@ -81,22 +81,22 @@ export default function GamePlay() {
 
     const savingGuess = useRef(false);
 
-    {/* Yellow indicator */}
-    const letterChecker = (letter: string) => {
-        let count = 0;
+    // {/* Yellow indicator */}
+    // const letterChecker = (letter: string) => {
+    //     let count = 0;
 
-        for (let i = 0; i < 5; i++) {
-            if (!validGuess[i].includes(letter)) {
-                return 0;
-            } else if (validGuess[i] === letter) {
-                count += 0;
-            } else {
-                count ++;
-            }
-        }
+    //     for (let i = 0; i < 5; i++) {
+    //         if (!validGuess[i].includes(letter)) {
+    //             return 0;
+    //         } else if (validGuess[i] === letter) {
+    //             count += 0;
+    //         } else {
+    //             count ++;
+    //         }
+    //     }
 
-        return count;
-    }
+    //     return count;
+    // }
 
     
     {/* Grab each letter and return how many duplicates, and then save
@@ -1953,7 +1953,7 @@ export default function GamePlay() {
             </div>
 
     {/* {This is the keyboard buttons} */}
-        <div className="flex flex-col items-center gap-2 mt-8 w-full max-w-full">
+        <div className="flex flex-col items-center gap-2 mt-8 w-full max-w-full md:half-w-full">
             <div key={100} className="flex w-full justify-center gap-1 sm:gap-2">
                 <button key="Q-key" 
                 className={`h-10 w-10 ${
@@ -2593,11 +2593,11 @@ export default function GamePlay() {
                     pressedKey === "BACKSPACE"
                     ? "bg-red-500"
                     : "bg-gray-300"
-                } hover:bg-red-500`}
+                } hover:bg-red-500 justify-center`}
                 onClick={() => setText((prev) => prev.slice(0, -1))}
                 > 
 
-                <Delete size={32} aria-hidden="true"> </Delete>
+                <Delete size={32} aria-hidden="true" className="-translate-x-[3px]">  </Delete>
             </button>
 
         </div>
@@ -2865,7 +2865,7 @@ export default function GamePlay() {
             )}
         </div>
     </div>
-            </div>
+     </div>
         {userId && curRoundId !== null && (
             <section
                 aria-label="Guess feed"
@@ -2892,7 +2892,7 @@ export default function GamePlay() {
                     )}
                 </div>
             </section>
-        )}
+            )}
         </main>
         <Leaderboard/>
         <PlayerPresence/>
