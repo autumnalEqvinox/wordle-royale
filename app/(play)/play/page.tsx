@@ -103,19 +103,15 @@ export default function GamePlay() {
     {/* wanted to add a fun east egg that changes the colors to yellow and green if the text is suppoed 
         to be white (for darker backgrounds) */}
     function guessFeedColorValidation(word: string, colorText: string) {
-        if (!userId) {
+        if (!userId ||
+            colorText !== "#000000" && colorText !== "#FFFFFF"
+        ) {
             return word;
         }
-        
-        // For now, return black color, no easter egg for them
-        if (colorText === "#000000"){
-            return word;
-        }
-
         const letters = [];
-
-        {/* this will be solely for white text on a 
-            darker background, for now */}
+        
+        // for if the text color is black --> lighter backgrounds
+        if (colorText === "#000000"){
         
             // loop over each letter and check if it is in the word, in the wrong place, or not at all
             for (let i = 0; i < word.length; i++) {
@@ -132,16 +128,64 @@ export default function GamePlay() {
 
                 // show a green letter if in the right spot
                 if (letter === validGuess[i]) {
-                    color = "#4ADE80";
+                    color = "#008533af"; // show green letters if there is a match
+
                 } else {
                     for (let j = 0; j < word.length; j++) {
+                        // j < i --> if the duplicate letter appears before the placement of our
+                        //  letter placement we are checking, return that letter color first
                         if (word[j] === letter && (word[j] === validGuess[j] || j < i)) {
                             count--;
                         }
                     }
 
                     if (count > 0) { // #FACC15
-                        color = "#ffe26f";
+                        color = "#b38f00bb";
+                    }
+                }
+
+                letters.push(
+                    <span key={i+120} style={{ color }}>
+                        {letter}
+                    </span>
+                );
+            }
+        }
+
+        if (colorText === "#FFFFFF") {
+        {/* this will be solely for white text on a 
+            darker background, for now: 
+                                        our "#FFFFFF"
+            */}
+        
+            // loop over each letter and check if it is in the word, in the wrong place, or not at all
+            for (let i = 0; i < word.length; i++) {
+                const letter = word[i];
+                let color = colorText;
+                let count = 0;
+
+                // grab each valid letter to use for count
+                for (const answerLetter of validGuess) {
+                    if (answerLetter === letter) {
+                        count++;
+                    }
+                }
+
+                // show a green letter if in the right spot
+                if (letter === validGuess[i]) {
+                    color = "#4ADE80"; // show green letters if there is a match
+
+                } else {
+                    // second index to check every letter and see if there are any duplicates
+                    for (let j = 0; j < word.length; j++) {
+                        // there are multiple letters and the letter is in a valid guess
+                        if (word[j] === letter && (word[j] === validGuess[j] || j < i)) { 
+                            count--;
+                        }
+                    }
+
+                    if (count > 0) { // #FACC15
+                        color = "#ffe26f"; // any duplicates --> return yellow colors
                     }
                 }
 
@@ -152,8 +196,10 @@ export default function GamePlay() {
                     </span>
                 );
             }
+        }
+
         return letters;
-    }
+        }   
         
         // look at the user's color profile selected and save 
         // that value into the background for the guessFeed.
