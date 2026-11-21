@@ -141,6 +141,8 @@ export default function GamePlay() {
 
                     if (count > 0) { // #FACC15
                         matchBackground = "#FEF08A";
+                    } else {
+                        matchBackground = "#ffffff"
                     }
                 }
 
@@ -190,7 +192,7 @@ export default function GamePlay() {
 
                     if (count > 0) { // #FACC15
                         color = "#ffe26f"; // any duplicates --> return yellow colors
-                    }
+                    } 
                 }
 
 
