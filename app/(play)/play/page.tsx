@@ -116,7 +116,7 @@ export default function GamePlay() {
             // loop over each letter and check if it is in the word, in the wrong place, or not at all
             for (let i = 0; i < word.length; i++) {
                 const letter = word[i];
-                let color = colorText;
+                let matchBackground: string | undefined;
                 let count = 0;
 
                 // grab each valid letter to use for count
@@ -128,7 +128,7 @@ export default function GamePlay() {
 
                 // show a green letter if in the right spot
                 if (letter === validGuess[i]) {
-                    color = "#008533af"; // show green letters if there is a match
+                    matchBackground = "#87ffb1"; // show green letters if there is a match
 
                 } else {
                     for (let j = 0; j < word.length; j++) {
@@ -140,15 +140,19 @@ export default function GamePlay() {
                     }
 
                     if (count > 0) { // #FACC15
-                        color = "#b38f00bb";
+                        matchBackground = "#FEF08A";
                     }
                 }
 
                 letters.push(
-                    <span key={i+120} style={{ color }}>
+                    <span
+                        key={i}
+                        className={matchBackground ? "rounded-sm px-0.5 ring-1 ring-inset ring-black/30" : undefined}
+                        style={{ color: colorText, backgroundColor: matchBackground }}
+                    >
                         {letter}
                     </span>
-                );
+                );  
             }
         }
 
@@ -191,8 +195,14 @@ export default function GamePlay() {
 
 
                 letters.push(
-                    <span key={i+120} style={{ color }}>
-                        {letter}
+                    <span
+                        key={i}
+                        style={{
+                            color,
+                            textShadow: color !== colorText ? `0 0 6px ${color}` : undefined,
+                        }}
+                    >
+                        {word[i]}
                     </span>
                 );
             }
