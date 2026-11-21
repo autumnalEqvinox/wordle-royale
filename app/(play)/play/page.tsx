@@ -51,13 +51,7 @@ export default function GamePlay() {
     const usernameCache = useRef(new Map<string, Promise<string>>());
     const guessFeedContainerRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        const feedContainer = guessFeedContainerRef.current;
-        if (feedContainer) {
-            feedContainer.scrollTop = feedContainer.scrollHeight;
-        }
-    }, [guessFeed]);
-
+    
     // get the last 5 guesses from guessedText by getting the max between 0 (starting), and the max length - 5
     const guessedTextLength = Math.max(0, guessedText.length-5);
 
@@ -81,23 +75,173 @@ export default function GamePlay() {
 
     const savingGuess = useRef(false);
 
-    {/* Yellow indicator */}
-    const letterChecker = (letter: string) => {
-        let count = 0;
+    const [backgroundColor, setBackgroundColor] = useState<string>();
 
-        for (let i = 0; i < 5; i++) {
-            if (!validGuess[i].includes(letter)) {
-                return 0;
-            } else if (validGuess[i] === letter) {
-                count += 0;
-            } else {
-                count ++;
+    const pageColor = backgroundColor ?? "#FFFFFF"
+    const textColor = getTextColor(pageColor);
+    
+    {/* Math calculations to check 4.5:1 ratio of background color in user's hex profile
+        and return either white text or black text if the brightness is hard to read in one text
+        compared to another. Ex: Dark color, white text, light color, dark text. */}
+    function getTextColor(hex: string): "#FFFFFF" | "#000000" {
+        const rgb = hex.replace(/^#/, "");
+
+        const [red, green, blue] = [0, 2, 4].map((index) => {
+            const channel = parseInt(rgb.slice(index, index + 2), 16) / 255;
+
+            return channel <= 0.04045
+                ? channel / 12.92
+                : ((channel + 0.055) / 1.055) ** 2.4;
+            });
+            
+            const luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+            const whiteContrast = 1.05 / (luminance + 0.05);
+            
+            return whiteContrast >= 4.5 ? "#FFFFFF" : "#000000";
+        }
+
+    {/* wanted to add a fun east egg that changes the colors to yellow and green if the text is suppoed 
+        to be white (for darker backgrounds) */}
+    function guessFeedColorValidation(word: string, colorText: string) {
+        if (!userId ||
+            colorText !== "#000000" && colorText !== "#FFFFFF"
+        ) {
+            return word;
+        }
+        const letters = [];
+        
+        // for if the text color is black --> lighter backgrounds
+        if (colorText === "#000000"){
+        
+            // loop over each letter and check if it is in the word, in the wrong place, or not at all
+            for (let i = 0; i < word.length; i++) {
+                const letter = word[i];
+                let matchBackground: string | undefined;
+                let count = 0;
+
+                // grab each valid letter to use for count
+                for (const answerLetter of validGuess) {
+                    if (answerLetter === letter) {
+                        count++;
+                    }
+                }
+
+                // show a green letter if in the right spot
+                if (letter === validGuess[i]) {
+                    matchBackground = "#87ffb1"; // show green letters if there is a match
+
+                } else {
+                    for (let j = 0; j < word.length; j++) {
+                        // j < i --> if the duplicate letter appears before the placement of our
+                        //  letter placement we are checking, return that letter color first
+                        if (word[j] === letter && (word[j] === validGuess[j] || j < i)) {
+                            count--;
+                        }
+                    }
+
+                    if (count > 0) { // #FACC15
+                        matchBackground = "#FEF08A";
+                    }
+                }
+
+                letters.push(
+                    <span
+                        key={i}
+                        className={matchBackground ? "rounded-sm px-0.5 ring-1 ring-inset ring-black/30" : undefined}
+                        style={{ color: colorText, backgroundColor: matchBackground }}
+                    >
+                        {letter}
+                    </span>
+                );  
             }
         }
 
-        return count;
-    }
+        if (colorText === "#FFFFFF") {
+        {/* this will be solely for white text on a 
+            darker background, for now: 
+                                        our "#FFFFFF"
+            */}
+        
+            // loop over each letter and check if it is in the word, in the wrong place, or not at all
+            for (let i = 0; i < word.length; i++) {
+                const letter = word[i];
+                let color = colorText;
+                let count = 0;
 
+                // grab each valid letter to use for count
+                for (const answerLetter of validGuess) {
+                    if (answerLetter === letter) {
+                        count++;
+                    }
+                }
+
+                // show a green letter if in the right spot
+                if (letter === validGuess[i]) {
+                    color = "#4ADE80"; // show green letters if there is a match
+
+                } else {
+                    // second index to check every letter and see if there are any duplicates
+                    for (let j = 0; j < word.length; j++) {
+                        // there are multiple letters and the letter is in a valid guess
+                        if (word[j] === letter && (word[j] === validGuess[j] || j < i)) { 
+                            count--;
+                        }
+                    }
+
+                    if (count > 0) { // #FACC15
+                        color = "#ffe26f"; // any duplicates --> return yellow colors
+                    }
+                }
+
+
+                letters.push(
+                    <span
+                        key={i}
+                        style={{
+                            color,
+                            textShadow: color !== colorText ? `0 0 6px ${color}` : undefined,
+                        }}
+                    >
+                        {word[i]}
+                    </span>
+                );
+            }
+        }
+
+        return letters;
+        }   
+        
+        // look at the user's color profile selected and save 
+        // that value into the background for the guessFeed.
+        useEffect(() => {
+            let unsubscribeProfile: (() => void) | undefined;
+            
+            const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+                unsubscribeProfile?.();
+                setBackgroundColor(undefined);
+                
+                if (!user) return;
+                
+                const userRef = doc(db, "users", user.uid);
+                
+                unsubscribeProfile = onSnapshot(userRef, (snapshot) => {
+                    const color = snapshot.data()?.color;
+                    setBackgroundColor(typeof color === "string" ? color : undefined);
+                });
+            });
+            
+            return () => {
+                unsubscribeAuth();
+                unsubscribeProfile?.();
+            };
+        }, []);
+        
+        useEffect(() => {
+            const feedContainer = guessFeedContainerRef.current;
+            if (feedContainer) {
+                feedContainer.scrollTop = feedContainer.scrollHeight;
+            }
+        }, [guessFeed]);
     
     {/* Grab each letter and return how many duplicates, and then save
         each of the values for each of the rows */}
@@ -141,11 +285,9 @@ export default function GamePlay() {
         }
     );
 
-
     // want to check what round it is on in the database, 
     // and then if there is no curRoundId, then initialize it
     
-
         return () => unsubscribe();
     }, [userId]);
 
@@ -212,7 +354,6 @@ export default function GamePlay() {
             clearInterval(ticker);
         };
     }, [hasWon, curRoundId, resetAtMs]);
-
 
 
     async function initializePlayer(user: User) {
@@ -1215,7 +1356,8 @@ export default function GamePlay() {
             // also removed redundant functions that were not needed anymore since the new function handles both keyboard and enter button submission
         />
             {/* p-14 */}
-        <main className="grid grid-cols-1 items-start lg:grid-cols-[minmax(0,1fr)_332px_minmax(0,1fr)] lg:gap-x-6">
+        <main className={`grid grid-cols-1 items-start bg-white
+                        lg:grid-cols-[minmax(0,1fr)_332px_minmax(0,1fr)] lg:gap-x-6`}>
             <div className="flex flex-col items-center lg:col-start-2">
             {/* Countdown shown on the page itself while waiting for the next word */}
             {hasWon && (
@@ -2865,7 +3007,7 @@ export default function GamePlay() {
             )}
         </div>
     </div>
-            </div>
+    </div>
         {userId && curRoundId !== null && (
             <section
                 aria-label="Guess feed"
@@ -2884,9 +3026,13 @@ export default function GamePlay() {
                             <div
                                 key={id}
                                 className="flex items-center justify-between gap-4 border-b border-gray-200 py-2 last:border-b-0"
+                                style={{ backgroundColor: pageColor, color: textColor }}
                             >
                                 <span className="truncate">{username}</span>
-                                <span className="shrink-0 font-mono">{word}</span>
+                                <span className="shrink-0 font-mono">
+                                    {/* To display our letter validation if the textColor is white (for now...) */}
+                                    {guessFeedColorValidation(word, textColor)}
+                                </span>
                             </div>
                         ))
                     )}
