@@ -27,6 +27,7 @@ type GuessFeedItem = {
     id: string;
     username: string;
     word: string;
+    color?: string;
 };
 
 export default function GamePlay() {
@@ -414,12 +415,16 @@ export default function GamePlay() {
                         submittedBy: typeof data.submittedBy === "string"
                             ? data.submittedBy
                             : null,
+                        color: typeof data.color === "string" && /^#[0-9a-fA-F]{6}$/.test(data.color)
+                            ? data.color
+                            : undefined,
                     }];
                 });
                 setGuessedText(guesses.map((guess) => guess.word));
-                setGuessFeed(guesses.map(({ id, word }) => ({
+                setGuessFeed(guesses.map(({ id, word, color }) => ({
                     id,
                     word,
+                    color, 
                     username: "Loading...",
                 })));
 
@@ -559,6 +564,7 @@ export default function GamePlay() {
                 submittedBy: user.uid,
                 roundId,
                 submittedAt: serverTimestamp(),
+                color: backgroundColor ?? "#FFFFFF",
             });
 
             transaction.set(playerRef, {
@@ -3024,19 +3030,23 @@ export default function GamePlay() {
                     {guessFeed.length === 0 ? (
                         <p className="text-sm text-gray-500">No guesses yet.</p>
                     ) : (
-                        guessFeed.map(({ id, username, word }) => (
-                            <div
-                                key={id}
-                                className="flex items-center justify-between gap-4 border-b border-gray-200 py-2 last:border-b-0"
-                                style={{ backgroundColor: pageColor, color: textColor }}
-                            >
-                                <span className="truncate">{username}</span>
-                                <span className="shrink-0 font-mono">
-                                    {/* To display our letter validation if the textColor is white (for now...) */}
-                                    {guessFeedColorValidation(word, textColor)}
-                                </span>
-                            </div>
-                        ))
+                        guessFeed.map(({ id, username, word, color }) => {
+                            const rowColor = color ?? pageColor;
+                            const rowTextColor = getTextColor(rowColor);
+
+                            return (
+                                <div
+                                    key={id}
+                                    className="flex items-center justify-between gap-4 border-b border-gray-200 py-2 last:border-b-0"
+                                    style={{ backgroundColor: rowColor, color: rowTextColor }}
+                                >
+                                    <span className="truncate">{username}</span>
+                                    <span className="shrink-0 font-mono">
+                                        {guessFeedColorValidation(word, rowTextColor)}
+                                    </span>
+                                </div>
+                            );
+                        })
                     )}
                 </div>
             </section>
